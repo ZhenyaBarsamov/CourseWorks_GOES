@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4BFBC345-B25C-4DA4-9405-398D06E6D30B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>FNLSystem</RootNamespace>
+    <AssemblyName>FNLSystem</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\education_school_blocks_building_study_learn_numbers_icon_512x512.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\Solver.cs" />
+    <Compile Include="Classes\TrainingGraphsStorage.cs" />
+    <Compile Include="Forms\AboutSystem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AboutSystem.Designer.cs">
+      <DependentUpon>AboutSystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\AugmentalFlowForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AugmentalFlowForm.Designer.cs">
+      <DependentUpon>AugmentalFlowForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FlowTaskForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FlowTaskForm.Designer.cs">
+      <DependentUpon>FlowTaskForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\GraphSelectorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\GraphSelectorForm.Designer.cs">
+      <DependentUpon>GraphSelectorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LectureBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LectureBox.Designer.cs">
+      <DependentUpon>LectureBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\TaskStatisticsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TaskStatisticsForm.Designer.cs">
+      <DependentUpon>TaskStatisticsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\VertexLabelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\VertexLabelForm.Designer.cs">
+      <DependentUpon>VertexLabelForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\AboutSystem.resx">
+      <DependentUpon>AboutSystem.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AugmentalFlowForm.resx">
+      <DependentUpon>AugmentalFlowForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FlowTaskForm.resx">
+      <DependentUpon>FlowTaskForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\GraphSelectorForm.resx">
+      <DependentUpon>GraphSelectorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LectureBox.resx">
+      <DependentUpon>LectureBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\TaskStatisticsForm.resx">
+      <DependentUpon>TaskStatisticsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\VertexLabelForm.resx">
+      <DependentUpon>VertexLabelForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GraphEduSysControlLibrary\GraphEduSysControlLibrary.csproj">
+      <Project>{71976a8f-1567-4365-8312-fe1817f78fdb}</Project>
+      <Name>GraphEduSysControlLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MyClassLibrary\MyClassLibrary.csproj">
+      <Project>{1ea8fe85-c91e-4772-9c73-bc5a7fe665ed}</Project>
+      <Name>MyClassLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\1200px-Identity_graph8.svg rotated.png" />
+    <Content Include="Resources\1200px-Identity_graph8.svg.png" />
+    <Content Include="Resources\Background.png" />
+    <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_128x128.ico" />
+    <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_32x32.ico" />
+    <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_512x512.ico" />
+    <Content Include="Resources\FinalBackground.png" />
+    <Content Include="Resources\NewBackground.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

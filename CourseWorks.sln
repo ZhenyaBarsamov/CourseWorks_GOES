@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAGL_Test", "MAGL_Test\MAGL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GOES", "GOES\GOES.csproj", "{CDB72E41-4631-4B62-A1C6-79BDA607EAAD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGVL", "SGVL\SGVL.csproj", "{723B6041-B76A-4048-94B4-4D33DAB1D98C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{CDB72E41-4631-4B62-A1C6-79BDA607EAAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDB72E41-4631-4B62-A1C6-79BDA607EAAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDB72E41-4631-4B62-A1C6-79BDA607EAAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

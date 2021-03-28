@@ -1,6 +1,6 @@
 ﻿using SGVL.Graphs;
 
-namespace SGVL.Visualization.Layout {
+namespace SGVL.Visualization.AbstractTypes.Layout {
     /// <summary>
     /// Интерфейс, представляющий алгоритм укладки графа
     /// </summary>

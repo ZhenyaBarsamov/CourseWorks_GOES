@@ -50,15 +50,17 @@
     <Compile Include="Graphs\RelativePoint.cs" />
     <Compile Include="Graphs\Vertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Visualization\Layout\AbsolutePositioning.cs" />
-    <Compile Include="Visualization\Visualizators\GraphVisualizator.cs" />
-    <Compile Include="Visualization\Visualizators\InteractiveAction.cs" />
-    <Compile Include="Visualization\Visualizators\InteractiveMode.cs" />
-    <Compile Include="Visualization\EdgeDrawers\IEdgeDrawer.cs" />
-    <Compile Include="Visualization\Layout\ILayoutAlgorithm.cs" />
-    <Compile Include="Visualization\VertexDrawers\IVertexDrawer.cs" />
-    <Compile Include="Visualization\Visualizators\VisualizationSettings.cs" />
+    <Compile Include="Visualization\AbstractTypes\Layout\AbsolutePositioning.cs" />
+    <Compile Include="Visualization\AbstractTypes\Visualizer\GraphVisualizator.cs" />
+    <Compile Include="Visualization\AbstractTypes\Visualizer\InteractiveAction.cs" />
+    <Compile Include="Visualization\AbstractTypes\Visualizer\InteractiveMode.cs" />
+    <Compile Include="Visualization\AbstractTypes\EdgeDrawer\IEdgeDrawer.cs" />
+    <Compile Include="Visualization\AbstractTypes\Layout\ILayoutAlgorithm.cs" />
+    <Compile Include="Visualization\AbstractTypes\VertexDrawer\IVertexDrawer.cs" />
+    <Compile Include="Visualization\AbstractTypes\Visualizer\VisualizationSettings.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Visualization\Visualizers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

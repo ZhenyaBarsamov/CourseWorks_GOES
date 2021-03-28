@@ -1,11 +1,11 @@
 ﻿using SGVL.Graphs.DisplayedData;
 using SGVL.Graphs;
 using System.Drawing;
-using SGVL.Visualization.EdgeDrawers;
-using SGVL.Visualization.VertexDrawers;
-using SGVL.Visualization.Layout;
+using SGVL.Visualization.AbstractTypes.EdgeDrawer;
+using SGVL.Visualization.AbstractTypes.VertexDrawer;
+using SGVL.Visualization.AbstractTypes.Layout;
 
-namespace SGVL.Visualization.Visualizators {
+namespace SGVL.Visualization.AbstractTypes.Visualizer {
     /// <summary>
     /// Абстрактный класс, представляющий визуализатор графа
     /// </summary>

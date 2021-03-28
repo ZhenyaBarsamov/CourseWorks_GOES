@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace SGVL.Visualization.Layout {
+namespace SGVL.Visualization.AbstractTypes.Layout {
     /// <summary>
     /// Класс, предназначенный для задания укладки графа в соответствие со списокм переданному ему координат вершин
     /// </summary>

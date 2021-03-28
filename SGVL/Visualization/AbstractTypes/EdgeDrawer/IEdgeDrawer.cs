@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using SGVL.Graphs;
 
-namespace SGVL.Visualization.EdgeDrawers {
+namespace SGVL.Visualization.AbstractTypes.EdgeDrawer {
     /// <summary>
     /// Интерфейс, представляющий объект, занимающийся рисованием ребра графа и проверкой 
     /// принадлежности координат данному ребру

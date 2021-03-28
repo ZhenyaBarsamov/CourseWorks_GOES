@@ -1,4 +1,4 @@
-﻿namespace SGVL.Visualization.Visualizators {
+﻿namespace SGVL.Visualization.AbstractTypes.Visualizer {
     /// <summary>
     /// Перечисление для режимов интерактивности визуализации графа
     /// </summary>

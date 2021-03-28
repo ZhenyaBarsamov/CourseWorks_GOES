@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using SGVL.Graphs;
 
-namespace SGVL.Visualization.VertexDrawers {
+namespace SGVL.Visualization.AbstractTypes.VertexDrawer {
     /// <summary>
     /// Интерфейс, представляющий объект, занимающийся рисованием вершины графа и проверкой 
     /// принадлежности координат данной вершины

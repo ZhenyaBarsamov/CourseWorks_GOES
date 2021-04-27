@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанных со сборкой.
 [assembly: AssemblyTitle("GOES")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Обучающая система - результат курсовой работы. Разработчик: Барсамов Евгений Сергеевич, учебная группа ПМИ-1,2-2017. Научный руководитель: Алябьева Валентина Георгиевна. Кафедра МОВС, Механико-математический факульет, ПГНИУ, 2021 год.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HP Inc.")]
-[assembly: AssemblyProduct("GOES")]
-[assembly: AssemblyCopyright("Copyright © HP Inc. 2021")]
+[assembly: AssemblyCompany("ПГНИУ")]
+[assembly: AssemblyProduct("GOES - Graph Optimization Education System")]
+[assembly: AssemblyCopyright("ПГНИУ, ММФ, кафедра МОВС, Барсамов Евгений Сергеевич")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

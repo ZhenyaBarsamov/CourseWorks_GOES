@@ -7,11 +7,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GOES.Forms;
+using GOES.Problems;
+using GOES.DataManager;
+using GOES.Problems.MaximalBipartiteMatching;
 
 namespace GOES {
     public partial class FormMain : Form {
         public FormMain() {
             InitializeComponent();
+        }
+
+
+        // Вызов окна "О программе"
+        private void buttonAbout_Click(object sender, EventArgs e) {
+            var formAbout = new FormAbout();
+            formAbout.ShowDialog();
+        }
+
+        // Открытие окна с текстом лекции
+        private void buttonLectures_Click(object sender, EventArgs e) {
+            FormLectureViewer formLecture;
+            try {
+                formLecture = new FormLectureViewer("Theory.html");
+            }
+            catch {
+                MessageBox.Show(
+                    "Не удаётся открыть файл с лекцией. Файл с лекцией должен называться \"Theory.html\" и должен " +
+                    "находиться в каталоге приложения. Пожалуйста, убедитесь в том, что такой файл действительно существует," +
+                    "проверьте его целостность и повторите попытку снова.",
+                    "Не удалось открыть лекцию", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            formLecture.Show();
+        }
+
+        // Запуск задач
+        private void buttonProblems_Click(object sender, EventArgs e) {
+            var problemsManager = new ProblemsManager();
+            var problem = problemsManager.GetAvailableProblemStatements(Problem.MaximalBipartiteMatching)[0];
+            var formMaximalBipartiteProblem = new FormMaximalBipartiteMatching((MaximalBipartiteMatchingStatement)problem);
+            formMaximalBipartiteProblem.ShowDialog();
         }
     }
 }

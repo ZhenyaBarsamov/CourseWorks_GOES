@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GOES", "GOES\GOES.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGVL", "SGVL\SGVL.csproj", "{723B6041-B76A-4048-94B4-4D33DAB1D98C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SgvlTest", "SgvlTest\SgvlTest.csproj", "{9A45707B-E23D-4F6B-AF23-546214CE2EDF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SGVL_TestStand", "SGVL_TestStand\SGVL_TestStand.csproj", "{D984C015-612C-46D3-846D-292F10412738}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{723B6041-B76A-4048-94B4-4D33DAB1D98C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A45707B-E23D-4F6B-AF23-546214CE2EDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A45707B-E23D-4F6B-AF23-546214CE2EDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A45707B-E23D-4F6B-AF23-546214CE2EDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A45707B-E23D-4F6B-AF23-546214CE2EDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D984C015-612C-46D3-846D-292F10412738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D984C015-612C-46D3-846D-292F10412738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D984C015-612C-46D3-846D-292F10412738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D984C015-612C-46D3-846D-292F10412738}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

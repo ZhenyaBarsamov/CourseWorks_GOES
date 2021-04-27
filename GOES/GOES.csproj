@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\education_school_blocks_building_study_learn_numbers_icon_512x512.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,8 +55,62 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormAbout.Designer.cs">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormLectureViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormLectureViewer.Designer.cs">
+      <DependentUpon>FormLectureViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\FormProblemSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormProblemSelector.Designer.cs">
+      <DependentUpon>FormProblemSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DataManager\EnumProblems.cs" />
+    <Compile Include="DataManager\ProblemsManager.cs" />
+    <Compile Include="Problems\EnumProblemMode.cs" />
+    <Compile Include="Problems\MaximalBipartiteMatching\FormMaximalBipartiteMatching.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Problems\MaximalBipartiteMatching\FormMaximalBipartiteMatching.Designer.cs">
+      <DependentUpon>FormMaximalBipartiteMatching.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Problems\MaximalBipartiteMatching\MaximalBipartiteMatchingStatement.cs" />
+    <Compile Include="Problems\MaximalFlow\FormMaximalFlow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Problems\MaximalFlow\FormMaximalFlow.Designer.cs">
+      <DependentUpon>FormMaximalFlow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Problems\MaximalFlow\MaximalFlowProblemStatement.cs" />
+    <Compile Include="Problems\ProblemStatement.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormAbout.resx">
+      <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormLectureViewer.resx">
+      <DependentUpon>FormLectureViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProblemSelector.resx">
+      <DependentUpon>FormProblemSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Problems\MaximalBipartiteMatching\FormMaximalBipartiteMatching.resx">
+      <DependentUpon>FormMaximalBipartiteMatching.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Problems\MaximalFlow\FormMaximalFlow.resx">
+      <DependentUpon>FormMaximalFlow.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -76,5 +133,17 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SGVL\SGVL.csproj">
+      <Project>{723b6041-b76a-4048-94b4-4d33dab1d98c}</Project>
+      <Name>SGVL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\1200px-Identity_graph8.svg rotated.png" />
+    <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_128x128.ico" />
+    <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_512x512.ico" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

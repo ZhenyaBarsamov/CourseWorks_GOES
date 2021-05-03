@@ -28,7 +28,7 @@
             // 
             // SimpleGraphVisualizer
             // 
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.SimpleGraphVisualizer_Paint);
+            this.SizeChanged += new System.EventHandler(this.SimpleGraphVisualizer_SizeChanged);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.SimpleGraphVisualizer_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.SimpleGraphVisualizer_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.SimpleGraphVisualizer_MouseUp);

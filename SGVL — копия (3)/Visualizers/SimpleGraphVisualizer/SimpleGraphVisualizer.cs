@@ -14,7 +14,8 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
         // а с координатами мыши на изображении, с координатами пикселей.
         // Это даст возможность добавлять полосы прокрутки для больших графов, и т.д.
         // Это сработает(?):  Point p = pictureBox1.PointToClient(System.Windows.Forms.Cursor.Position);
-        // TODO: Для оптимизации можно использовать квадродерево.
+        // TODO: хорошо бы рисовать не на битмапе, а на самом элементе управления. Это будет в тыщу раз быстрее.
+        // Ещё для оптимизации можно использовать квадродерево.
         // TODO: хорошо бы перейти от абсолютных координат вершин к координатам относительным (от 0 до 1, к примеру).
         // Это позволит рисовать граф на холсте любых размеров с сохранением пропорций как-бы.
 
@@ -59,6 +60,8 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             InteractiveMode = InteractiveMode.Interactive;
             IsVerticesMoving = true;
             IsInteractiveUpdating = true;
+            // Создаём под изображение битмап, чтобы оно не стиралось после перерисовки
+            Image = new Bitmap(Width, Height);
             // Создаём объекты для рисования элементов графа
             VertexDrawer = new CircleVertexDrawer(Settings);
             if (Graph.IsDirected)
@@ -68,8 +71,8 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             // Обнуляем подсвеченные вершину и ребро
             SelectedVertex = null;
             SelectedEdge = null;
-            // Запрашиваем перерисовку контрола
-            Invalidate();
+            // Рисуем граф и запрашиваем перерисовку контрола
+            DrawGraph();
         }
 
         public void ResetVerticesBorderColor() {
@@ -131,33 +134,48 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
         // ----Методы
         private void OnGraphChanged(Graph graph) {
             if (IsInteractiveUpdating)
-                Invalidate();
+                DrawGraph();
         }
 
         private void OnSettingsChanged(DrawingSettings drawingSettings) {
-            Invalidate();
+            DrawGraph();
+        }
+
+        /// <summary>
+        /// Получить поверхность для рисования
+        /// </summary>
+        private Graphics GetGraphics() {
+            // Получаем поверхность рисования
+            var g = Graphics.FromImage(Image);
+            // Задаём сглаживание при рисовании
+            g.SmoothingMode = SmoothingMode.HighQuality;
+            return g;
         }
 
         /// <summary>
         /// Метод отрисовки графа
         /// </summary>
-        public void DrawGraph(Graphics g) {
+        public void DrawGraph() {
             if (Graph == null)
                 return;
-            // Очищаем поверхность и заливаем заданным фоновым цветом
-            g.Clear(Settings.BackgroundColor);
-            // Рисуем вершины
-            foreach (var vertex in Graph.Vertices)
-                if (vertex == SelectedVertex)
-                    VertexDrawer.DrawSelectedVertex(g, vertex);
-                else
-                    VertexDrawer.DrawVertex(g, vertex);
-            // Рисуем рёбра
-            foreach (var edge in Graph.Edges)
-                if (edge == SelectedEdge)
-                    EdgeDrawer.DrawSelectedEdge(g, edge);
-                else
-                    EdgeDrawer.DrawEdge(g, edge);
+            using (var g = GetGraphics()) {
+                // Очищаем поверхность и заливаем заданным фоновым цветом
+                g.Clear(Settings.BackgroundColor);
+                // Рисуем вершины
+                foreach (var vertex in Graph.Vertices)
+                    if (vertex == SelectedVertex)
+                        VertexDrawer.DrawSelectedVertex(g, vertex);
+                    else
+                        VertexDrawer.DrawVertex(g, vertex);
+                // Рисуем рёбра
+                foreach (var edge in Graph.Edges)
+                    if (edge == SelectedEdge)
+                        EdgeDrawer.DrawSelectedEdge(g, edge);
+                    else
+                        EdgeDrawer.DrawEdge(g, edge);
+                // Вызываем перерисовку элемента управления
+                Invalidate();
+            }
         }
 
 
@@ -176,6 +194,8 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             // Если была выделенная вершина, проверяем, покинула ли мышь её. Если нет - конец. Если да - убираем подсветку
             if (SelectedVertex != null)
                 if (!VertexDrawer.IsCoordinatesOnVertex(SelectedVertex, mousePoint)) {
+                    // Для экономии перерисовываем не всё, а только эту вершину
+                    VertexDrawer.DrawVertex(GetGraphics(), SelectedVertex);
                     SelectedVertex = null;
                     Invalidate();
                 }
@@ -186,6 +206,7 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
                 // Если да - выделяем и выходим (больше искать нечего)
                 if (VertexDrawer.IsCoordinatesOnVertex(vertex, mousePoint)) {
                     SelectedVertex = vertex;
+                    VertexDrawer.DrawSelectedVertex(GetGraphics(), vertex);
                     Invalidate();
                     return;
                 }
@@ -201,6 +222,8 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             // Если было выделенное ребро, проверяем, покинула ли мышь его. Если нет - конец. Если да - убираем подсветку
             if (SelectedEdge != null) {
                 if (!EdgeDrawer.IsCoordinatesOnEdge(SelectedEdge, mousePoint)) {
+                    // Для экономии перерисовываем не всё, а только это ребро
+                    EdgeDrawer.DrawEdge(GetGraphics(), SelectedEdge);
                     SelectedEdge = null;
                     Invalidate();
                 }
@@ -212,6 +235,7 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
                 // Если да - выделяем и выходим (искать больше нечего)
                 if (EdgeDrawer.IsCoordinatesOnEdge(edge, mousePoint)) {
                     SelectedEdge = edge;
+                    EdgeDrawer.DrawSelectedEdge(GetGraphics(), edge);
                     Invalidate();
                     return;
                 }
@@ -295,11 +319,11 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             prevMouseMovingPosition = Point.Empty;
         }
 
-        private void SimpleGraphVisualizer_Paint(object sender, PaintEventArgs e) {
-            var graphics = e.Graphics;
-            // Задаём сглаживание при рисовании
-            graphics.SmoothingMode = SmoothingMode.HighQuality;
-            DrawGraph(graphics);
+        private void SimpleGraphVisualizer_SizeChanged(object sender, System.EventArgs e) {
+            if (Width != 0 && Height != 0) {
+                Image = new Bitmap(Width, Height);
+                DrawGraph();
+            }
         }
     }
 }

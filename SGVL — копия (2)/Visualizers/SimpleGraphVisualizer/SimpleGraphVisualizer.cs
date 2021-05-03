@@ -1,7 +1,8 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using SGVL.Graphs;
+using SGVL.Types.Visualizers;
+using SGVL.Types.Graphs;
 using SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing;
 using SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing;
 
@@ -10,32 +11,25 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
     /// Элемент управления для визуализации графа на основе стандартного элемента управления PictureBox
     /// </summary>
     public partial class SimpleGraphVisualizer : PictureBox, IGraphVisualizer {
-        // TODO: хорошо бы работать не с координатами мыши на PictureBox,
-        // а с координатами мыши на изображении, с координатами пикселей.
-        // Это даст возможность добавлять полосы прокрутки для больших графов, и т.д.
-        // Это сработает(?):  Point p = pictureBox1.PointToClient(System.Windows.Forms.Cursor.Position);
-        // TODO: хорошо бы рисовать не на битмапе, а на самом элементе управления. Это будет в тыщу раз быстрее.
-        // Ещё для оптимизации можно использовать квадродерево.
-        // TODO: хорошо бы перейти от абсолютных координат вершин к координатам относительным (от 0 до 1, к примеру).
-        // Это позволит рисовать граф на холсте любых размеров с сохранением пропорций как-бы.
-
-
         // ----Атрибуты
         public Graph Graph { get; private set; }
         public InteractiveMode InteractiveMode { get; set; }
         public bool IsVerticesMoving { get; set; }
         public bool IsInteractiveUpdating { get; set; }
+        /// <summary>
+        /// Настройки визуализации
+        /// </summary>
         public DrawingSettings Settings { get; private set; }
         private IVertexDrawer VertexDrawer { get; set; }
         private IEdgeDrawer EdgeDrawer { get; set; }
         /// <summary>
         /// Вершина, которая находится под мышью
         /// </summary>
-        private Vertex SelectedVertex { get; set; }
+        public Vertex SelectedVertex { get; private set; }
         /// <summary>
         /// Ребро, которое находится под мышью
         /// </summary>
-        private Edge SelectedEdge { get; set; }
+        public Edge SelectedEdge { get; private set; }
 
 
         // ----Конструктор
@@ -75,61 +69,6 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             DrawGraph();
         }
 
-        public void ResetVerticesBorderColor() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetVerticesFillColor() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetVerticesFillColor(Settings.VertexFillColor);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetEdgesColor() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetEdgesColor(Settings.EdgeColor);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetVerticesBold() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetVerticesBold(false);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetEdgesBold() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetEdgesBold(false);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
 
         // ----Методы
         private void OnGraphChanged(Graph graph) {
@@ -137,7 +76,7 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
                 DrawGraph();
         }
 
-        private void OnSettingsChanged(DrawingSettings drawingSettings) {
+        private void OnSettingsChanged() {
             DrawGraph();
         }
 
@@ -163,13 +102,13 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
                 g.Clear(Settings.BackgroundColor);
                 // Рисуем вершины
                 foreach (var vertex in Graph.Vertices)
-                    if (vertex == SelectedVertex)
+                    if (vertex == SelectedVertex && (InteractiveMode == InteractiveMode.Interactive || InteractiveMode == InteractiveMode.OnlyVertices))
                         VertexDrawer.DrawSelectedVertex(g, vertex);
                     else
                         VertexDrawer.DrawVertex(g, vertex);
                 // Рисуем рёбра
                 foreach (var edge in Graph.Edges)
-                    if (edge == SelectedEdge)
+                    if (edge == SelectedEdge && (InteractiveMode == InteractiveMode.Interactive || InteractiveMode == InteractiveMode.OnlyEdges))
                         EdgeDrawer.DrawSelectedEdge(g, edge);
                     else
                         EdgeDrawer.DrawEdge(g, edge);
@@ -201,6 +140,9 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
                 }
                 else
                     return;
+            // Если вершины не интерактивны - выделения нет
+            if (InteractiveMode != InteractiveMode.Interactive && InteractiveMode != InteractiveMode.OnlyVertices)
+                return;
             // Смотрим, оказалась ли теперь мышь над одной из вершин
             foreach (var vertex in Graph.Vertices) {
                 // Если да - выделяем и выходим (больше искать нечего)
@@ -222,7 +164,6 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             // Если было выделенное ребро, проверяем, покинула ли мышь его. Если нет - конец. Если да - убираем подсветку
             if (SelectedEdge != null) {
                 if (!EdgeDrawer.IsCoordinatesOnEdge(SelectedEdge, mousePoint)) {
-                    // Для экономии перерисовываем не всё, а только это ребро
                     EdgeDrawer.DrawEdge(GetGraphics(), SelectedEdge);
                     SelectedEdge = null;
                     Invalidate();
@@ -230,6 +171,9 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
                 else
                     return;
             }
+            // Если рёбра не интерактивны - выделения нет
+            if (InteractiveMode != InteractiveMode.Interactive && InteractiveMode != InteractiveMode.OnlyEdges)
+                return;
             // Смотрим, оказалась ли мышь над одним из рёбер
             foreach (var edge in Graph.Edges) {
                 // Если да - выделяем и выходим (искать больше нечего)
@@ -243,32 +187,28 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
         }
 
         private Point mouseDownPosition = Point.Empty;
-        private Point prevMouseMovingPosition = Point.Empty;
 
         /// <summary>
         /// Произвести перетаскивание вершины, если требуется
         /// </summary>
         /// <param name="mousePoint">Координаты мыши</param>
         private void DoVertexMove(PointF mousePoint) {
-            // Если вершины нельзя перетаскивать - выходим
-            if (!IsVerticesMoving)
-                return;
             // Если левая кнопка не была нажата, то и перетаскиваний нет
             if (mouseDownPosition == PointF.Empty)
                 return;
-            // Если никакая вершина не выбрана, или если текущие координаты - это координаты нажатия, то выходим
-            if (SelectedVertex == null || mousePoint == mouseDownPosition)
+            // Если никакая вершина не выбрана, или если координаты мыши после нажатия не менялись, это пока нажатие
+            if (SelectedVertex == null || mouseDownPosition == mousePoint)
                 return;
-            // Иначе - меняем координату выбранной вершины в соответствии и изменениями координат
+            // Если же менялись, то меняем координату выбранной вершины в соответствии и изменениями координат
             PointF delta = new PointF { 
-                X = mousePoint.X - prevMouseMovingPosition.X,
-                Y = mousePoint.Y - prevMouseMovingPosition.Y
+                X = mousePoint.X - mouseDownPosition.X,
+                Y = mousePoint.Y - mouseDownPosition.Y
             };
             SelectedVertex.DrawingCoords = new PointF { 
                 X = SelectedVertex.DrawingCoords.X + delta.X,
                 Y = SelectedVertex.DrawingCoords.Y + delta.Y
             };
-            prevMouseMovingPosition = new Point((int)mousePoint.X, (int)mousePoint.Y);
+            mouseDownPosition = new Point((int)mousePoint.X, (int)mousePoint.Y);
         }
 
         private void DoClickWork(PointF mousePoint) {
@@ -286,37 +226,39 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
         }
 
         private void SimpleGraphVisualizer_MouseMove(object sender, MouseEventArgs e) {
+            // TODO: хорошо бы работать не с координатами мыши на PictureBox,
+            // а с координатами мыши на изображении, с координатами пикселей.
+            // Это даст возможность добавлять полосы прокрутки для больших графов, и т.д.
+            // Это сработает(?):  Point p = pictureBox1.PointToClient(System.Windows.Forms.Cursor.Position);
+
             if (Graph == null)
                 return;
 
             PointF mousePoint = new PointF(e.X, e.Y);
 
-            // Проверяем, перетаскивается ли вершина, и перетаскиваем её
-            DoVertexMove(mousePoint);
-            // Проверяем выделение рёбер. Выделяем то, которое под мышкой, убираем выделение с того, которое теперь не выделено
-            ChangeEdgesSelecting(mousePoint);
-            // Проверяем выделение вершин. Выделяем ту, которая под мышкой, убираем выделение с той, которая теперь не выделена
-            ChangeVerticesSelecting(mousePoint);
+            // Если визуализация интерактивная, разбираемся с подсветкой вершины/ребра под мышью
+            if (InteractiveMode != InteractiveMode.NonInteractive) {
+                // Если вершины можно перетаскивать, разбираемся с этим
+                if (IsVerticesMoving) {
+                    DoVertexMove(mousePoint);
+                }
+
+                // Проверяем выделение рёбер. Выделяем то, которое под мышкой, убираем выделение с того, которое теперь не выделено
+                ChangeEdgesSelecting(mousePoint);
+                // Проверяем выделение вершин. Выделяем ту, которая под мышкой, убираем выделение с той, которая теперь не выделена
+                ChangeVerticesSelecting(mousePoint);
+            }
         }
 
         private void SimpleGraphVisualizer_MouseDown(object sender, MouseEventArgs e) {
-            // Обрабатываем нажатие левой кнопки мыши.
-            if (e.Button != MouseButtons.Left)
-                return;
             mouseDownPosition = e.Location;
-            prevMouseMovingPosition = e.Location;
         }
 
         private void SimpleGraphVisualizer_MouseUp(object sender, MouseEventArgs e) {
-            // Обрабатываем отпускание левой кнопки мыши.
-            if (e.Button != MouseButtons.Left)
-                return;
             PointF mousePoint = new PointF(e.X, e.Y);
-            // Если было нажатие (координаты MouseDown совпадают с координатами MouseUp), 
-            // проверяем, на что нажали
+            // Разбираемся с нажатиями
             DoClickWork(mousePoint);
             mouseDownPosition = Point.Empty;
-            prevMouseMovingPosition = Point.Empty;
         }
 
         private void SimpleGraphVisualizer_SizeChanged(object sender, System.EventArgs e) {

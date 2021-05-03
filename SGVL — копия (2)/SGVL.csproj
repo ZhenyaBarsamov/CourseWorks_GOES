@@ -53,13 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Graphs\Delegates.cs" />
-    <Compile Include="Graphs\Edge.cs" />
-    <Compile Include="Graphs\Graph.cs" />
-    <Compile Include="Graphs\Vertex.cs" />
-    <Compile Include="Visualizers\Delegates.cs" />
-    <Compile Include="Visualizers\IGraphVisualizer.cs" />
-    <Compile Include="Visualizers\InteractiveMode.cs" />
+    <Compile Include="Types\Graphs\Delegates.cs" />
+    <Compile Include="Types\Graphs\Edge.cs" />
+    <Compile Include="Types\Graphs\Graph.cs" />
+    <Compile Include="Types\Graphs\Vertex.cs" />
+    <Compile Include="Types\Visualizers\Delegates.cs" />
+    <Compile Include="Types\Visualizers\IGraphVisualizer.cs" />
+    <Compile Include="Types\Visualizers\InteractiveMode.cs" />
     <Compile Include="Visualizers\MsaglGraphVisualizer\MsaglGraphVisualizer.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -67,8 +67,8 @@
       <DependentUpon>MsaglGraphVisualizer.cs</DependentUpon>
     </Compile>
     <Compile Include="Visualizers\MsaglGraphVisualizer\MsaglGraphWrapper.cs" />
-    <Compile Include="Visualizers\DrawingSettings.cs" />
-    <Compile Include="Visualizers\MsaglGraphVisualizer\MsaglSettingsWrapper.cs" />
+    <Compile Include="Visualizers\SimpleGraphVisualizer\Delegates.cs" />
+    <Compile Include="Visualizers\SimpleGraphVisualizer\DrawingSettings.cs" />
     <Compile Include="Visualizers\SimpleGraphVisualizer\EdgesDrawing\DirectedLineEdgeDrawer.cs" />
     <Compile Include="Visualizers\SimpleGraphVisualizer\EdgesDrawing\IEdgeDrawer.cs" />
     <Compile Include="Visualizers\SimpleGraphVisualizer\EdgesDrawing\UndirectedLineEdgeDrawer.cs" />
@@ -92,6 +92,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

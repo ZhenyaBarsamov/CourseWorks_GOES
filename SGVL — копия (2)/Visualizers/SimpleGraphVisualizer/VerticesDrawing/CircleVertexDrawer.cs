@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using SGVL.Graphs;
+using SGVL.Types.Graphs;
 
 namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
     /// <summary>
@@ -13,11 +13,6 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
         /// Используемые настройки рисования графа
         /// </summary>
         public DrawingSettings Settings { get; private set; }
-
-
-        // ----Константы
-        const float defaultLineWidth = 1;
-        const float boldCoefficient = 2;
 
 
         // ----Конструктор
@@ -39,8 +34,6 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
         /// <param name="vertex">Вершина, которую необходимо нарисовать</param>
         /// <param name="isVertexSelected">Флаг, показывающий, должна ли вершина быть подсвечена</param>
         private void DrawVertex(Graphics g, Vertex vertex, bool isVertexSelected) {
-            // Параметры рисования вершины
-            float width = vertex.Bold ? defaultLineWidth * boldCoefficient : defaultLineWidth;
             // В зависимости от того, выделена ли вершина, меняются некоторые цвета
             Color borderColor = isVertexSelected ? Settings.VertexSelectingColor : vertex.BorderColor;
             Color numberColor = isVertexSelected ? Settings.VertexNumberSelectingColor : Settings.VertexNumberColor;
@@ -59,7 +52,7 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
 
             // Рисуем вершину
             g.FillEllipse(new SolidBrush(vertex.FillColor), leftUpperPoint.X, leftUpperPoint.Y, diameter, diameter); // заливаем место под вершиной
-            g.DrawEllipse(new Pen(borderColor, width), leftUpperPoint.X, leftUpperPoint.Y, diameter, diameter); // рисуем границы вершины
+            g.DrawEllipse(new Pen(borderColor, 2), leftUpperPoint.X, leftUpperPoint.Y, diameter, diameter); // рисуем границы вершины
             // Выводим номер вершины и её метку
             TextRenderer.DrawText(g, vertex.Number.ToString(), font, 
                 new Point((int)numberPosition.X, (int)numberPosition.Y), numberColor, vertex.FillColor);

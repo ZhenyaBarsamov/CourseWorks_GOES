@@ -385,10 +385,10 @@
             this.radioButtonActionBold.Dock = System.Windows.Forms.DockStyle.Fill;
             this.radioButtonActionBold.Location = new System.Drawing.Point(71, 3);
             this.radioButtonActionBold.Name = "radioButtonActionBold";
-            this.radioButtonActionBold.Size = new System.Drawing.Size(128, 21);
+            this.radioButtonActionBold.Size = new System.Drawing.Size(160, 21);
             this.radioButtonActionBold.TabIndex = 2;
             this.radioButtonActionBold.TabStop = true;
-            this.radioButtonActionBold.Text = "Толстое ребро";
+            this.radioButtonActionBold.Text = "Выделение жирным";
             this.radioButtonActionBold.UseVisualStyleBackColor = true;
             // 
             // groupBox6

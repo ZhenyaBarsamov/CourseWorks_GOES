@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using SGVL.Graphs;
+using SGVL.Types.Graphs;
 
 namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
     /// <summary>
@@ -8,17 +8,6 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
     /// </summary>
     class DirectedLineEdgeDrawer : UndirectedLineEdgeDrawer, IEdgeDrawer {
         // ----Атрибуты наследуются
-
-        // ----Константы
-        /// <summary>
-        /// Длина усиков стрелки вдоль линии ребра
-        /// </summary>
-        private const float arrowLength = 10;
-        /// <summary>
-        /// Высота усиков стрелки (расстояние от линии ребра до крайних точек усиков стрелки)
-        /// </summary>
-        private const float arrowHeight = 4;
-        
 
 
         // ----Конструктор
@@ -39,9 +28,10 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
         /// <param name="isEdgeSelected">Флаг, показывающий, должно ли ребро быть подсвечено</param>
         private void DrawEdge(Graphics g, Edge edge, bool isEdgeSelected) {
             // Параметры рисования ребра
-            const float arrowL = arrowLength; // длина усиков стрелки вдоль отрезка
-            const float arrowH = arrowHeight; // расстояние от отрезка до крайних точек усиков стрелки (высота усиков)
-            float width = edge.Bold ? defaultLineWidth * boldCoefficient : defaultLineWidth;
+            const float arrowL = 10; // длина усиков стрелки вдоль отрезка
+            const float arrowH = 4; // расстояние от отрезка до крайних точек усиков стрелки (высота усиков)
+            const float edgeWidth = 2; // толщина ребра
+            float width = edge.Bold ? edgeWidth * 2 : edgeWidth;
 
             // В зависимости от того, выделено ли ребро, меняем некоторые цвета
             Color color = isEdgeSelected ? Settings.EdgeSelectingColor : edge.Color;

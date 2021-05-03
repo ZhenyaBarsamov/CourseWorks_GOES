@@ -26,6 +26,7 @@ namespace MAGL_Test {
             graph = new Microsoft.Msagl.Drawing.Graph("graph");
             //create the graph content 
             graph.Directed = false;
+            graph.Attr.BackgroundColor = Microsoft.Msagl.Drawing.Color.Green;
             graph.AddEdge("A", "B").Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
             graph.AddEdge("B", "C").LabelText = "Я метка!";
             graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;

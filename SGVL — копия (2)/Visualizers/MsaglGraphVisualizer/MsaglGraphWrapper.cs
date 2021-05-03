@@ -1,5 +1,5 @@
 ﻿using MsaglGraphs = Microsoft.Msagl.Drawing;
-using SgvlGraphs = SGVL.Graphs;
+using SgvlGraphs = SGVL.Types.Graphs;
 
 namespace SGVL.Visualizers.MsaglGraphVisualizer {
     /// <summary>
@@ -17,12 +17,6 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
         /// Граф MSAGL, соответствующий графу SGVL
         /// </summary>
         public MsaglGraphs.Graph MsaglGraph { get; private set; }
-
-
-        // ----Константы
-        const double fontSize = 5;
-        const double defaultLineWidth = 1;
-        const double boldCoefficient = 2;
 
 
         // ----Конструктор
@@ -43,18 +37,17 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
                 // Задаём форму в виде круга
                 msaglNode.Attr.Shape = MsaglGraphs.Shape.Circle;
                 // Задаём размер шрифта
-                msaglNode.Label.FontSize = fontSize;
+                msaglNode.Label.FontSize = 5;
                 // Подписываемся на события изменения атрибутов вершины
                 vertex.LabelChanged += OnVertexLabelChanged;
                 vertex.BorderColorChanged += OnVertexBorderColorChanged;
                 vertex.FillColorChanged += OnVertexFillColorChanged;
-                vertex.BoldChanged += OnVertexBoldChanged;
                 // На изменение координат мы не подписываемся - это пока не работает
             }
             // Создаём рёбра графа Msagl
             foreach (var edge in graph.Edges) {
                 var msaglEdge = MsaglGraph.AddEdge(edge.SourceVertex.Number.ToString(), edge.TargetVertex.Number.ToString());
-                // Задаём ребру id для быстрого поиска в виде строки
+                // Задаём ребру id для быстрого поиска
                 msaglEdge.Attr.Id = $"{edge.SourceVertex.Number}-{edge.TargetVertex.Number}";
                 // Если граф неориентированный, убираем с конца стрелку
                 if (!graph.IsDirected)
@@ -62,7 +55,7 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
                 // Приводим в соответствие значения их атрибутов
                 UpdateMsaglEdge(msaglEdge, edge);
                 // Задаём размер шрифта
-                msaglEdge.Label.FontSize = fontSize;
+                msaglEdge.Label.FontSize = 5;
                 // Подписываемся на события изменения атрибутов ребра
                 edge.LabelChanged += OnEdgeLabelChanged;
                 edge.ColorChanged += OnEdgeColorChanged;
@@ -92,13 +85,6 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
             node.Attr.FillColor = new MsaglGraphs.Color(vertex.FillColor.A, vertex.FillColor.R, vertex.FillColor.G, vertex.FillColor.B);
         }
 
-        private void UpdateMsaglNodeBold(MsaglGraphs.Node node, SgvlGraphs.Vertex vertex) {
-            if (vertex.Bold)
-                node.Attr.LineWidth = defaultLineWidth * boldCoefficient;
-            else
-                node.Attr.LineWidth = defaultLineWidth;
-        }
-
         private void UpdateMsaglNode(MsaglGraphs.Node node, SgvlGraphs.Vertex vertex) {
             // Идентификатор вершины не меняется - обновлять не надо
             // Метка
@@ -107,8 +93,6 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
             UpdateMsaglNodeBorderColor(node, vertex);
             // Цвет заливки вершины
             UpdateMsaglNodeFillColor(node, vertex);
-            // Выделение жирным
-            UpdateMsaglNodeBold(node, vertex);
         }
 
         private void UpdateMsaglEdgeLabel(MsaglGraphs.Edge msaglEdge, SgvlGraphs.Edge sgvlEdge) {
@@ -121,9 +105,9 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
 
         private void UpdateMsaglEdgeBold(MsaglGraphs.Edge msaglEdge, SgvlGraphs.Edge sgvlEdge) {
             if (sgvlEdge.Bold)
-                msaglEdge.Attr.LineWidth = defaultLineWidth * boldCoefficient;
+                msaglEdge.Attr.LineWidth = 2;
             else
-                msaglEdge.Attr.LineWidth = defaultLineWidth;
+                msaglEdge.Attr.LineWidth = 1;
         }
 
         private void UpdateMsaglEdge(MsaglGraphs.Edge msaglEdge, SgvlGraphs.Edge sgvlEdge) {
@@ -131,7 +115,7 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
             UpdateMsaglEdgeLabel(msaglEdge, sgvlEdge);
             // Цвет ребра 
             UpdateMsaglEdgeColor(msaglEdge, sgvlEdge);
-            // Выделение жирным
+            // Толщина ребра
             UpdateMsaglEdgeBold(msaglEdge, sgvlEdge);
         }
 
@@ -150,11 +134,6 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
         private void OnVertexFillColorChanged(SgvlGraphs.Vertex vertex) {
             var node = MsaglGraph.FindNode(vertex.Number.ToString());
             UpdateMsaglNodeFillColor(node, vertex);
-        }
-
-        private void OnVertexBoldChanged(SgvlGraphs.Vertex vertex) {
-            var node = MsaglGraph.FindNode(vertex.Number.ToString());
-            UpdateMsaglNodeBold(node, vertex);
         }
 
         // ----Обработчики событий изменений в рёбрах графа SGVL

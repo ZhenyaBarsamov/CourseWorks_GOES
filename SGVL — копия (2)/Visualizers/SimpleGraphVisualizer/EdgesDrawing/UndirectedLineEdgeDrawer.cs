@@ -1,4 +1,4 @@
-﻿using SGVL.Graphs;
+﻿using SGVL.Types.Graphs;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -13,16 +13,6 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
         /// Используемые настройки рисования графа
         /// </summary>
         public DrawingSettings Settings { get; private set; }
-
-        // ----Константы
-        /// <summary>
-        /// Толщина линии по умолчанию
-        /// </summary>
-        protected const float defaultLineWidth = 2;
-        /// <summary>
-        /// Коэффициент, на который умножается толщина линии при выделении жирным
-        /// </summary>
-        protected const float boldCoefficient = 2;
 
 
         // ----Конструктор
@@ -98,7 +88,8 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
         /// <param name="isEdgeSelected">Флаг, показывающий, должно ли ребро быть подсвечено</param>
         private void DrawEdge(Graphics g, Edge edge, bool isEdgeSelected) {
             // Параметры рисования ребра
-            float width = edge.Bold ? defaultLineWidth * boldCoefficient : defaultLineWidth;
+            const float edgeWidth = 2; // толщина стрелки
+            float width = edge.Bold ? edgeWidth * 2 : edgeWidth;
 
             // В зависимости от того, выделено ли ребро, меняются некоторые цвета
             Color color = isEdgeSelected ? Settings.EdgeSelectingColor : edge.Color;
@@ -138,7 +129,7 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
 
         public bool IsCoordinatesOnEdge(Edge edge, PointF coords) {
             // Погрешности сравнения (вычислены эмпирически)
-            const float floatCompareError = 4f; // погрешность сравнения вещественных чисел
+            const float floatCompareError = 0.01f; // погрешность сравнения вещественных чисел
             const float specialCaseError = 2f; // погрешность для частных случаев (горизонтальная/вертикалная прямые)
             const float generalCaseError = 0.1f; // погрешность для общего случая (произвольная прямая)
             // Вычисляем точки начала и конца рисования
@@ -156,13 +147,13 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.EdgesDrawing {
             // Смотрим, подходит ли проверяемый отрезок по координатам X или Y
             if (minX <= coords.X && coords.X <= maxX || minY <= coords.Y && coords.Y <= maxY)
                 // Проверям принадлежность прямой, если она вертикальная
-                if (Math.Abs(sPoint.X - tPoint.X) < floatCompareError && minY <= coords.Y && coords.Y <= maxY && Math.Abs(sPoint.X - coords.X) < specialCaseError)
+                if (Math.Abs(sPoint.X - tPoint.X) < floatCompareError && minY <= coords.Y && coords.Y <= maxY && Math.Abs(sPoint.X - coords.X) <= specialCaseError)
                     isBelogToEdge = true;
                 // Проверям принадлежность прямой, если она горизонтальная
-                else if (Math.Abs(sPoint.Y - tPoint.Y) < floatCompareError && minX <= coords.X && coords.X <= maxX && Math.Abs(sPoint.Y - coords.Y) < specialCaseError)
+                else if (Math.Abs(sPoint.Y - tPoint.Y) < floatCompareError && minX <= coords.X && coords.X <= maxX && Math.Abs(sPoint.Y - coords.Y) <= specialCaseError)
                     isBelogToEdge = true;
                 // Для произвольной прямой (не вертикальной и не горизонтальной) проверяем с помощью уравнения прямой
-                else if (Math.Abs((coords.X - sPoint.X) / (tPoint.X - sPoint.X) - (coords.Y - sPoint.Y) / (tPoint.Y - sPoint.Y)) < generalCaseError)
+                else if (Math.Abs((coords.X - sPoint.X) / (tPoint.X - sPoint.X) - (coords.Y - sPoint.Y) / (tPoint.Y - sPoint.Y)) <= generalCaseError)
                     isBelogToEdge = true;
             return isBelogToEdge;
         }

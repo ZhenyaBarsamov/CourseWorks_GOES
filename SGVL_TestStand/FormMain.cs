@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using SGVL.Types.Graphs;
-using SGVL.Types.Visualizers;
+using SGVL.Graphs;
+using SGVL.Visualizers;
 using SGVL.Visualizers.SimpleGraphVisualizer;
 using SGVL.Visualizers.MsaglGraphVisualizer;
 
@@ -102,6 +102,8 @@ namespace SGVL_TestStand {
                     vertex.BorderColor = Color.Black;
                 else
                     vertex.BorderColor = color;
+            else if (radioButtonActionBold.Checked)
+                vertex.Bold = !vertex.Bold;
         }
 
         private void OnSelectedEdge(Edge edge) {

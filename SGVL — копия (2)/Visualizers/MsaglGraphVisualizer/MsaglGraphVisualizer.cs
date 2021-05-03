@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
-using SGVL.Graphs;
+using SGVL.Types.Visualizers;
+using SGVL.Types.Graphs;
 using System.Drawing;
 
 namespace SGVL.Visualizers.MsaglGraphVisualizer {
@@ -24,10 +25,6 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
             }
         }
 
-        public DrawingSettings Settings { get; private set; }
-        private MsaglSettingsWrapper SettingsWrapper { get; set; }
-
-
         // ----Конструктор
         public MsaglGraphVisualizer() {
             InitializeComponent();
@@ -40,122 +37,55 @@ namespace SGVL.Visualizers.MsaglGraphVisualizer {
             gViewer.CustomOpenButtonPressed += (sender, e) => e.Handled = true;
         }
 
-
         // ----Методы
-        private void OnGraphChanged(Graph graph) {
-            if (IsInteractiveUpdating)
-                gViewer.Invalidate();
-        }
-
         public void Initialize(Graph graph) {
-            // Отписываемся от текущего графа, если он был
+            // Отписываемся от текущего графа, если нужно
             if (MsaglGraphWrapper != null)
                 Graph.GraphChainged -= OnGraphChanged;
             // Создаём обёртку для графа MSAGL по этому графу
             MsaglGraphWrapper = new MsaglGraphWrapper(graph);
             // Подписываемся на изменения графа 
-            Graph.GraphChainged += OnGraphChanged;
+            graph.GraphChainged += OnGraphChanged;
             // MSAGL-визуализатору даём MSAGL-граф из обёртки
             gViewer.Graph = MsaglGraphWrapper.MsaglGraph;
             // Задаём настройки визуализации
             InteractiveMode = InteractiveMode.Interactive;
             IsVerticesMoving = true;
             IsInteractiveUpdating = true;
-            Settings = new DrawingSettings();
-            SettingsWrapper = new MsaglSettingsWrapper(gViewer, MsaglGraphWrapper.MsaglGraph, MsaglGraphWrapper.SgvlGraph, Settings);
         }
 
-        public void ResetVerticesBorderColor() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
+        private void OnGraphChanged(Graph graph) {
+            if (IsInteractiveUpdating)
+                gViewer.Invalidate();
         }
-
-        public void ResetVerticesFillColor() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetVerticesFillColor(Settings.VertexFillColor);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetEdgesColor() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetEdgesColor(Settings.EdgeColor);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetVerticesBold() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetVerticesBold(false);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
-        public void ResetEdgesBold() {
-            if (!IsInteractiveUpdating)
-                Graph.SetVerticesBorderColor(Settings.VertexBorderColor);
-            else {
-                IsInteractiveUpdating = false;
-                Graph.SetEdgesBold(false);
-                IsInteractiveUpdating = true;
-                OnGraphChanged(Graph);
-            }
-        }
-
 
         // ----События
         public event VertexSelectedEventHandler VertexSelectedEvent;
         public event EdgeSelectedEventHandler EdgeSelectedEvent;
 
-
         // ----Обработка событий выбора вершины/ребра
         private Point mouseDownPosition = Point.Empty;
         private void gViewer_MouseDown(object sender, MouseEventArgs e) {
-            if (e.Button != MouseButtons.Left)
-                return;
-            // При нажатии левой кнопки мыши, если есть хотя бы какая-то интерактивность, сохраняем точку нажатия
             if (InteractiveMode == InteractiveMode.NonInteractive)
                 return;
             mouseDownPosition = e.Location;
         }
 
         private void gViewer_MouseUp(object sender, MouseEventArgs e) {
-            if (e.Button != MouseButtons.Left)
-                return;
-            // При отпускании левой кнопки мыши, если было нажатие в интерактивном режиме, создаём событие нажатия нужного объекта графа
             if (mouseDownPosition == e.Location) {
                 if (InteractiveMode == InteractiveMode.NonInteractive)
                     return;
-                object selectedObject = gViewer.SelectedObject;
-                if (selectedObject is Microsoft.Msagl.Drawing.Node) {
+                if (gViewer.SelectedObject is Microsoft.Msagl.Drawing.Node) {
                     if (InteractiveMode == InteractiveMode.OnlyEdges)
                         return;
-                    Microsoft.Msagl.Drawing.Node node = selectedObject as Microsoft.Msagl.Drawing.Node;
+                    Microsoft.Msagl.Drawing.Node node = gViewer.SelectedObject as Microsoft.Msagl.Drawing.Node;
                     int vertexIndex = int.Parse(node.Id) - 1;
                     VertexSelectedEvent?.Invoke(Graph.Vertices[vertexIndex]);
                 }
-                else if (selectedObject is Microsoft.Msagl.Drawing.Edge) {
+                else if (gViewer.SelectedObject is Microsoft.Msagl.Drawing.Edge) {
                     if (InteractiveMode == InteractiveMode.OnlyVertices)
                         return;
-                    Microsoft.Msagl.Drawing.Edge edge = selectedObject as Microsoft.Msagl.Drawing.Edge;
+                    Microsoft.Msagl.Drawing.Edge edge = gViewer.SelectedObject as Microsoft.Msagl.Drawing.Edge;
                     int sourceIndex = int.Parse(edge.Source) - 1;
                     int targetIndex = int.Parse(edge.Target) - 1;
                     EdgeSelectedEvent?.Invoke(Graph.GetEdge(sourceIndex, targetIndex));

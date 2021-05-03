@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using SGVL.Graphs;
+using SGVL.Types.Graphs;
 
 namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
     /// <summary>

@@ -2,20 +2,21 @@
 
 namespace GOES.Problems {
     /// <summary>
-    /// Класс, предназначенный для хранения постановки некоторой конкретной оптимизационной задачи на графе
+    /// Класс, предназначенный для хранения примера конкретной оптимизационной задачи на графе
+    /// (например, задача о максимальном потоке для заданной конкретной сети)
     /// </summary>
-    public abstract class ProblemStatement {
+    public abstract class ProblemExample {
         // ----Атрибуты
         /// <summary>
-        /// Название постановки (идентификатор, номер, или часть описания)
+        /// Название примера (название, номер, часть описания, и т.д.)
         /// </summary>
         public string Name { get; private set; }
         /// <summary>
-        /// Описание постановки (о чём она, особенности, и т.д.)
+        /// Описание примера (о чём он, особенности, и т.д.)
         /// </summary>
         public string Description { get; private set; }
         /// <summary>
-        /// Признак ориентированности графа
+        /// Признак использования в данной примере (задаче) ориентированного графа
         /// </summary>
         public bool IsGraphDirected { get; private set; }
         /// <summary>
@@ -32,7 +33,7 @@ namespace GOES.Problems {
         /// <param name="description">Описание постановки задачи</param>
         /// <param name="isGraphDirected">Признак ориентированности графа</param>
         /// <param name="defaultGraphLayout">Массив точек, задающих расположение вершин графа по умолчанию</param>
-        public ProblemStatement(string name, string description, bool isGraphDirected, PointF[] defaultGraphLayout) {
+        public ProblemExample(string name, string description, bool isGraphDirected, PointF[] defaultGraphLayout) {
             Name = name;
             Description = description;
             IsGraphDirected = isGraphDirected;

@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GOES.Problems;
 
@@ -15,20 +9,20 @@ namespace GOES.Forms {
     /// </summary>
     public partial class FormProblemSelector : Form {
         // ----Атрибуты
-        private readonly List<Tuple<string, List<string>>> problems;
+        private readonly List<IProblem> problems;
 
         /// <summary>
-        /// Индекс выбранной пользователем задачи
+        /// Выбранная пользователем задача
         /// </summary>
-        public int ProblemIndex { get; private set; }
+        public IProblem SelectedProblem { get; private set; }
         /// <summary>
-        /// Индекс выбранной пользователем постановки задачи
+        /// Выбранный пользователем пример задачи
         /// </summary>
-        public int StatementIndex { get; private set; }
+        public ProblemExample SelectedExample { get; private set; }
         /// <summary>
-        /// Режим работы с задачей
+        /// Выбранный пользователем режим работы с задачей
         /// </summary>
-        public ProblemMode Mode { get; private set; }
+        public ProblemMode SelectedMode { get; private set; }
 
 
         // ----Вспомогательные методы
@@ -37,26 +31,55 @@ namespace GOES.Forms {
             listBoxProblems.BeginUpdate();
             listBoxProblems.Items.Clear();
             foreach (var problem in problems)
-                listBoxProblems.Items.Add(problem.Item1);
+                listBoxProblems.Items.Add(problem.ProblemDescriptor.Name);
             listBoxProblems.EndUpdate();
         }
 
-        // Заполнить таблицу с постановками задачи, имеющей заданный индекс в списке
-        private void FillProblemStatements(int problemIndex) {
-            if (problemIndex < 0)
+        // Обновить описание для выбранной задачи
+        private void UpdateProblemDescription() {
+            int selectedProblemIndex = listBoxProblems.SelectedIndex;
+            if (selectedProblemIndex < 0) {
+                labelProblemDescription.Text = "";
                 return;
-            listBoxProblemStatements.BeginUpdate();
-            listBoxProblemStatements.Items.Clear();
-            foreach (var statement in problems[problemIndex].Item2)
-                listBoxProblemStatements.Items.Add(statement);
-            listBoxProblemStatements.EndUpdate();
+            }
+            IProblem selectedProblem = problems[selectedProblemIndex];
+            labelProblemDescription.Text = selectedProblem.ProblemDescriptor.Description;
+        }
+
+        // Заполнить таблицу с примерами выбранной задачи
+        private void FillExamples() {
+            int selectedProblemIndex = listBoxProblems.SelectedIndex;
+            if (selectedProblemIndex < 0)
+                return;
+            IProblem selectedProblem = problems[selectedProblemIndex];
+            listBoxExamples.BeginUpdate();
+            listBoxExamples.Items.Clear();
+            foreach (var example in selectedProblem.ProblemDescriptor.ProblemExamples)
+                listBoxExamples.Items.Add(example.Name);
+            if (selectedProblem.ProblemDescriptor.IsRandomExampleAvailable)
+                listBoxExamples.Items.Add("Случайный пример");
+            listBoxExamples.EndUpdate();
+        }
+
+        // Обновить описание для выбранного примера задачи
+        private void UpdateExampleDescription() {
+            int selectedExampleIndex = listBoxExamples.SelectedIndex;
+            if (selectedExampleIndex < 0) {
+                labelExampleDescription.Text = "";
+                return;
+            }
+            ProblemExample[] selectedProblemExamples = problems[listBoxProblems.SelectedIndex].ProblemDescriptor.ProblemExamples;
+            if (selectedExampleIndex < selectedProblemExamples.Length)
+                labelExampleDescription.Text = selectedProblemExamples[selectedExampleIndex].Description;
+            else
+                labelExampleDescription.Text = "Автоматически сгенерировать пример задачи";
         }
 
         // Обновить состояние кнопок формы
         private void UpdateControlsState() {
-            // Если выбрана задача, и её конкретная постановка - доступны кнопки начала решения или демонстрации
+            // Если выбрана задача, и её пример - доступны кнопки начала решения или демонстрации
             buttonSolution.Enabled = buttonDemonstration.Enabled =
-                listBoxProblems.SelectedIndex != -1 && listBoxProblemStatements.SelectedIndex != -1;
+                listBoxProblems.SelectedIndex >= 0 && listBoxExamples.SelectedIndex >= 0;
         }
 
         // ----Конструкторы
@@ -68,26 +91,31 @@ namespace GOES.Forms {
         }
 
         /// <summary>
-        /// Инициализировать форму выбора задач
+        /// Инициализировать форму выбора задачи
         /// </summary>
-        /// <param name="problems">Список кортежей формата (название задачи; список постановок задачи)</param>
-        public FormProblemSelector(List<Tuple<string, List<string>>> problems) {
+        /// <param name="problems">Список задач, которые будут представлены на форме</param>
+        public FormProblemSelector(List<IProblem> problems) {
             InitializeComponent();
             this.problems = problems;
             FillProblems();
-            FillProblemStatements(listBoxProblems.SelectedIndex);
+            FillExamples();
+            UpdateProblemDescription();
+            UpdateExampleDescription();
             UpdateControlsState();
         }
 
         // ----Обработчики событий
         private void listBoxProblems_SelectedIndexChanged(object sender, EventArgs e) {
-            // Заполняем таблицу с постановками задачи соответствующими постановками и обновляем состояние кнопок
-            FillProblemStatements(listBoxProblems.SelectedIndex);
+            // Заполняем таблицу с примерами выбранной задачи, обновляем описания и обновляем состояние кнопок
+            FillExamples();
+            UpdateProblemDescription();
+            UpdateExampleDescription();
             UpdateControlsState();
         }
 
-        private void listBoxProblemStatements_SelectedIndexChanged(object sender, EventArgs e) {
-            // Обновляем состояние кнопок
+        private void listBoxExamples_SelectedIndexChanged(object sender, EventArgs e) {
+            // Обновляем описание выбранного примера и обновляем состояние кнопок
+            UpdateExampleDescription();
             UpdateControlsState();
         }
 
@@ -96,16 +124,29 @@ namespace GOES.Forms {
             Close();
         }
 
+        // Сохранить выбор пользователя
+        private void SaveSelectedOptions(ProblemMode mode) {
+            IProblem selectedProblem = problems[listBoxProblems.SelectedIndex];
+            ProblemExample[] selectedProblemExamples = selectedProblem.ProblemDescriptor.ProblemExamples;
+            SelectedProblem = selectedProblem;
+            // Если был выбран пример "Случаный пример", то ему соответствует null (его нет в списке примеров)
+            if (listBoxExamples.SelectedIndex < selectedProblemExamples.Length)
+                SelectedExample = selectedProblemExamples[listBoxExamples.SelectedIndex];
+            else
+                SelectedExample = null;
+            SelectedMode = mode;
+        }
+
         private void buttonSolution_Click(object sender, EventArgs e) {
-            ProblemIndex = listBoxProblems.SelectedIndex;
-            StatementIndex = listBoxProblemStatements.SelectedIndex;
-            Mode = ProblemMode.Solution;
+            SaveSelectedOptions(ProblemMode.Solution);
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void buttonDemonstration_Click(object sender, EventArgs e) {
-            ProblemIndex = listBoxProblems.SelectedIndex;
-            StatementIndex = listBoxProblemStatements.SelectedIndex;
-            Mode = ProblemMode.Demonstration;
+            SaveSelectedOptions(ProblemMode.Demonstration);
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

@@ -73,24 +73,26 @@
     <Compile Include="Forms\FormProblemSelector.Designer.cs">
       <DependentUpon>FormProblemSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataManager\EnumProblems.cs" />
-    <Compile Include="DataManager\ProblemsManager.cs" />
     <Compile Include="Problems\EnumProblemMode.cs" />
-    <Compile Include="Problems\MaximalBipartiteMatching\FormMaximalBipartiteMatching.cs">
+    <Compile Include="Problems\IProblem.cs" />
+    <Compile Include="Problems\IProblemDescriptor.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\FormMaxBipartiteMatchingProblem.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Problems\MaximalBipartiteMatching\FormMaximalBipartiteMatching.Designer.cs">
-      <DependentUpon>FormMaximalBipartiteMatching.cs</DependentUpon>
+    <Compile Include="Problems\MaxBipartiteMatching\FormMaxBipartiteMatchingProblem.Designer.cs">
+      <DependentUpon>FormMaxBipartiteMatchingProblem.cs</DependentUpon>
     </Compile>
-    <Compile Include="Problems\MaximalBipartiteMatching\MaximalBipartiteMatchingStatement.cs" />
-    <Compile Include="Problems\MaximalFlow\FormMaximalFlow.cs">
+    <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemDescriptor.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemExample.cs" />
+    <Compile Include="Problems\MaxFlow\FormMaxFlowProblem.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Problems\MaximalFlow\FormMaximalFlow.Designer.cs">
-      <DependentUpon>FormMaximalFlow.cs</DependentUpon>
+    <Compile Include="Problems\MaxFlow\FormMaxFlowProblem.Designer.cs">
+      <DependentUpon>FormMaxFlowProblem.cs</DependentUpon>
     </Compile>
-    <Compile Include="Problems\MaximalFlow\MaximalFlowProblemStatement.cs" />
-    <Compile Include="Problems\ProblemStatement.cs" />
+    <Compile Include="Problems\MaxFlow\MaxFlowProblemDescriptor.cs" />
+    <Compile Include="Problems\MaxFlow\MaxFlowProblemExample.cs" />
+    <Compile Include="Problems\ProblemExample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormMain.resx">
@@ -105,11 +107,11 @@
     <EmbeddedResource Include="Forms\FormProblemSelector.resx">
       <DependentUpon>FormProblemSelector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Problems\MaximalBipartiteMatching\FormMaximalBipartiteMatching.resx">
-      <DependentUpon>FormMaximalBipartiteMatching.cs</DependentUpon>
+    <EmbeddedResource Include="Problems\MaxBipartiteMatching\FormMaxBipartiteMatchingProblem.resx">
+      <DependentUpon>FormMaxBipartiteMatchingProblem.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Problems\MaximalFlow\FormMaximalFlow.resx">
-      <DependentUpon>FormMaximalFlow.cs</DependentUpon>
+    <EmbeddedResource Include="Problems\MaxFlow\FormMaxFlowProblem.resx">
+      <DependentUpon>FormMaxFlowProblem.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

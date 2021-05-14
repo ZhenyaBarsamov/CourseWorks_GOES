@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GOES.Forms;
 using GOES.Problems;
-using GOES.DataManager;
-using GOES.Problems.MaximalBipartiteMatching;
+using GOES.Problems.MaxFlow;
+using GOES.Problems.MaxBipartiteMatching;
 
 namespace GOES {
     public partial class FormMain : Form {
@@ -44,10 +44,27 @@ namespace GOES {
 
         // Запуск задач
         private void buttonProblems_Click(object sender, EventArgs e) {
-            var problemsManager = new ProblemsManager();
-            var problem = problemsManager.GetAvailableProblemStatements(Problem.MaximalBipartiteMatching)[0];
-            var formMaximalBipartiteProblem = new FormMaximalBipartiteMatching((MaximalBipartiteMatchingStatement)problem);
-            formMaximalBipartiteProblem.ShowDialog();
+            FormProblemSelector formProblemsSelector = new FormProblemSelector(new List<IProblem> { 
+                new FormMaxFlowProblem(),
+                new FormMaxBipartiteMatchingProblem()
+            });
+            DialogResult dialogResult = formProblemsSelector.ShowDialog();
+            if (dialogResult == DialogResult.Cancel)
+                return;
+            IProblem problemInterface = formProblemsSelector.SelectedProblem;
+            Form problemForm = problemInterface as Form;
+            if (problemForm == null) {
+                MessageBox.Show("Выбранное задание невозможно отобразить, так как оно не является формой", "Ошибка запуска задания");
+                return;
+            }
+            try {
+                problemInterface.InitializeProblem(formProblemsSelector.SelectedExample, formProblemsSelector.SelectedMode);
+            }
+            catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Ошибка запуска задания");
+                return;
+            }
+            problemForm.ShowDialog();
         }
     }
 }

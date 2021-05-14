@@ -8,17 +8,33 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Windows.Forms;
-using SGVL.Types.Graphs;
+using SGVL.Graphs;
 using SGVL.Visualizers;
 
-namespace GOES.Problems.MaximalBipartiteMatching {
-    public partial class FormMaximalBipartiteMatching : Form {
+namespace GOES.Problems.MaxBipartiteMatching {
+    public partial class FormMaxBipartiteMatchingProblem : Form, IProblem {
         // ----Атрибуты
         private bool[,] graph;
         private Graph visualizingGraph;
         private int graphSize => graph.GetLength(0);
 
-        public FormMaximalBipartiteMatching() {
+        public IProblemDescriptor ProblemDescriptor => new MaxBipartiteMatchingProblemDescriptor();
+
+        private MaxBipartiteMatchingProblemExample example;
+        private ProblemMode mode;
+
+        public void InitializeProblem(ProblemExample example, ProblemMode mode) {
+            // Если требуется случайная генерация, а её нет, говорим, что не реализовано
+            if (example == null && !ProblemDescriptor.IsRandomExampleAvailable)
+                throw new NotImplementedException("Случайная генерация примеров не реализована");
+            // Если нам дан пример не задачи о максимальном потоке - ошибка
+            if (!(example is MaxBipartiteMatchingProblemExample))
+                throw new ArgumentException("Ошибка в выбранном примере. Его невозможно открыть.");
+            this.example = example as MaxBipartiteMatchingProblemExample;
+            this.mode = mode;
+        }
+
+        public FormMaxBipartiteMatchingProblem() {
             InitializeComponent();
         }
 
@@ -26,7 +42,7 @@ namespace GOES.Problems.MaximalBipartiteMatching {
         /// Конструктор, создающий задачу поиска максимального паросочетания в двудольном графе с заданным условием
         /// </summary>
         /// <param name="statement">Постановка задачи</param>
-        public FormMaximalBipartiteMatching(MaximalBipartiteMatchingStatement statement) {
+        public FormMaxBipartiteMatchingProblem(MaxBipartiteMatchingProblemExample statement) {
             InitializeComponent();
             graph = new bool[statement.GraphMatrix.GetLength(0), statement.GraphMatrix.GetLength(1)];
             for (int row = 0; row < statement.GraphMatrix.GetLength(0); row++)

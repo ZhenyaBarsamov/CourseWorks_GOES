@@ -1,10 +1,10 @@
 ﻿using System.Drawing;
 
-namespace GOES.Problems.MaximalFlow {
+namespace GOES.Problems.MaxFlow {
     /// <summary>
-    /// Класс, предназначенный для хранения постановки задачи о максимальном потоке и минимальном разрезе
+    /// Класс, предназначенный для хранения примера задачи о максимальном потоке и минимальном разрезе
     /// </summary>
-    public class MaximalFlowProblemStatement : ProblemStatement {
+    public class MaxFlowProblemExample : ProblemExample {
         // ----Атрибуты
         /// <summary>
         /// Матрица пропускных способностей сети
@@ -21,6 +21,9 @@ namespace GOES.Problems.MaximalFlow {
 
 
         // ----Свойства
+        /// <summary>
+        /// Матрица смежности графа, вместо пропускных способностей дуг хранящая признаки их существования
+        /// </summary>
         public bool[,] GraphMatrix {
             get {
                 var graphMatrix = new bool[CapacityMatrix.GetLength(0), CapacityMatrix.GetLength(1)];
@@ -34,15 +37,15 @@ namespace GOES.Problems.MaximalFlow {
 
         // ----Конструктор
         /// <summary>
-        /// Конструктор, создающий экземпляр постановки задачи о максимальном потоке и минимальном разрезе
+        /// Конструктор, создающий экземпляр примера задачи о максимальном потоке и минимальном разрезе
         /// </summary>
-        /// <param name="name">Название постановки задачи</param>
-        /// <param name="description">Описание постановки задачи</param>
+        /// <param name="name">Название примера</param>
+        /// <param name="description">Описание примера</param>
         /// <param name="sourceIndex">Индекс вершины-истока</param>
         /// <param name="targetIndex">Индекс вершины-стока</param>
         /// <param name="capacityMatrix">Матрица пропускных способностей сети</param>
         /// <param name="defaultGraphLayout">Массив точек, задающих расположение вершин графа по умолчанию</param>
-        public MaximalFlowProblemStatement(string name, string description, int sourceIndex, int targetIndex, int[,] capacityMatrix, 
+        public MaxFlowProblemExample(string name, string description, int sourceIndex, int targetIndex, int[,] capacityMatrix, 
             PointF[] defaultGraphLayout) : base(name, description, true, defaultGraphLayout) {
             CapacityMatrix = capacityMatrix;
             SourceVertexIndex = sourceIndex;

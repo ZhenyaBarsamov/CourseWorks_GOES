@@ -31,17 +31,18 @@
             // 
             this.webBrowserLecture.Dock = System.Windows.Forms.DockStyle.Fill;
             this.webBrowserLecture.Location = new System.Drawing.Point(0, 0);
-            this.webBrowserLecture.MinimumSize = new System.Drawing.Size(20, 20);
+            this.webBrowserLecture.MinimumSize = new System.Drawing.Size(22, 22);
             this.webBrowserLecture.Name = "webBrowserLecture";
-            this.webBrowserLecture.Size = new System.Drawing.Size(800, 450);
+            this.webBrowserLecture.Size = new System.Drawing.Size(900, 506);
             this.webBrowserLecture.TabIndex = 0;
             // 
             // FormLectureViewer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(900, 506);
             this.Controls.Add(this.webBrowserLecture);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormLectureViewer";
             this.Text = "Лекции";

@@ -51,7 +51,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(754, 455);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(632, 459);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // groupBoxMenu
@@ -59,10 +59,10 @@
             this.tableLayoutPanel1.SetColumnSpan(this.groupBoxMenu, 2);
             this.groupBoxMenu.Controls.Add(this.tableLayoutPanel2);
             this.groupBoxMenu.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxMenu.Location = new System.Drawing.Point(191, 116);
+            this.groupBoxMenu.Location = new System.Drawing.Point(161, 117);
             this.groupBoxMenu.Name = "groupBoxMenu";
             this.tableLayoutPanel1.SetRowSpan(this.groupBoxMenu, 2);
-            this.groupBoxMenu.Size = new System.Drawing.Size(370, 220);
+            this.groupBoxMenu.Size = new System.Drawing.Size(310, 222);
             this.groupBoxMenu.TabIndex = 0;
             this.groupBoxMenu.TabStop = false;
             this.groupBoxMenu.Text = "Меню";
@@ -75,14 +75,14 @@
             this.tableLayoutPanel2.Controls.Add(this.buttonLectures, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.buttonAbout, 0, 3);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 20);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(364, 199);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(304, 199);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // buttonProblems
@@ -90,7 +90,7 @@
             this.buttonProblems.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonProblems.Location = new System.Drawing.Point(3, 3);
             this.buttonProblems.Name = "buttonProblems";
-            this.buttonProblems.Size = new System.Drawing.Size(358, 43);
+            this.buttonProblems.Size = new System.Drawing.Size(298, 43);
             this.buttonProblems.TabIndex = 0;
             this.buttonProblems.Text = "Задачи";
             this.buttonProblems.UseVisualStyleBackColor = true;
@@ -101,7 +101,7 @@
             this.buttonLectures.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonLectures.Location = new System.Drawing.Point(3, 52);
             this.buttonLectures.Name = "buttonLectures";
-            this.buttonLectures.Size = new System.Drawing.Size(358, 43);
+            this.buttonLectures.Size = new System.Drawing.Size(298, 43);
             this.buttonLectures.TabIndex = 1;
             this.buttonLectures.Text = "Лекции";
             this.buttonLectures.UseVisualStyleBackColor = true;
@@ -112,7 +112,7 @@
             this.buttonAbout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.buttonAbout.Location = new System.Drawing.Point(3, 150);
             this.buttonAbout.Name = "buttonAbout";
-            this.buttonAbout.Size = new System.Drawing.Size(358, 46);
+            this.buttonAbout.Size = new System.Drawing.Size(298, 46);
             this.buttonAbout.TabIndex = 2;
             this.buttonAbout.Text = "О программе";
             this.buttonAbout.UseVisualStyleBackColor = true;
@@ -120,10 +120,11 @@
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(754, 455);
+            this.ClientSize = new System.Drawing.Size(632, 459);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

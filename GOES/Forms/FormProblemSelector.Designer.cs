@@ -68,13 +68,13 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1039, 520);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -131,37 +131,37 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel2.Controls.Add(this.listBoxProblems, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.labelProblemDescription, 0, 1);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 20);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 2;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(506, 389);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(506, 387);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // listBoxProblems
             // 
             this.listBoxProblems.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxProblems.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listBoxProblems.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listBoxProblems.FormattingEnabled = true;
-            this.listBoxProblems.ItemHeight = 16;
+            this.listBoxProblems.ItemHeight = 18;
             this.listBoxProblems.Location = new System.Drawing.Point(3, 3);
             this.listBoxProblems.Name = "listBoxProblems";
-            this.listBoxProblems.Size = new System.Drawing.Size(500, 188);
+            this.listBoxProblems.Size = new System.Drawing.Size(500, 187);
             this.listBoxProblems.TabIndex = 0;
             this.listBoxProblems.SelectedIndexChanged += new System.EventHandler(this.listBoxProblems_SelectedIndexChanged);
             // 
             // labelProblemDescription
             // 
             this.labelProblemDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelProblemDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelProblemDescription.Location = new System.Drawing.Point(3, 194);
+            this.labelProblemDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelProblemDescription.Location = new System.Drawing.Point(3, 193);
             this.labelProblemDescription.Name = "labelProblemDescription";
-            this.labelProblemDescription.Size = new System.Drawing.Size(500, 195);
+            this.labelProblemDescription.Size = new System.Drawing.Size(500, 194);
             this.labelProblemDescription.TabIndex = 1;
             // 
             // groupBoxExamples
@@ -181,46 +181,46 @@
             // 
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel3.Controls.Add(this.listBoxExamples, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.labelExampleDescription, 0, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 20);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(509, 389);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(509, 387);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // listBoxExamples
             // 
             this.listBoxExamples.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxExamples.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listBoxExamples.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.listBoxExamples.FormattingEnabled = true;
-            this.listBoxExamples.ItemHeight = 16;
+            this.listBoxExamples.ItemHeight = 18;
             this.listBoxExamples.Location = new System.Drawing.Point(3, 3);
             this.listBoxExamples.Name = "listBoxExamples";
-            this.listBoxExamples.Size = new System.Drawing.Size(503, 188);
+            this.listBoxExamples.Size = new System.Drawing.Size(503, 187);
             this.listBoxExamples.TabIndex = 4;
             this.listBoxExamples.SelectedIndexChanged += new System.EventHandler(this.listBoxExamples_SelectedIndexChanged);
             // 
             // labelExampleDescription
             // 
             this.labelExampleDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelExampleDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelExampleDescription.Location = new System.Drawing.Point(3, 194);
+            this.labelExampleDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelExampleDescription.Location = new System.Drawing.Point(3, 193);
             this.labelExampleDescription.Name = "labelExampleDescription";
-            this.labelExampleDescription.Size = new System.Drawing.Size(503, 195);
+            this.labelExampleDescription.Size = new System.Drawing.Size(503, 194);
             this.labelExampleDescription.TabIndex = 5;
             // 
             // FormProblemSelector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1039, 520);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.Name = "FormProblemSelector";
             this.Text = "Выбор задачи";
             this.tableLayoutPanel1.ResumeLayout(false);

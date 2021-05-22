@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\TextLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -84,6 +87,9 @@
     </Compile>
     <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemDescriptor.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemExample.cs" />
+    <Compile Include="Problems\MaxFlow\Algorithm.cs" />
+    <Compile Include="Problems\MaxFlow\EnumMaxFlowError.cs" />
+    <Compile Include="Problems\MaxFlow\EnumMaxFlowProblemState.cs" />
     <Compile Include="Problems\MaxFlow\FormMaxFlowProblem.cs">
       <SubType>Form</SubType>
     </Compile>

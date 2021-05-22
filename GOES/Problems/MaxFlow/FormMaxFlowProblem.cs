@@ -7,6 +7,7 @@ using SGVL.Visualizers;
 using SGVL.Graphs;
 using GOES.Forms;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GOES.Problems.MaxFlow {
     public partial class FormMaxFlowProblem : Form, IProblem {
@@ -366,7 +367,7 @@ namespace GOES.Problems.MaxFlow {
                 return;
             }
             bool isCorrect = true;
-            string answer = textBoxAnswer.Text.Trim();
+            string answer = textBoxAnswer.Text.Trim().ToLower();
             if (answer != string.Empty) {
                 char sign = answer[0];
                 string[] numbersStr = answer.Substring(1).Split(' ');
@@ -484,38 +485,25 @@ namespace GOES.Problems.MaxFlow {
 
 
         private bool IsAnswerCorrect() {
-            string answer = textBoxAnswer.Text.Trim();
+            string answer = textBoxAnswer.Text.Trim().ToLower();
+            Regex regex;
             switch (problemState) {
                 case MaxFlowProblemState.PathVertexLabelWaiting:
                     // Метки можно не ставить
                     if (answer == string.Empty)
                         return true;
-                    // Первым символом должен быть знак
-                    if (answer[0] != '+' && answer[0] != '-')
-                        return false;
-                    // После знака должно идти два целых числа через пробел, либо вместо второго числа "inf" (для первой вершины)
-                    string[] numbersStr = answer.Substring(1).Split(' ');
-                    if (numbersStr.Length != 2)
-                        return false;
-                    if (curPathVertices.Count > 1) {
-                        if (!int.TryParse(numbersStr[0], out _) || !int.TryParse(numbersStr[1], out _))
-                            return false;
-                    }
-                    else {
-                        if (!int.TryParse(numbersStr[0], out _) || numbersStr[1] != "inf")
-                            return false;
-                    }
-                    return true;
+                    // Первым символом должен быть знак (+ или -)
+                    // После знака должно идти целое число, затем через пробел ещё одно целое число либо "inf" (для первой вершины)
+                    regex = new Regex(@"^(\+|-)\d+ (\d+|inf)$");
+                    return regex.IsMatch(answer);
                 case MaxFlowProblemState.FlowRaiseWaiting:
                     // Должно быть одно целое число
-                    if (!int.TryParse(answer, out _))
-                        return false;
-                    return true;
+                    regex = new Regex(@"^\d+$");
+                    return regex.IsMatch(answer);
                 case MaxFlowProblemState.MaximalFlowWaiting:
                     // Должно быть одно целое число
-                    if (!int.TryParse(answer, out _))
-                        return false;
-                    return true;
+                    regex = new Regex(@"^\d+$");
+                    return regex.IsMatch(answer);
                 default:
                     return false;
             }

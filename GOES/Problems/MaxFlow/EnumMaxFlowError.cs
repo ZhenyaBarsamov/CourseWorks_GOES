@@ -41,6 +41,18 @@ namespace GOES.Problems.MaxFlow {
         /// <summary>
         /// Неправильная величина дополнительного потока
         /// </summary>
-        IncorrectFlowRaise
+        IncorrectFlowRaise,
+        /// <summary>
+        /// Неправильный формат для значения макисмального потока
+        /// </summary>
+        IncorrectMaxFlowFormat,
+        /// <summary>
+        /// Неправильная величина максимального потока в сети
+        /// </summary>
+        IncorrectMaxFlowValue,
+        /// <summary>
+        /// Выбранная дуга не входит в минимальный разрез сети
+        /// </summary>
+        IncorrectMinCutEdge
     }
 }

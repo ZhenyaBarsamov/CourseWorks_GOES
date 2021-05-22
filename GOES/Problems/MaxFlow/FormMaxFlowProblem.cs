@@ -102,7 +102,7 @@ namespace GOES.Problems.MaxFlow {
             // Получаем решение задачи
             Algorithm.GetMaxFlowSolve(capacityMatrix, sourceVertexIndex, targetVertexIndex, out correctMinimalCut, out correctMaxFlowValue);
             // Ставим решение в состояние ожидания начала
-            SetWelcomeState();
+            SetStartWaitingState();
         }
 
         public IProblemDescriptor ProblemDescriptor => new MaxFlowProblemDescriptor();
@@ -130,11 +130,12 @@ namespace GOES.Problems.MaxFlow {
         }
 
         void UnlockAnswerGroupBox() {
+            textBoxAnswer.Text = string.Empty;
             groupBoxAnswers.Enabled = true;
         }
 
         // ----Методы изменения состояния задания (этапа решения)
-        void SetWelcomeState() {
+        void SetStartWaitingState() {
             problemState = MaxFlowProblemState.StartWaiting;
             graphVisualizerInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisualizerInterface.IsVerticesMoving = false;
@@ -174,13 +175,29 @@ namespace GOES.Problems.MaxFlow {
             LockAnswerGroupBox();
         }
 
-        void SetFlowIncreasingWaiting() {
+        void SetPathVertexLabelWaiting() {
+            problemState = MaxFlowProblemState.PathVertexLabelWaiting;
+            graphVisualizerInterface.InteractiveMode = InteractiveMode.NonInteractive;
+            graphVisualizerInterface.IsVerticesMoving = false;
+            string message =
+                "Введите метку для вершины в поле для ответов, а затем нажмите кнопку \"Принять ответ\"." + Environment.NewLine +
+                "Метка вводится в формате:" + Environment.NewLine +
+                "\"<знак><предыдущая вершина> <текущий аугментальный поток>\"," + Environment.NewLine +
+                "например: \"+1 inf\" или \"-7 19\"." + Environment.NewLine +
+                "Для вершины-истока текущий аугментальный поток следует принять бесконечным: \"inf\"." + Environment.NewLine +
+                "Метка проверяется на правильность, и ошибочная метка будет отмечена как ошибка (кроме опечаток)." + Environment.NewLine +
+                "Вы можете не ставить метку: для этого оставьте поле ввода ответа пустым.";
+            ShowStandardTip(message);
+            UnlockAnswerGroupBox();
+        }
+
+        void SetFlowRaiseWaiting() {
             problemState = MaxFlowProblemState.FlowRaiseWaiting;
             graphVisualizerInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisualizerInterface.IsVerticesMoving = false;
             string message =
                 "Аугментальный путь построен." + Environment.NewLine +
-                "Введите дополнительный поток, который можно пустить по построенному аугментальному пути, в виде одного целого числа";
+                "Введите в поле для ответов величину дополнительного потока, который можно пустить по построенному аугментальному пути, в виде одного целого числа.";
             ShowSuccessTip(message);
             UnlockAnswerGroupBox();
         }
@@ -191,31 +208,99 @@ namespace GOES.Problems.MaxFlow {
             graphVisualizerInterface.IsVerticesMoving = false;
             string message =
                 "Максимальный поток в сети построен." + Environment.NewLine +
-                "Введите величину построенного потока в виде одного целого числа";
+                "Введите в поле для ответов величину построенного максимального потока в виде одного целого числа.";
             ShowSuccessTip(message);
             UnlockAnswerGroupBox();
         }
 
-        void SetPathVertexLabelWaiting() {
-            problemState = MaxFlowProblemState.PathVertexLabelWaiting;
+        void SetNextCutEdgeWaiting() {
+            problemState = MaxFlowProblemState.NextCutEdgeWaiting;
+            graphVisualizerInterface.InteractiveMode = InteractiveMode.Interactive;
+            graphVisualizerInterface.IsVerticesMoving = true;
+            string message =
+                "Выберите все дуги, которые входят в минимальный разрез данной сети." + Environment.NewLine;
+            if (curCutEdges.Count != 0) {
+                // Формируем строку с текущими выбранными дугами разреза
+                StringBuilder cutEdgesStr = new StringBuilder();
+                for (int cutEdgeIndex = 0; cutEdgeIndex < curCutEdges.Count; cutEdgeIndex++)
+                    cutEdgesStr.Append($"{{{curCutEdges[cutEdgeIndex].Item1 + 1}-{curCutEdges[cutEdgeIndex].Item2 + 1}}}, ");
+                // Удаляем последнюю запятую и пробел
+                cutEdgesStr.Remove(cutEdgesStr.Length - 2, 2);
+                message += $"Уже отмеченные дуги минимального разреза: {cutEdgesStr}.";
+            }
+            ShowStandardTip(message);
+            LockAnswerGroupBox();
+        }
+
+        void SetProblemFinish() {
+            problemState = MaxFlowProblemState.ProblemFinish;
             graphVisualizerInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisualizerInterface.IsVerticesMoving = false;
-            string message =
-                "Введите метку для вершины в поле для ответов, а затем нажмите кнопку \"Принять ответ\"." + Environment.NewLine +
-                "Метка вводится в формате:" + Environment.NewLine +
-                "\"<знак><предыдущая вершина> <текущий аугментальный поток>\"," + Environment.NewLine +
-                "например: \"+1 25\" или \"-7 19\"." + Environment.NewLine +
-                "Метка проверяется на правильность, и ошибочная метка будет отмечена как ошибка (кроме опечаток)." + Environment.NewLine +
-                "Вы можете не ставить метку: для этого оставьте поле ввода ответа пустым.";
-            ShowStandardTip(message);
-            UnlockAnswerGroupBox();
+            string message = 
+                "Максимальный поток и минимальный разрез в сети найдены." + Environment.NewLine +
+                "Задание успешно выполнено!";
+            ShowSuccessTip(message);
+            LockAnswerGroupBox();
         }
 
         void MarkError(MaxFlowError error) {
             string errorMessage;
             switch (error) {
                 case MaxFlowError.StartOnNonSourceVertex:
-                    errorMessage = "Построение аугментального пути необходимо начинать с истока! Которая вершина является для данной сети истоком?";
+                    errorMessage = "Построение аугментального пути необходимо начинать с истока! Какая вершина является для данной сети истоком?";
+                    break;
+                case MaxFlowError.MoveToFarVertex:
+                    errorMessage =
+                        "Вы попытались перейти в вершину, которая не соединена дугой с последней вершиной построенного маршрута." + Environment.NewLine +
+                        $"Последней (текущей) вершиной маршрута является вершина {curPathVertices.Last() + 1}.";
+                    break;
+                case MaxFlowError.ForwardEdgeIsFull:
+                    errorMessage =
+                        "Вы попытались пройти по прямой дуге, поток в которой уже максимален, и увеличить его невозможно.";
+                    break;
+                case MaxFlowError.BackEdgeIsEmpty:
+                    errorMessage =
+                        "Вы попытались пройти по обратной дуге, поток в которой нулевой, и уменьшить его невозможно.";
+                    break;
+                case MaxFlowError.IncorrectVertexLabelFormat:
+                    errorMessage =
+                        "Неправильный формат метки." +
+                        "Метка вводится в формате:" + Environment.NewLine +
+                        "\"<знак><предыдущая вершина> <текущий аугментальный поток>\"," + Environment.NewLine +
+                        "например: \"+1 inf\" или \"-7 19\"." + Environment.NewLine +
+                        "Для вершины-истока текущий аугментальный поток следует принять бесконечным: \"inf\".";
+                    break;
+                case MaxFlowError.IncorrectVertexLabel:
+                    errorMessage =
+                        "Ошибка в метке. Перепроверьте её, и попробуйте снова." + Environment.NewLine +
+                        "Знак в метке отражает направление добавленной к маршруту дуги: прямое (+) или обратное (-)." + 
+                        " Это также указывает на то, как необходимо поступать с потоком в добавленной дуге: увеличивать (+) или уменьшать (-) его." + Environment.NewLine +
+                        "Предыдущая вершина - это предыдущая посещённая вершина." + Environment.NewLine + 
+                        "Аугментальный поток - это поток, который дополнительно можно провести по текущему построенному маршруту." + Environment.NewLine +
+                        "Формат ввода: <знак><предыдущая вершина> <аугментальный поток>.";
+
+                    break;
+                case MaxFlowError.IncorrectFlowRaiseFormat:
+                    errorMessage =
+                        "Неправильный формат величины аугментального потока." + Environment.NewLine +
+                        "Величина аугментального потока вводится в формате одного целого числа.";
+                    break;
+                case MaxFlowError.IncorrectFlowRaise:
+                    errorMessage =
+                        "Неправильная величина аугментального потока. Пересчитайте её, и попробуйте снова.";
+                    break;
+                case MaxFlowError.IncorrectMaxFlowFormat:
+                    errorMessage =
+                        "Неправильный формат величины максимального потока." + Environment.NewLine +
+                        "Величина максимального потока вводится в формате одного целого числа.";
+                    break;
+                case MaxFlowError.IncorrectMaxFlowValue:
+                    errorMessage =
+                        "Неправильная величина построенного максимального потока. Пересчитайте её, и попробуйте снова.";
+                    break;
+                case MaxFlowError.IncorrectMinCutEdge:
+                    errorMessage =
+                        "Выбранная Вами дуга не входит в минимальный разрез. Подумайте снова.";
                     break;
                 default:
                     errorMessage = string.Empty;
@@ -236,6 +321,7 @@ namespace GOES.Problems.MaxFlow {
                 }
                 else {
                     MarkError(MaxFlowError.StartOnNonSourceVertex);
+                    return;
                 }
             }
             else {
@@ -243,6 +329,7 @@ namespace GOES.Problems.MaxFlow {
                 // Если между выбранной вершиной и текущей вершиной нет дуги - ошибка
                 if (capacityMatrix[lastVertexIndex, selectedVertexIndex] == 0 && capacityMatrix[selectedVertexIndex, lastVertexIndex] == 0) {
                     MarkError(MaxFlowError.MoveToFarVertex);
+                    return;
                 }
                 else {
                     bool isForwardEdge = capacityMatrix[lastVertexIndex, selectedVertexIndex] != 0;
@@ -272,6 +359,7 @@ namespace GOES.Problems.MaxFlow {
             }
             SetPathVertexLabelWaiting();
         }
+
         private void CheckVertexLabel() {
             if (!IsAnswerCorrect()) {
                 MarkError(MaxFlowError.IncorrectVertexLabelFormat);
@@ -309,7 +397,7 @@ namespace GOES.Problems.MaxFlow {
             }
             if (isCorrect) {
                 if (curPathVertices.Last() == targetVertexIndex)
-                    SetFlowIncreasingWaiting();
+                    SetFlowRaiseWaiting();
                 else
                     SetNextPathVertexWaiting();
             }
@@ -318,15 +406,46 @@ namespace GOES.Problems.MaxFlow {
         }
         
         private void CheckMaxFlowValue() {
-            throw new NotImplementedException();
+            if (!IsAnswerCorrect()) {
+                MarkError(MaxFlowError.IncorrectMaxFlowFormat);
+                return;
+            }
+            string answer = textBoxAnswer.Text.Trim();
+            int maxFlowValue = int.Parse(answer);
+            if (maxFlowValue == correctMaxFlowValue) {
+                SetNextCutEdgeWaiting();
+            }
+            else {
+                MarkError(MaxFlowError.IncorrectMaxFlowValue);
+            }
         }
 
         private void CheckMinimalCutEdge(Edge edge) {
-            throw new NotImplementedException();
-        }
-
-        private void CheckIsFlowMax() {
-            throw new NotImplementedException();
+            int edgeSourceIndex = edge.SourceVertex.Number - 1;
+            int edgeTargetIndex = edge.TargetVertex.Number - 1;
+            bool isCorrect = false;
+            // Проверяем, взята ли уже эта дуга. Если да - выходим
+            foreach (var cutEdge in curCutEdges)
+                if (cutEdge.Item1 == edgeSourceIndex && cutEdge.Item2 == edgeTargetIndex)
+                    return;
+            // Проверяем, входит ли выбранная дуга в минимальный разрез
+            foreach (var cutEdge in correctMinimalCut) {
+                if (cutEdge.Item1 == edgeSourceIndex && cutEdge.Item2 == edgeTargetIndex) {
+                    isCorrect = true;
+                    break;
+                }
+            }
+            if (isCorrect) {
+                curCutEdges.Add(new Tuple<int, int>(edgeSourceIndex, edgeTargetIndex));
+                edge.Color = Color.Blue;
+                if (curCutEdges.Count < correctMinimalCut.Count)
+                    SetNextCutEdgeWaiting();
+                else
+                    SetProblemFinish();
+            }
+            else {
+                MarkError(MaxFlowError.IncorrectMinCutEdge);
+            }
         }
 
         private void ToNewIteration() {
@@ -388,6 +507,11 @@ namespace GOES.Problems.MaxFlow {
                     }
                     return true;
                 case MaxFlowProblemState.FlowRaiseWaiting:
+                    // Должно быть одно целое число
+                    if (!int.TryParse(answer, out _))
+                        return false;
+                    return true;
+                case MaxFlowProblemState.MaximalFlowWaiting:
                     // Должно быть одно целое число
                     if (!int.TryParse(answer, out _))
                         return false;

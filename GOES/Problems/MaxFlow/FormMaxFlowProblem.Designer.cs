@@ -124,7 +124,7 @@
             this.groupBoxTip.Size = new System.Drawing.Size(309, 218);
             this.groupBoxTip.TabIndex = 1;
             this.groupBoxTip.TabStop = false;
-            this.groupBoxTip.Text = "Сообщение";
+            this.groupBoxTip.Text = "Сообщения";
             // 
             // textLabelTip
             // 

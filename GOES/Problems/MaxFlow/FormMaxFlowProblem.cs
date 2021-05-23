@@ -29,6 +29,10 @@ namespace GOES.Problems.MaxFlow {
         List<int> curAugmentalPath;
         int curAugmentalFlowValue;
         List<Tuple<int, int>> curCutEdges;
+        // ----Атрибуты для демонстрации решения
+        List<int> selectedAugmentalPath;
+        int selectedPathVertexIndex;
+        int minimalCutEdgeIndex;
         // ----Атрибуты с правильными ответами (правильной величиной максимального потока правильными рёбрами минимального разреза)
         int correctMaxFlowValue;
         List<Tuple<int, int>> correctMinimalCut;
@@ -46,14 +50,10 @@ namespace GOES.Problems.MaxFlow {
             // В зависимости от режима задачи (решение/демонстрация) меняем некоторые элементы управления
             problemMode = mode;
             if (problemMode == ProblemMode.Solution) {
-                buttonReloadIteration.Text = "К началу итерации";
-                buttonReloadProblem.Text = "Начать заново";
-                groupBoxAnswers.Enabled = true;
+                SetAnswerGroupBoxSolutionMode();
             }
             else if (problemMode == ProblemMode.Demonstration) {
-                buttonReloadIteration.Text = "Сделать шаг";
-                buttonReloadProblem.Text = "Начать заново";
-                groupBoxAnswers.Enabled = false;
+                SetAnswerGroupBoxDemonstrationMode();
             }
             // Создаём граф для визуализации по примеру (если нужна генерация, генерируем)
             if (example != null) {
@@ -73,6 +73,9 @@ namespace GOES.Problems.MaxFlow {
             flowMatrix = new int[verticesCount, verticesCount];
             curAugmentalPath = new List<int>();
             curCutEdges = new List<Tuple<int, int>>();
+            selectedAugmentalPath = null;
+            selectedPathVertexIndex = 0;
+            minimalCutEdgeIndex = 0;
             // Пишем условие задачи - номер истока и номер стока
             textLabelExampleDescription.Text = 
                 $"Исток: {maxFlowExample.SourceVertexIndex + 1}; Сток: {maxFlowExample.TargetVertexIndex + 1}";
@@ -113,6 +116,9 @@ namespace GOES.Problems.MaxFlow {
                 vertex.Label = "";
             graphVisInterface.ResetVerticesBorderColor();
             graphVisInterface.ResetEdgesColor();
+            // Если это демонстрация, мы должны обнулить уже рассматриваемое решение
+            selectedAugmentalPath = null;
+            SetNextPathVertexWaiting();
         }
 
 
@@ -137,6 +143,18 @@ namespace GOES.Problems.MaxFlow {
 
 
         // ----Методы для работы с блоком ответов
+        // Задать блоку для ответов состояние для демонстрации решения
+        void SetAnswerGroupBoxDemonstrationMode() {
+            buttonAcceptAnswer.Text = "Сделать шаг";
+            textBoxAnswer.Enabled = false;
+        }
+
+        // Задать блоку для ответов состояние для решения задачи
+        void SetAnswerGroupBoxSolutionMode() {
+            buttonAcceptAnswer.Text = "Принять ответ";
+            textBoxAnswer.Enabled = true;
+        }
+
         // Заблокировать блок для ответов
         void LockAnswerGroupBox() {
             textBoxAnswer.Text = string.Empty;
@@ -194,20 +212,33 @@ namespace GOES.Problems.MaxFlow {
             problemState = MaxFlowProblemState.StartWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
-            string message =
-                        "Добро пожаловать в задание \"Максимальный поток в сети\"!" + Environment.NewLine +
-                        "Ваша задача - найти максимальный поток в представленной сети, а затем - " +
-                        "её минимальный разрез." + Environment.NewLine +
-                        "Стройте аугментальные маршруты от истока к стоку. " +
-                        "Для этого выбирайте вершины маршрута, начав с истока, и закончив в стоке." + Environment.NewLine +
-                        $"Исток - вершина {maxFlowExample.SourceVertexIndex + 1}, сток - вершина {maxFlowExample.TargetVertexIndex + 1}." + Environment.NewLine +
-                        "Если при построении маршрута Вы зашли в тупик, можете сбросить построенный маршрут кнопкой \"К началу итерации\", " +
-                        "это не повлияет на оценку." + Environment.NewLine +
-                        "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
-                        "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine +
-                        "Чтобы начать решение, нажмите кнопку \"К началу итерации\".";
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Добро пожаловать в задание \"Максимальный поток в сети\"!" + Environment.NewLine +
+                    "Ваша задача - найти максимальный поток в представленной сети, а затем - " +
+                    "её минимальный разрез." + Environment.NewLine +
+                    "Стройте аугментальные маршруты от истока к стоку. " +
+                    "Для этого выбирайте вершины маршрута, начав с истока, и закончив в стоке." + Environment.NewLine +
+                    $"Исток - вершина {maxFlowExample.SourceVertexIndex + 1}, сток - вершина {maxFlowExample.TargetVertexIndex + 1}." + Environment.NewLine +
+                    "Если при построении маршрута Вы зашли в тупик, можете сбросить построенный маршрут кнопкой \"К началу итерации\", " +
+                    "это не повлияет на оценку." + Environment.NewLine +
+                    "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
+                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine +
+                    "Чтобы начать решение, нажмите кнопку \"К началу итерации\".";
+            else if (problemMode == ProblemMode.Demonstration)
+                message =
+                    "Добро пожаловать в демонстрацию решения задачи \"Максимальный поток в сети\"!" + Environment.NewLine +
+                    "Здесь у Вас есть возможность просмотреть пошаговую демонстрацию решения задачи о максимальном потоке" + Environment.NewLine +
+                    "Для того, чтобы сделать очередной шаг решения, нажимайте кнопку \"Сделать шаг\"." + Environment.NewLine +
+                    "Вы можете начать итерацию решения заново кнопкой \"К началу итерации\"." +
+                    "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
+                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine +
+                    "Чтобы начать демонстрацию решения, нажмите кнопку \"К началу итерации\", " +
+                    "а затем используйте кнопки \"Сделать шаг\", \"К началу итерации\" и \"Начать заново\" для управления ходом решения.";
             ShowSuccessTip(message);
             LockAnswerGroupBox();
+            buttonReloadIteration.Enabled = true;
         }
 
         // Перевести задачу в состояние ожидания следующей вершины для аугментального пути
@@ -215,19 +246,33 @@ namespace GOES.Problems.MaxFlow {
             problemState = MaxFlowProblemState.NextPathVertexWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
             graphVisInterface.IsVerticesMoving = true;
-            string message =
-                "Выберите следующую вершину для аугментального пути." + Environment.NewLine;
-            if (curAugmentalPath.Count != 0) {
+            string message = "";
+            if (problemMode == ProblemMode.Solution) {
+                message =
+                    "Выберите следующую вершину для аугментального пути." + Environment.NewLine;
+            }
+            else if (problemMode == ProblemMode.Demonstration) {
+                if (curAugmentalPath.Count > 0) {
+                    int lastVertexIndex = curAugmentalPath.Last();
+                    message = $"Последней выбрана вершина {lastVertexIndex + 1}, метка для неё: {visGraph[lastVertexIndex].Label}" + Environment.NewLine;
+                }
+            }
+            if (curAugmentalPath.Count > 0) {
                 // Формируем строку с текущим аугментальным маршрутом
                 StringBuilder pathStr = new StringBuilder();
                 foreach (var pathVertex in curAugmentalPath)
                     pathStr.Append($"{pathVertex + 1}-");
                 // Удаляем последнюю чёрточку
                 pathStr.Remove(pathStr.Length - 1, 1);
-                message += $"Текущий аугментальный путь: {pathStr}";
+                message += $"Текущий аугментальный путь: {pathStr}" + Environment.NewLine;
             }
+            if (problemMode == ProblemMode.Demonstration)
+                message +=
+                    "Нажмите кнопку \"Сделать шаг\", чтобы добавить следующую вершину в строящийся аугментальный путь";
             ShowStandardTip(message);
-            LockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                LockAnswerGroupBox();
+            buttonReloadIteration.Enabled = true;
         }
 
         // Перевести задачу в состояние ожидания метки выбранной вершины для аугментального пути
@@ -235,16 +280,23 @@ namespace GOES.Problems.MaxFlow {
             problemState = MaxFlowProblemState.PathVertexLabelWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
-            string message =
-                "Введите метку для вершины в поле для ответов, а затем нажмите кнопку \"Принять ответ\"." + Environment.NewLine +
-                "Метка вводится в формате:" + Environment.NewLine +
-                "\"<знак><предыдущая вершина> <текущий аугментальный поток>\"," + Environment.NewLine +
-                "например: \"+1 inf\" или \"-7 19\"." + Environment.NewLine +
-                "Для вершины-истока текущий аугментальный поток следует принять бесконечным: \"inf\"." + Environment.NewLine +
-                "Метка проверяется на правильность, и ошибочная метка будет отмечена как ошибка (кроме опечаток)." + Environment.NewLine +
-                "Вы можете не ставить метку: для этого оставьте поле ввода ответа пустым.";
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Введите метку для вершины в поле для ответов, а затем нажмите кнопку \"Принять ответ\"." + Environment.NewLine +
+                    "Метка вводится в формате:" + Environment.NewLine +
+                    "\"<знак><предыдущая вершина> <текущий аугментальный поток>\"," + Environment.NewLine +
+                    "например: \"+1 inf\" или \"-7 19\"." + Environment.NewLine +
+                    "Для вершины-истока текущий аугментальный поток следует принять бесконечным: \"inf\"." + Environment.NewLine +
+                    "Метка проверяется на правильность, и ошибочная метка будет отмечена как ошибка (кроме опечаток)." + Environment.NewLine +
+                    "Вы можете не ставить метку: для этого оставьте поле ввода ответа пустым.";
+            else if (problemMode == ProblemMode.Demonstration) {
+                message = "";
+            }
             ShowStandardTip(message);
-            UnlockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                UnlockAnswerGroupBox();
+            buttonReloadIteration.Enabled = true;
         }
 
         // Перевести задачу в состояние ожидания величины аугментального потока для построенного аугментального пути
@@ -252,11 +304,18 @@ namespace GOES.Problems.MaxFlow {
             problemState = MaxFlowProblemState.FlowRaiseWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
-            string message =
-                "Аугментальный путь построен." + Environment.NewLine +
-                "Введите в поле для ответов величину дополнительного потока, который можно пустить по построенному аугментальному пути, в виде одного целого числа.";
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Аугментальный путь построен." + Environment.NewLine +
+                    "Введите в поле для ответов величину дополнительного потока, который можно пустить по построенному аугментальному пути, в виде одного целого числа.";
+            else if (problemMode == ProblemMode.Demonstration)
+                message = "Аугментальный путь построен." + Environment.NewLine +
+                    $"Нажмите кнопку \"Сделать шаг\", чтобы пустить по построенному аугментальному пути дополнительный поток величиной {curAugmentalFlowValue}.";
             ShowSuccessTip(message);
-            UnlockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                UnlockAnswerGroupBox();
+            buttonReloadIteration.Enabled = false;
         }
 
         // Перевести задачу в состояние ожидания величины максимального потока для построеннного максимального потока сети
@@ -264,11 +323,19 @@ namespace GOES.Problems.MaxFlow {
             problemState = MaxFlowProblemState.MaximalFlowWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
-            string message =
-                "Максимальный поток в сети построен." + Environment.NewLine +
-                "Введите в поле для ответов величину построенного максимального потока в виде одного целого числа.";
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Максимальный поток в сети построен." + Environment.NewLine +
+                    "Введите в поле для ответов величину построенного максимального потока в виде одного целого числа.";
+            else if (problemMode == ProblemMode.Demonstration)
+                message =
+                    "Максимальный поток в сети построен." + Environment.NewLine +
+                    $"Величина максимального (текущего) потока для данной сети равна {correctMaxFlowValue}.";
             ShowSuccessTip(message);
-            UnlockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                UnlockAnswerGroupBox();
+            buttonReloadIteration.Enabled = false;
         }
 
         // Перевести задачу в состояние ожидания следующей дуги минимального разреза
@@ -276,8 +343,10 @@ namespace GOES.Problems.MaxFlow {
             problemState = MaxFlowProblemState.NextCutEdgeWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
             graphVisInterface.IsVerticesMoving = true;
-            string message =
-                "Выберите все дуги, которые входят в минимальный разрез данной сети." + Environment.NewLine;
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Выберите все дуги, которые входят в минимальный разрез данной сети." + Environment.NewLine;
             if (curCutEdges.Count != 0) {
                 // Формируем строку с текущими выбранными дугами разреза
                 StringBuilder cutEdgesStr = new StringBuilder();
@@ -285,10 +354,14 @@ namespace GOES.Problems.MaxFlow {
                     cutEdgesStr.Append($"{{{cutEdge.Item1 + 1}-{cutEdge.Item2 + 1}}}, ");
                 // Удаляем последнюю запятую и пробел
                 cutEdgesStr.Remove(cutEdgesStr.Length - 2, 2);
-                message += $"Уже отмеченные дуги минимального разреза: {cutEdgesStr}.";
+                message += $"Уже отмеченные дуги минимального разреза: {cutEdgesStr}." + Environment.NewLine;
             }
+            if (problemMode == ProblemMode.Demonstration)
+                message = "Нажмите кнопку \"Сделать шаг\", чтобы выбрать очередную дугу минимального разреза";
             ShowStandardTip(message);
-            LockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                LockAnswerGroupBox();
+            buttonReloadIteration.Enabled = false;
         }
 
         // Перевести задачу в состояние выполненной задачи
@@ -301,6 +374,7 @@ namespace GOES.Problems.MaxFlow {
                 "Задание успешно выполнено!";
             ShowSuccessTip(message);
             LockAnswerGroupBox();
+            buttonReloadIteration.Enabled = false;
         }
 
 
@@ -541,6 +615,51 @@ namespace GOES.Problems.MaxFlow {
         }
 
 
+        // ----Методы для демонстрации решения
+        private void DoAnswerForDemonstration() {
+            switch (problemState) {
+                case MaxFlowProblemState.NextPathVertexWaiting:
+                    if (selectedAugmentalPath == null || selectedPathVertexIndex >= selectedAugmentalPath.Count) {
+                        selectedAugmentalPath = 
+                            Algorithm.GetAugmentalPath(capacityMatrix, flowMatrix, sourceVertexIndex, targetVertexIndex, out _);
+                        selectedPathVertexIndex = 0;
+                    }
+                    int selectedVertex = selectedAugmentalPath[selectedPathVertexIndex];
+                    selectedPathVertexIndex++;
+                    CheckAugmentalPathVertex(visGraph[selectedVertex]);
+                    DoAnswerForDemonstration();
+                    break;
+                case MaxFlowProblemState.PathVertexLabelWaiting:
+                    if (curAugmentalPath.Count <= 1) {
+                        textBoxAnswer.Text = $"+{sourceVertexIndex + 1} inf";
+                    }
+                    else {
+                        int lastVertexIndex = curAugmentalPath[curAugmentalPath.Count - 2];
+                        int selectedVertexIndex = curAugmentalPath.Last();
+                        bool isForwardEdge = capacityMatrix[lastVertexIndex, selectedVertexIndex] != 0;
+                        char sign = isForwardEdge ? '+' : '-';
+                        textBoxAnswer.Text = $"{sign}{lastVertexIndex + 1} {curAugmentalFlowValue}";
+                    }
+                    CheckVertexLabel();
+                    break;
+                case MaxFlowProblemState.FlowRaiseWaiting:
+                    textBoxAnswer.Text = curAugmentalFlowValue.ToString();
+                    CheckFlowRaise();
+                    break;
+                case MaxFlowProblemState.MaximalFlowWaiting:
+                    textBoxAnswer.Text = correctMaxFlowValue.ToString();
+                    CheckMaxFlowValue();
+                    break;
+                case MaxFlowProblemState.NextCutEdgeWaiting:
+                    Tuple<int, int> selectedEdge = correctMinimalCut[minimalCutEdgeIndex];
+                    minimalCutEdgeIndex++;
+                    Edge edge = visGraph.GetEdge(selectedEdge.Item1, selectedEdge.Item2);
+                    CheckMinimalCutEdge(edge);
+                    break;
+            }
+        }
+
+
         // ----Обработчики событий
         // Вызов окна с лекцией
         private void buttonLecture_Click(object sender, EventArgs e) {
@@ -577,18 +696,26 @@ namespace GOES.Problems.MaxFlow {
 
         // Принятие ответа
         private void buttonAcceptAnswer_Click(object sender, EventArgs e) {
-            if (problemState == MaxFlowProblemState.PathVertexLabelWaiting)
-                CheckVertexLabel();
-            else if (problemState == MaxFlowProblemState.FlowRaiseWaiting)
-                CheckFlowRaise();
-            else if (problemState == MaxFlowProblemState.MaximalFlowWaiting)
-                CheckMaxFlowValue();
+            if (problemMode == ProblemMode.Solution) {
+                if (problemState == MaxFlowProblemState.PathVertexLabelWaiting)
+                    CheckVertexLabel();
+                else if (problemState == MaxFlowProblemState.FlowRaiseWaiting)
+                    CheckFlowRaise();
+                else if (problemState == MaxFlowProblemState.MaximalFlowWaiting)
+                    CheckMaxFlowValue();
+            }
+            else if (problemMode == ProblemMode.Demonstration) {
+                DoAnswerForDemonstration();
+            }
         }
 
         // Начало новой итерации решения
         private void buttonReloadIteration_Click(object sender, EventArgs e) {
-            if (problemState == MaxFlowProblemState.StartWaiting)
+            if (problemState == MaxFlowProblemState.StartWaiting) {
+                if (problemMode == ProblemMode.Demonstration)
+                    UnlockAnswerGroupBox();
                 SetNextPathVertexWaiting();
+            }
             else
                 StartNewIteration();
         }

@@ -148,6 +148,33 @@ namespace GOES.Problems.MaxFlow {
             groupBoxAnswers.Enabled = true;
         }
 
+        // ----Методы для работы с полем ввода ответов
+        // Проверить ответ на соответствие формату ввода в зависимости от требуемого ответа (метки вершины, числа)
+        private bool IsAnswerCorrect() {
+            string answer = textBoxAnswer.Text.Trim().ToLower();
+            Regex regex;
+            switch (problemState) {
+                case MaxFlowProblemState.PathVertexLabelWaiting:
+                    // Метки можно не ставить
+                    if (answer == string.Empty)
+                        return true;
+                    // Первым символом должен быть знак (+ или -)
+                    // После знака должно идти целое число, затем через пробел ещё одно целое число либо "inf" (для первой вершины)
+                    regex = new Regex(@"^(\+|-)\d+ (\d+|inf)$");
+                    return regex.IsMatch(answer);
+                case MaxFlowProblemState.FlowRaiseWaiting:
+                    // Должно быть одно целое число
+                    regex = new Regex(@"^\d+$");
+                    return regex.IsMatch(answer);
+                case MaxFlowProblemState.MaximalFlowWaiting:
+                    // Должно быть одно целое число
+                    regex = new Regex(@"^\d+$");
+                    return regex.IsMatch(answer);
+                default:
+                    return false;
+            }
+        }
+
 
         // ----Методы для работы с визуализацией графа
         // Обновить метки на дугах графа вида <текущий поток>/<пропускная способность>
@@ -512,33 +539,6 @@ namespace GOES.Problems.MaxFlow {
             }
         }
 
-
-        // ----Методы для работы с полем ввода ответов
-        // Проверить ответ на соответствие формату ввода в зависимости от требуемого ответа (метки вершины, числа)
-        private bool IsAnswerCorrect() {
-            string answer = textBoxAnswer.Text.Trim().ToLower();
-            Regex regex;
-            switch (problemState) {
-                case MaxFlowProblemState.PathVertexLabelWaiting:
-                    // Метки можно не ставить
-                    if (answer == string.Empty)
-                        return true;
-                    // Первым символом должен быть знак (+ или -)
-                    // После знака должно идти целое число, затем через пробел ещё одно целое число либо "inf" (для первой вершины)
-                    regex = new Regex(@"^(\+|-)\d+ (\d+|inf)$");
-                    return regex.IsMatch(answer);
-                case MaxFlowProblemState.FlowRaiseWaiting:
-                    // Должно быть одно целое число
-                    regex = new Regex(@"^\d+$");
-                    return regex.IsMatch(answer);
-                case MaxFlowProblemState.MaximalFlowWaiting:
-                    // Должно быть одно целое число
-                    regex = new Regex(@"^\d+$");
-                    return regex.IsMatch(answer);
-                default:
-                    return false;
-            }
-        }
 
         // ----Обработчики событий
         // Вызов окна с лекцией

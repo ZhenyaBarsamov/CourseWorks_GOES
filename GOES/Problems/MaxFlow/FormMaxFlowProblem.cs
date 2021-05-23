@@ -103,6 +103,7 @@ namespace GOES.Problems.MaxFlow {
 
 
         // ----Методы для работы с ходом решения/демонстрации
+        // Начать новую итерацию решения
         private void StartNewIteration() {
             // Очищаем текущий маршрут и величину аугментального потока
             curAugmentalPath.Clear();

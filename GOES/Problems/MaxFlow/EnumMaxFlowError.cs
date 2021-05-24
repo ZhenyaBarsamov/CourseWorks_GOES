@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GOES.Problems.MaxFlow {
+﻿namespace GOES.Problems.MaxFlow {
     /// <summary>
     /// Перечисление для ошибок, которые могут быть допущены учеником 
     /// при решении задачи о максимальном потоке

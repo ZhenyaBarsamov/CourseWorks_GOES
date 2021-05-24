@@ -447,6 +447,9 @@ namespace GOES.Problems.MaxFlow {
         // Проверить выбранную в аугментальный путь вершину
         private void CheckAugmentalPathVertex(Vertex vertex) {
             int selectedVertexIndex = vertex.Number - 1;
+            // Если по этой вершине уже проходит путь - выходим
+            if (curAugmentalPath.Contains(selectedVertexIndex))
+                return;
             // Если это первая вершина пути, она обязательно должна быть вершиной-истоком
             if (curAugmentalPath.Count == 0) {
                 if (selectedVertexIndex == sourceVertexIndex) {

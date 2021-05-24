@@ -76,6 +76,13 @@ namespace GOES.Problems.MaxFlow {
             return flowMatrix;
         }
 
+        /// <summary>
+        /// Вычислить величину текущего потока в сети
+        /// </summary>
+        /// <param name="flowMatrix">Матрица потоков сети</param>
+        /// <param name="verticesCount">Количество вершин в сети</param>
+        /// <param name="sourceIndex">Индекс вершины-истока</param>
+        /// <returns></returns>
         public static int GetCurNetworkFlowValue(int[,] flowMatrix, int verticesCount, int sourceIndex) {
             int sumFlow = 0;
             for (int nextVertex = 0; nextVertex < verticesCount; nextVertex++)
@@ -83,6 +90,22 @@ namespace GOES.Problems.MaxFlow {
             return sumFlow;
         }
 
+        // Получить случайную перестановку вершин для графа с заданным количеством вершин
+        private static int[] GetRandomVerticesPermutation(int verticesCount) {
+            Random permutation = new Random();
+            int[] res = new int[verticesCount];
+            for (int vertexIndex = 0; vertexIndex < verticesCount; vertexIndex++)
+                res[vertexIndex] = vertexIndex;
+            for (int vertexIndex = 0; vertexIndex < verticesCount - 1; vertexIndex++) {
+                int r = permutation.Next(vertexIndex, verticesCount);
+                int tmp = res[vertexIndex];
+                res[vertexIndex] = res[r];
+                res[r] = tmp;
+            }
+            return res;
+        }
+
+        // Построить аугментальный путь
         private static void BuildAugmentalPath(int[,] capacityMatrix, int[,] flowMatrix, int verticesCount, int curVertexIndex, int targetVertexIndex, bool[] verticesInPath, bool[] visitedVertices, List<int> pathVertices) {
             // Помечаем вершину как посещённую
             visitedVertices[curVertexIndex] = true;
@@ -94,19 +117,22 @@ namespace GOES.Problems.MaxFlow {
             if (curVertexIndex == targetVertexIndex)
                 return;
 
-            // Ищем следующую вершину
-            for (int nextVertexIndex = 0; nextVertexIndex < verticesCount; nextVertexIndex++) {
-                // Проверяем прямое ребро: есть, не взято, допускает увеличение потока
+            // Ищем следующую вершину. Для того, чтобы каждый раз выбирался новый путь, создаём случайную
+            // перестановку вершин, и идём по ней, а не по 0..(verticesCount-1)
+            int[] verticesPermutation = GetRandomVerticesPermutation(verticesCount);
+            foreach (var nextVertexIndex in verticesPermutation) {
+                // Если эта вершина уже посещена, переходим к следующей
+                if (verticesInPath[nextVertexIndex])
+                    continue;
+                // Проверяем прямое ребро: есть и допускает увеличение потока
                 if (capacityMatrix[curVertexIndex, nextVertexIndex] != 0
-                    && !verticesInPath[nextVertexIndex]
                     && capacityMatrix[curVertexIndex, nextVertexIndex] - flowMatrix[curVertexIndex, nextVertexIndex] > 0)
                     BuildAugmentalPath(capacityMatrix, flowMatrix, verticesCount, nextVertexIndex, targetVertexIndex, verticesInPath, visitedVertices, pathVertices);
                 // Проверим, не закончен ли поиск (на случай, если путь уже найден)
                 if (pathVertices.Last() == targetVertexIndex)
                     return;
-                // Проверяем обратное ребро: есть, не взято, допускает уменьшение потока
+                // Проверяем обратное ребро: есть и допускает уменьшение потока
                 if (capacityMatrix[nextVertexIndex, curVertexIndex] != 0
-                    && !verticesInPath[nextVertexIndex]
                     && flowMatrix[nextVertexIndex, curVertexIndex] > 0)
                     BuildAugmentalPath(capacityMatrix, flowMatrix, verticesCount, nextVertexIndex, targetVertexIndex, verticesInPath, visitedVertices, pathVertices);
                 // Проверим, не закончен ли поиск (на случай, если путь уже найден)
@@ -121,6 +147,7 @@ namespace GOES.Problems.MaxFlow {
             }
         }
 
+        // Получить величину аугментального потока для заданного аугментального пути
         private static int GetAugmentalFlowValue(int[,] capacityMatrix, int[,] flowMatrix, int verticesCount, List<int> augmentalPath) {
             // Если аугментального пути нет, то аугментальный поток в нём - нулевой
             if (augmentalPath.Count == 0)
@@ -134,12 +161,13 @@ namespace GOES.Problems.MaxFlow {
                 if (capacityMatrix[curVertexIndex, nextVertexIndex] - flowMatrix[curVertexIndex, nextVertexIndex] > 0)
                     curAugmentalFlow = capacityMatrix[curVertexIndex, nextVertexIndex] - flowMatrix[curVertexIndex, nextVertexIndex];
                 else
-                    curAugmentalFlow = flowMatrix[curVertexIndex, nextVertexIndex];
+                    curAugmentalFlow = flowMatrix[nextVertexIndex, curVertexIndex];
                 augmentalFlowValue = Math.Min(augmentalFlowValue, curAugmentalFlow);
             }
             return augmentalFlowValue;
         }
 
+        // Получить минимальный разрез сети по множеству когда-либо посещённых вершин в последней итерации построения аугментальной цепи
         private static List<Tuple<int, int>> GetMinimalCut(int[,] capacityMatrix, int[,] flowMatrix, int verticesCount, bool[] divisionOfVertices) {
             List<Tuple<int, int>> res = new List<Tuple<int, int>>();
             // Составляем списки из индексов вершин обоих подмножеств

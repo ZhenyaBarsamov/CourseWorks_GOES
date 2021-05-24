@@ -145,12 +145,14 @@ namespace GOES.Problems.MaxFlow {
         // ----Методы для работы с блоком ответов
         // Задать блоку для ответов состояние для демонстрации решения
         void SetAnswerGroupBoxDemonstrationMode() {
+            groupBoxAnswers.Text = "Демонстрация";
             buttonAcceptAnswer.Text = "Сделать шаг";
             textBoxAnswer.Enabled = false;
         }
 
         // Задать блоку для ответов состояние для решения задачи
         void SetAnswerGroupBoxSolutionMode() {
+            groupBoxAnswers.Text = "Ответы";
             buttonAcceptAnswer.Text = "Принять ответ";
             textBoxAnswer.Enabled = true;
         }

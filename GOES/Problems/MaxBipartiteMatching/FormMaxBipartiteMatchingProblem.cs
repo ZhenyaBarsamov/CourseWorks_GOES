@@ -15,13 +15,13 @@ namespace GOES.Problems.MaxBipartiteMatching {
     public partial class FormMaxBipartiteMatchingProblem : Form, IProblem {
         // ----Атрибуты
         private bool[,] graph;
-        private Graph visualizingGraph;
-        private int graphSize => graph.GetLength(0);
+        private Graph visGraph;
+        private int verticesCount;
 
         public IProblemDescriptor ProblemDescriptor => new MaxBipartiteMatchingProblemDescriptor();
 
-        private MaxBipartiteMatchingProblemExample example;
-        private ProblemMode mode;
+        private MaxBipartiteMatchingProblemExample maxBipartiteMatchingExample;
+        private ProblemMode problemMode;
 
         public void InitializeProblem(ProblemExample example, ProblemMode mode) {
             // Если требуется случайная генерация, а её нет, говорим, что не реализовано
@@ -30,8 +30,8 @@ namespace GOES.Problems.MaxBipartiteMatching {
             // Если нам дан пример не задачи о максимальном потоке - ошибка
             if (!(example is MaxBipartiteMatchingProblemExample))
                 throw new ArgumentException("Ошибка в выбранном примере. Его невозможно открыть.");
-            this.example = example as MaxBipartiteMatchingProblemExample;
-            this.mode = mode;
+            this.maxBipartiteMatchingExample = example as MaxBipartiteMatchingProblemExample;
+            this.problemMode = mode;
         }
 
         public FormMaxBipartiteMatchingProblem() {
@@ -48,8 +48,8 @@ namespace GOES.Problems.MaxBipartiteMatching {
             for (int row = 0; row < statement.GraphMatrix.GetLength(0); row++)
                 for (int col = 0; col < statement.GraphMatrix.GetLength(1); col++)
                     graph[row, col] = statement.GraphMatrix[row, col] != 0;
-            visualizingGraph = new Graph(graph, false);
-            msaglGraphVisualizer.Initialize(visualizingGraph);
+            visGraph = new Graph(graph, false);
+            graphVisualizer.Initialize(visGraph);
         }
 
         bool isDemonstrationStarted = false;
@@ -58,21 +58,21 @@ namespace GOES.Problems.MaxBipartiteMatching {
         int[] matching;
 
         private void ClearVerticesMarking() {
-            foreach (var vertex in visualizingGraph.Vertices)
+            foreach (var vertex in visGraph.Vertices)
                 vertex.BorderColor = Color.Black;
         }
 
         private void ClearEdgesMarking() {
-            foreach (var edge in visualizingGraph.Edges)
+            foreach (var edge in visGraph.Edges)
                 edge.Color = Color.Black;
         }
 
         bool DFS(int vertexIndex) {
-            visualizingGraph.Vertices[vertexIndex].BorderColor = Color.BlueViolet;
+            visGraph.Vertices[vertexIndex].BorderColor = Color.BlueViolet;
             if (usedVertices[vertexIndex])
                 return false;
             usedVertices[vertexIndex] = true;
-            for (int nextVertexIndex = 0; nextVertexIndex < graphSize; nextVertexIndex++) {
+            for (int nextVertexIndex = 0; nextVertexIndex < verticesCount; nextVertexIndex++) {
                 if (graph[vertexIndex, nextVertexIndex] == false)
                     continue;
                 if (matching[nextVertexIndex] == -1 || DFS(matching[nextVertexIndex])) {
@@ -88,35 +88,26 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 ClearVerticesMarking();
                 ClearEdgesMarking();
                 isDemonstrationStarted = true;
-                matching = new int[graphSize]; // +1, т.к. нумерация вершин в графе у нас с 1
-                for (int i = 0; i < graphSize; i++)
+                matching = new int[verticesCount]; // +1, т.к. нумерация вершин в графе у нас с 1
+                for (int i = 0; i < verticesCount; i++)
                     matching[i] = -1;
-                usedVertices = new bool[graphSize];
+                usedVertices = new bool[verticesCount];
                 curVertexIndex = 0;
             }
             ClearVerticesMarking();
-            if (curVertexIndex >= graphSize)
+            if (curVertexIndex >= verticesCount)
                 return;
-            visualizingGraph.Vertices[curVertexIndex].BorderColor = Color.Red;
-            for (int i = 0; i < graphSize; i++)
+            visGraph.Vertices[curVertexIndex].BorderColor = Color.Red;
+            for (int i = 0; i < verticesCount; i++)
                 usedVertices[i] = false;
             // В конце шага отмечает, какие рёбра на текущий момент входят в паросочетание
             if (DFS(curVertexIndex)) {
                 ClearEdgesMarking();
-                for (int i = 0; i < graphSize; i++)
+                for (int i = 0; i < verticesCount; i++)
                     if (matching[i] != -1)
-                        visualizingGraph.GetEdge(i, matching[i]).Color = Color.LightGreen;
+                        visGraph.GetEdge(i, matching[i]).Color = Color.LightGreen;
             }
             curVertexIndex++;
-        }
-
-        private void buttonNextStep_Click(object sender, EventArgs e) {
-            Thread thread = new Thread(step);
-            thread.Start();
-        }
-
-        private void buttonToStart_Click(object sender, EventArgs e) {
-            isDemonstrationStarted = false;
         }
     }
 }

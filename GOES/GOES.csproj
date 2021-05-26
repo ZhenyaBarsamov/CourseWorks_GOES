@@ -79,6 +79,9 @@
     <Compile Include="Problems\EnumProblemMode.cs" />
     <Compile Include="Problems\IProblem.cs" />
     <Compile Include="Problems\IProblemDescriptor.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\Algorithm.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\EnumMaxBipartiteMatchingError.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\EnumMaxBipartiteMatchingProblemState.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\FormMaxBipartiteMatchingProblem.cs">
       <SubType>Form</SubType>
     </Compile>

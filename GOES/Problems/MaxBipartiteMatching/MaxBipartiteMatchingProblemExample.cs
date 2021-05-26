@@ -9,7 +9,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
         /// <summary>
         /// Матрица смежности графа
         /// </summary>
-        public int[,] GraphMatrix { get; private set; }
+        public bool[,] GraphMatrix { get; private set; }
 
 
         // ----Конструктор
@@ -18,11 +18,15 @@ namespace GOES.Problems.MaxBipartiteMatching {
         /// </summary>
         /// <param name="name">Название постановки задачи</param>
         /// <param name="description">Описание постановки задачи</param>
-        /// <param name="graphMatrix">Матрица смежности графа</param>
+        /// <param name="graphMatrix">Матрица смежности графа, содержащая 1, если соответствующее ребро существует, и 0 - иначе</param>
         /// <param name="defaultGraphLayout">Массив точек, задающих расположение вершин графа по умолчанию</param>
         public MaxBipartiteMatchingProblemExample(string name, string description, int[,] graphMatrix,
             PointF[] defaultGraphLayout) : base(name, description, false, defaultGraphLayout) {
-            GraphMatrix = graphMatrix;
+            int verticesCount = graphMatrix.GetLength(0);
+            GraphMatrix = new bool[verticesCount, verticesCount];
+            for (int row = 0; row < verticesCount; row++)
+                for (int col = 0; col < verticesCount; col++)
+                    GraphMatrix[row, col] = graphMatrix[row, col] == 1;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
 
         // ----Константы
         const float defaultLineWidth = 1;
-        const float boldCoefficient = 2;
+        const float boldCoefficient = 3;
 
 
         // ----Конструктор

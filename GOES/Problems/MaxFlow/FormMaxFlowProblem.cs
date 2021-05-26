@@ -349,7 +349,7 @@ namespace GOES.Problems.MaxFlow {
                 // Формируем строку с текущими выбранными дугами разреза
                 StringBuilder cutEdgesStr = new StringBuilder();
                 foreach (var cutEdge in curCutEdges)
-                    cutEdgesStr.Append($"{{{cutEdge.Item1 + 1}-{cutEdge.Item2 + 1}}}, ");
+                    cutEdgesStr.Append($"({cutEdge.Item1 + 1};{cutEdge.Item2 + 1}), ");
                 // Удаляем последнюю запятую и пробел
                 cutEdgesStr.Remove(cutEdgesStr.Length - 2, 2);
                 message += $"Уже отмеченные дуги минимального разреза: {cutEdgesStr}." + Environment.NewLine;

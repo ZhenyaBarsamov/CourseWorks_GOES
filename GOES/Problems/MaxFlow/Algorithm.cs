@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace GOES.Problems.MaxFlow {
+    /// <summary>
+    /// Статический класс, предоставляющий методы для решения задачи о максимальном потоке (полное решение и решение её этапов)
+    /// </summary>
     static class Algorithm {
         /// <summary>
         /// Получить аугментальный маршрут и его аугментальный поток для заданной сети

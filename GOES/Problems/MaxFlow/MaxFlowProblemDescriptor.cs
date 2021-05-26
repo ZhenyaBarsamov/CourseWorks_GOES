@@ -13,7 +13,7 @@ namespace GOES.Problems.MaxFlow {
             "алгоритма Форда-Фалкерсона";
 
         public ProblemExample[] ProblemExamples => new MaxFlowProblemExample[] {
-            new MaxFlowProblemExample("Пример 1", "Пример 1", 0, 6,
+            new MaxFlowProblemExample("Пример 1", "Пример 1.", 0, 6,
                             new int[,] {
                                 {0, 15, 0, 25, 0, 0, 0 },
                                 {0, 0, 16, 7, 0, 0, 0 },
@@ -27,7 +27,7 @@ namespace GOES.Problems.MaxFlow {
                                 new PointF(425, 400), new PointF(350, 250), new PointF(575, 250)
                             }
                         ),
-            new MaxFlowProblemExample("Пример 2", "Пример 2", 0, 3,
+            new MaxFlowProblemExample("Пример 2", "Пример 2.", 0, 3,
                             new [,] {
                                 {0, 7, 0, 0, 5, 0, 3, 0 },
                                 {0, 0, 2, 0, 0, 0, 0, 3 },
@@ -42,7 +42,8 @@ namespace GOES.Problems.MaxFlow {
                                 new PointF(180, 225), new PointF(500, 225), new PointF(250, 425), new PointF(450, 425)
                             }
                         ),
-            new MaxFlowProblemExample("Пример 3", "Парк Кирова", 0, 6,
+            new MaxFlowProblemExample("Пример 3", "Сеть \"Парк Кирова\", " +
+                "прообразом которой является парк им. Кирова на Елагином острове в городе Санкт-Петербург.", 0, 6,
                             new[,] {
                                 {0, 4, 3, 7, 0, 0, 0},
                                 {0, 0, 0, 1, 3, 0, 0},
@@ -56,7 +57,7 @@ namespace GOES.Problems.MaxFlow {
                                 new PointF(475, 235), new PointF(425, 385), new PointF(615, 195)
                             }
                         ),
-            new MaxFlowProblemExample("Пример 4", "Пример 4", 0, 8,
+            new MaxFlowProblemExample("Пример 4", "Пример 4.", 0, 8,
                             new[,] {
                                 {0, 7, 9, 4, 0, 0, 0, 0, 0},
                                 {0, 0, 0, 8, 3, 0, 0, 6, 0},
@@ -72,7 +73,8 @@ namespace GOES.Problems.MaxFlow {
                                 new PointF(355, 85), new PointF(415, 430), new PointF(450, 285), new PointF(475, 175), new PointF(615, 310)
                             }
                         ),
-            new MaxFlowProblemExample("Пример 5", "Пример 5", 0, 9,
+            new MaxFlowProblemExample("Пример 5", "Пример решения задачи о максимальном паросочетании в двудольном графе " +
+                "с помощью алгоритма поиска максимального потока в сети.", 0, 9,
                             new[,] {
                                 {0, 1, 0, 1, 0, 1, 0, 1, 0, 0},
                                 {0, 0, 1, 0, 1, 0, 0, 0, 0, 0},

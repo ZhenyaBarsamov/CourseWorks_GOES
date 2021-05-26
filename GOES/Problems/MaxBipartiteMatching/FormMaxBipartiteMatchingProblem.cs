@@ -12,6 +12,7 @@ using SGVL.Graphs;
 using SGVL.Visualizers;
 using GOES.Forms;
 using System.Text.RegularExpressions;
+using System.Media;
 
 namespace GOES.Problems.MaxBipartiteMatching {
     public partial class FormMaxBipartiteMatchingProblem : Form, IProblem {
@@ -117,12 +118,14 @@ namespace GOES.Problems.MaxBipartiteMatching {
         void ShowErrorTip(string message) {
             textLabelTip.Text = message;
             groupBoxTip.ForeColor = Color.Red;
+            SystemSounds.Exclamation.Play();
         }
 
         // Вывести сообщение об успехе
         void ShowSuccessTip(string message) {
             textLabelTip.Text = message;
             groupBoxTip.ForeColor = Color.Green;
+            SystemSounds.Asterisk.Play();
         }
 
 
@@ -148,9 +151,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
         }
 
         // Разблокировать блок для ответов
-        void UnlockAnswerGroupBox() {
+        void UnlockAnswerGroupBox(bool isTextBoxEnabled) {
             textBoxAnswer.Text = string.Empty;
             groupBoxAnswers.Enabled = true;
+            textBoxAnswer.Enabled = isTextBoxEnabled;
         }
 
         // ----Методы для работы с полем ввода ответов
@@ -250,7 +254,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 message +=
                     "Нажмите кнопку \"Сделать шаг\", чтобы добавить следующую вершину в строящийся аугментальный путь.";
             ShowStandardTip(message);
-            UnlockAnswerGroupBox();
+            UnlockAnswerGroupBox(false);
             buttonReloadIteration.Enabled = true;
         }
 
@@ -270,7 +274,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
                     $"Мощность максимального (текущего) паросочетания для данного двудольного равна {correctMaximalMatchingCardinality}.";
             ShowSuccessTip(message);
             if (problemMode == ProblemMode.Solution)
-                UnlockAnswerGroupBox();
+                UnlockAnswerGroupBox(true);
             buttonReloadIteration.Enabled = false;
         }
 
@@ -506,7 +510,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
         private void buttonReloadIteration_Click(object sender, EventArgs e) {
             if (problemState == MaxBipartiteMatchingProblemState.StartWaiting) {
                 if (problemMode == ProblemMode.Demonstration)
-                    UnlockAnswerGroupBox();
+                    UnlockAnswerGroupBox(false);
                 SetNextPathVertexWaitingState();
             }
             else

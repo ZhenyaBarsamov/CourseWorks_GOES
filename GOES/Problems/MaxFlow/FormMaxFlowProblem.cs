@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using System.Media;
 using System.Drawing;
 using SGVL.Visualizers;
 using SGVL.Graphs;
@@ -133,12 +134,14 @@ namespace GOES.Problems.MaxFlow {
         void ShowErrorTip(string message) {
             textLabelTip.Text = message;
             groupBoxTip.ForeColor = Color.Red;
+            SystemSounds.Exclamation.Play();
         }
 
         // Вывести сообщение об успехе
         void ShowSuccessTip(string message) {
             textLabelTip.Text = message;
             groupBoxTip.ForeColor = Color.Green;
+            SystemSounds.Asterisk.Play();
         }
 
 

@@ -70,7 +70,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 matchingPairsArray[i] = -1;
             // Пишем условие задачи - номер истока и номер стока
             textLabelExampleDescription.Text =
-                $"Найти максимальное паросочетание в представленном двудольном графе.";
+                "Максимальное паросочетание?";
             // Отображаем метки величины потока на дугах
             //UpdateEdgesLabels();
             // Получаем решение задачи
@@ -192,9 +192,9 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 message =
                     "Добро пожаловать в задание \"Максимальное паросочетание в двудольном графе\"!" + Environment.NewLine +
                     "Ваша задача - найти максимальное паросочетание в представленном двудольном графе и указать его мощность." + Environment.NewLine +
-                    "Последовательно стройте аугментальные маршруты и постепенно увеличивайте мощность текущего паросочетания." +
+                    "Последовательно стройте аугментальные маршруты и постепенно увеличивайте мощность текущего паросочетания. " +
                     "Для построения чередующихся (аугментальных) цепей последовательно выбирайте вершины маршрута, начав с непокрытой паросочетанием вершины " +
-                    "и заканчив такой же непокрытой вершиной." + Environment.NewLine +
+                    "и закончив такой же непокрытой вершиной." + Environment.NewLine +
                     "Если при построении маршрута Вы зашли в тупик, можете сбросить построенный маршрут кнопкой \"К началу итерации\", " +
                     "это не повлияет на оценку." + Environment.NewLine +
                     "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
@@ -244,6 +244,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 pathStr.Remove(pathStr.Length - 1, 1);
                 message += $"Текущий аугментальный путь: {pathStr}." + Environment.NewLine;
             }
+            message +=
+                "Жирным выделены рёбра, которые принадлежат текущему паросочетанию. " +
+                "Зелёным при построении аугментальной цепи выделяются рёбра, которые после проведения чередования должны войти в паросочетание. " +
+                "Красным при построении аугментальной цепи выделяются рёбра, которые после проведения чередования должны удалиться из паросочетания." + Environment.NewLine;
             if (problemMode == ProblemMode.Demonstration)
                 message +=
                     "Нажмите кнопку \"Сделать шаг\", чтобы добавить следующую вершину в строящийся аугментальный путь.";
@@ -252,6 +256,21 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 SetAnswerGroupBoxState(true, false, "Провести чередование");
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(true, false, "Сделать шаг");
+            buttonReloadIteration.Enabled = true;
+        }
+
+        // Перевести задачу в псевдосостояние ожидания чередования по построенному аугментальному пути (для режима демонстрации)
+        private void SetAlternationWaitState() {
+            problemState = MaxBipartiteMatchingProblemState.NextPathVertexWaiting; // Само состояние совпадает с состоянием ожидания очередной вершины
+            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
+            graphVisInterface.IsVerticesMoving = true;
+            string message = 
+                "Аугментальная цепь построена." + Environment.NewLine +
+                "Нажмите кнопку \"Сделать шаг\", чтобы провести чередование рёбер по построенному аугментальному пути. " + 
+                "При этом рёбра, входящие в паросочетание (выделены жирным и красным), будут удалены из него, " +
+                "а оставшиеся рёбра цепи (выделены зелёным), наоборот, будут добавлены в него. Таким образом мощность паросочетания увеличится на единицу.";
+            ShowSuccessTip(message);
+            SetAnswerGroupBoxState(true, false, "Сделать шаг");
             buttonReloadIteration.Enabled = true;
         }
 
@@ -268,7 +287,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
             else if (problemMode == ProblemMode.Demonstration)
                 message =
                     "Максимальное паросочетание построено." + Environment.NewLine +
-                    $"Мощность максимального (текущего) паросочетания для данного двудольного равна {correctMaximalMatchingCardinality}.";
+                    $"Мощность максимального (текущего) паросочетания для этого двудольного графа равна {correctMaximalMatchingCardinality}.";
             ShowSuccessTip(message);
             if (problemMode == ProblemMode.Solution)
                 SetAnswerGroupBoxState(true, true, "Принять ответ");
@@ -317,8 +336,8 @@ namespace GOES.Problems.MaxBipartiteMatching {
                         $"Последнее ребро построенного маршрута {prevEdge} входит в паросочетание. Значит, следующее ребро не должно входить в него.";
                     break;
                 case MaxBipartiteMatchingError.AlternationBreakingOnNotMatchedEdge:
-                    prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2];
-                    lastVertex = curAugmentalPath.Last();
+                    prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
+                    lastVertex = curAugmentalPath.Last() + 1;
                     prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
                     errorMessage =
                         "Выбранная Вами вершина для продолжения маршрута нарушает чередование непаросочетанных рёбер с паросочетанными." + Environment.NewLine +
@@ -456,7 +475,34 @@ namespace GOES.Problems.MaxBipartiteMatching {
 
         // ----Методы для демонстрации решения
         private void DoAnswerForDemonstration() {
-            throw new NotImplementedException();
+            switch (problemState) {
+                case MaxBipartiteMatchingProblemState.NextPathVertexWaiting:
+                    // Если мы уже целиком построили аугментальный путь - проводим чередование и строим новый путь
+                    if (curAugmentalPath.Count > 0 && selectedPathVertexIndex >= selectedAugmentalPath.Count) {
+                        AlternateOnAugmentalPath();
+                    }
+                    // Иначе - продолжаем строить путь
+                    else {
+                        // Если аугментального пути ещё не было или он кончился, строим новый
+                        if (selectedAugmentalPath == null || selectedPathVertexIndex >= selectedAugmentalPath.Count) {
+                            selectedAugmentalPath =
+                                Algorithm.GetRandomAugmentalPath(graph, verticesCount, matchingPairsArray);
+                            selectedPathVertexIndex = 0;
+                        }
+                        // И добавляем вершину в путь
+                        int selectedVertex = selectedAugmentalPath[selectedPathVertexIndex];
+                        selectedPathVertexIndex++;
+                        CheckAugmentalPathVertex(visGraph[selectedVertex]);
+                        // Проверяем, а не построен ли был аугментальный путь. Если да - говорим об этом
+                        if (selectedPathVertexIndex >= selectedAugmentalPath.Count)
+                            SetAlternationWaitState();
+                    }
+                    break;
+                case MaxBipartiteMatchingProblemState.MaxMatchingCardinalityWaiting:
+                    string answer = correctMaximalMatchingCardinality.ToString();
+                    CheckMaxMatchingCardinality(answer);
+                    break;
+            }
         }
 
 

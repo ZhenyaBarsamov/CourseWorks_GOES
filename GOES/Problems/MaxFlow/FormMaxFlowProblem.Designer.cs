@@ -274,6 +274,7 @@
             // textLabelExampleDescription
             // 
             this.textLabelExampleDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textLabelExampleDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textLabelExampleDescription.Location = new System.Drawing.Point(3, 20);
             this.textLabelExampleDescription.Multiline = true;
             this.textLabelExampleDescription.Name = "textLabelExampleDescription";

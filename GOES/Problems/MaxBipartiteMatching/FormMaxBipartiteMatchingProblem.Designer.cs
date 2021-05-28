@@ -29,17 +29,17 @@
             this.groupBoxHelp = new System.Windows.Forms.GroupBox();
             this.buttonLecture = new System.Windows.Forms.Button();
             this.groupBoxTip = new System.Windows.Forms.GroupBox();
+            this.textLabelTip = new GOES.Controls.TextLabel();
             this.groupBoxSolution = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonReloadIteration = new System.Windows.Forms.Button();
             this.buttonReloadProblem = new System.Windows.Forms.Button();
             this.groupBoxExampleDescription = new System.Windows.Forms.GroupBox();
+            this.textLabelExampleDescription = new GOES.Controls.TextLabel();
             this.groupBoxAnswers = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.textBoxAnswer = new System.Windows.Forms.TextBox();
             this.buttonAcceptAnswer = new System.Windows.Forms.Button();
-            this.textLabelTip = new GOES.Controls.TextLabel();
-            this.textLabelExampleDescription = new GOES.Controls.TextLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBoxVisualization.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.graphVisualizer)).BeginInit();
@@ -151,6 +151,17 @@
             this.groupBoxTip.TabStop = false;
             this.groupBoxTip.Text = "Подсказка";
             // 
+            // textLabelTip
+            // 
+            this.textLabelTip.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textLabelTip.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textLabelTip.Location = new System.Drawing.Point(3, 20);
+            this.textLabelTip.Multiline = true;
+            this.textLabelTip.Name = "textLabelTip";
+            this.textLabelTip.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textLabelTip.Size = new System.Drawing.Size(303, 195);
+            this.textLabelTip.TabIndex = 0;
+            // 
             // groupBoxSolution
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.groupBoxSolution, 3);
@@ -214,6 +225,17 @@
             this.groupBoxExampleDescription.TabStop = false;
             this.groupBoxExampleDescription.Text = "Условие задачи";
             // 
+            // textLabelExampleDescription
+            // 
+            this.textLabelExampleDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textLabelExampleDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textLabelExampleDescription.Location = new System.Drawing.Point(3, 20);
+            this.textLabelExampleDescription.Multiline = true;
+            this.textLabelExampleDescription.Name = "textLabelExampleDescription";
+            this.textLabelExampleDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textLabelExampleDescription.Size = new System.Drawing.Size(303, 27);
+            this.textLabelExampleDescription.TabIndex = 0;
+            // 
             // groupBoxAnswers
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.groupBoxAnswers, 3);
@@ -261,27 +283,6 @@
             this.buttonAcceptAnswer.Text = "Принять ответ";
             this.buttonAcceptAnswer.UseVisualStyleBackColor = true;
             this.buttonAcceptAnswer.Click += new System.EventHandler(this.buttonAcceptAnswer_Click);
-            // 
-            // textLabelTip
-            // 
-            this.textLabelTip.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textLabelTip.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textLabelTip.Location = new System.Drawing.Point(3, 20);
-            this.textLabelTip.Multiline = true;
-            this.textLabelTip.Name = "textLabelTip";
-            this.textLabelTip.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textLabelTip.Size = new System.Drawing.Size(303, 195);
-            this.textLabelTip.TabIndex = 0;
-            // 
-            // textLabelExampleDescription
-            // 
-            this.textLabelExampleDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textLabelExampleDescription.Location = new System.Drawing.Point(3, 20);
-            this.textLabelExampleDescription.Multiline = true;
-            this.textLabelExampleDescription.Name = "textLabelExampleDescription";
-            this.textLabelExampleDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textLabelExampleDescription.Size = new System.Drawing.Size(303, 27);
-            this.textLabelExampleDescription.TabIndex = 0;
             // 
             // FormMaxBipartiteMatchingProblem
             // 

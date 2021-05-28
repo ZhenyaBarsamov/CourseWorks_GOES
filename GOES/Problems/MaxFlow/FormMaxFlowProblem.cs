@@ -21,22 +21,22 @@ namespace GOES.Problems.MaxFlow {
 
 
         // ----Атрибуты сети
-        int sourceVertexIndex;
-        int targetVertexIndex;
-        int[,] capacityMatrix;
-        int[,] flowMatrix;
-        int verticesCount;
+        int sourceVertexIndex; // индекс вершины-истока
+        int targetVertexIndex; // индекс вершины-стока
+        int[,] capacityMatrix; // матрица пропускных способностей сети
+        int[,] flowMatrix; // матрица потоков сети
+        int verticesCount; // количество вершин сети
         // ----Атрибуты для алгоритма решения
-        List<int> curAugmentalPath;
-        int curAugmentalFlowValue;
-        List<Tuple<int, int>> curCutEdges;
+        List<int> curAugmentalPath; // текущий строящийся аугментальный путь (строящийся учеником или компьютером для демонстрации)
+        int curAugmentalFlowValue; // текущий аугментальный поток - поток, который дополнительно можно пропустить по текущему аугментальному пути
+        List<Tuple<int, int>> curCutEdges; // текущий строящийся минимальнй разрез сети (содержит дуги в виде пар <начальная вершина>-<конечная вершина>)
         // ----Атрибуты для демонстрации решения
-        List<int> selectedAugmentalPath;
-        int selectedPathVertexIndex;
-        int minimalCutEdgeIndex;
+        List<int> selectedAugmentalPath; // аугментальный путь, который выбрал компьютер для демонстрации текущей итерации
+        int selectedPathVertexIndex; // индекс текущей вершины из selectedAugmentalPath, до которой дошёл компьютер
+        int minimalCutEdgeIndex; // индекс ребра из correctMinimalCut, до которого дошёл компьютер
         // ----Атрибуты с правильными ответами (правильной величиной максимального потока правильными рёбрами минимального разреза)
-        int correctMaxFlowValue;
-        List<Tuple<int, int>> correctMinimalCut;
+        int correctMaxFlowValue; // правильное значение максимального потока
+        List<Tuple<int, int>> correctMinimalCut; // правильное множество дуг минимального разреза
 
 
         // ----Интерфейс задачи

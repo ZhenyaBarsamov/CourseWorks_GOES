@@ -5,8 +5,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Windows.Forms;
 using SGVL.Graphs;
 using SGVL.Visualizers;
@@ -24,16 +22,16 @@ namespace GOES.Problems.MaxBipartiteMatching {
         private Graph visGraph;
 
         // ----Атрибуты графа
-        private bool[,] graph;
-        private int verticesCount;
+        private bool[,] graph; // матрица смежности графа
+        private int verticesCount; // количество вершин графа
         // ----Атрибуты для алгоритма решения
-        private List<int> curAugmentalPath;
-        private int[] matchingPairsArray;
+        private List<int> curAugmentalPath; // текущий строящийся аугментальный маршрут
+        private int[] matchingPairsArray; // текущее паросочетание, заданное массивом пар: по индексу вершины хранится индекс пары этой вершины (-1, если пары нет)
         // ----Атрибуты для демонстрации
-        private List<int> selectedAugmentalPath;
-
+        private List<int> selectedAugmentalPath; // аугментальный путь, который выбрал компьютер для демонстрации текущей итерации (или пустой список, если его нет)
+        private int selectedPathVertexIndex; // индекс текущей вершины из selectedAugmentalPath, до которой дошёл компьютер
         // ----Атрибуты с правильными ответами
-        private int correctMaximalMatchingCardinality;
+        private int correctMaximalMatchingCardinality; // правильная мощность максимального паросочетания в данном графе (количество рёбер в нём)
 
 
         // ----Интерфейс задач
@@ -134,27 +132,20 @@ namespace GOES.Problems.MaxBipartiteMatching {
         void SetAnswerGroupBoxDemonstrationMode() {
             groupBoxAnswers.Text = "Демонстрация";
             buttonAcceptAnswer.Text = "Сделать шаг";
-            textBoxAnswer.Enabled = false;
         }
 
         // Задать блоку для ответов состояние для решения задачи
         void SetAnswerGroupBoxSolutionMode() {
             groupBoxAnswers.Text = "Ответы";
             buttonAcceptAnswer.Text = "Принять ответ";
-            textBoxAnswer.Enabled = true;
         }
 
-        // Заблокировать блок для ответов
-        void LockAnswerGroupBox() {
+        // Задать блоку для ответа нужное состояние
+        void SetAnswerGroupBoxState(bool isGroupBoxEnabled, bool isTextBoxEnabled, string buttonText) {
             textBoxAnswer.Text = string.Empty;
-            groupBoxAnswers.Enabled = false;
-        }
-
-        // Разблокировать блок для ответов
-        void UnlockAnswerGroupBox(bool isTextBoxEnabled) {
-            textBoxAnswer.Text = string.Empty;
-            groupBoxAnswers.Enabled = true;
             textBoxAnswer.Enabled = isTextBoxEnabled;
+            groupBoxAnswers.Enabled = isGroupBoxEnabled;
+            buttonAcceptAnswer.Text = buttonText;
         }
 
         // ----Методы для работы с полем ввода ответов
@@ -221,7 +212,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
                     "Чтобы начать демонстрацию решения, нажмите кнопку \"К началу итерации\", " +
                     "а затем используйте кнопки \"Сделать шаг\", \"К началу итерации\" и \"Начать заново\" для управления ходом решения.";
             ShowSuccessTip(message);
-            LockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                SetAnswerGroupBoxState(false, true, "Принять ответ");
+            else if (problemMode == ProblemMode.Demonstration)
+                SetAnswerGroupBoxState(false, false, "Сделать шаг");
             buttonReloadIteration.Enabled = true;
         }
 
@@ -254,7 +248,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 message +=
                     "Нажмите кнопку \"Сделать шаг\", чтобы добавить следующую вершину в строящийся аугментальный путь.";
             ShowStandardTip(message);
-            UnlockAnswerGroupBox(false);
+            if (problemMode == ProblemMode.Solution)
+                SetAnswerGroupBoxState(true, false, "Провести чередование");
+            else if (problemMode == ProblemMode.Demonstration)
+                SetAnswerGroupBoxState(true, false, "Сделать шаг");
             buttonReloadIteration.Enabled = true;
         }
 
@@ -274,7 +271,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
                     $"Мощность максимального (текущего) паросочетания для данного двудольного равна {correctMaximalMatchingCardinality}.";
             ShowSuccessTip(message);
             if (problemMode == ProblemMode.Solution)
-                UnlockAnswerGroupBox(true);
+                SetAnswerGroupBoxState(true, true, "Принять ответ");
             buttonReloadIteration.Enabled = false;
         }
 
@@ -287,7 +284,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 "Максимальное паросочетание в двудольном графе найдено." + Environment.NewLine +
                 "Задание успешно выполнено!";
             ShowSuccessTip(message);
-            LockAnswerGroupBox();
+            if (problemMode == ProblemMode.Solution)
+                SetAnswerGroupBoxState(false, false, "Принять ответ");
+            else if (problemMode == ProblemMode.Demonstration)
+                SetAnswerGroupBoxState(false, false, "Сделать шаг");
             buttonReloadIteration.Enabled = false;
         }
 
@@ -398,7 +398,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 }
                 curAugmentalPath.Add(selectedVertexIndex);
                 if (curAugmentalPath.Count % 2 == 0)
-                    visGraph.GetEdge(lastVertexIndex, selectedVertexIndex).Color = Color.Green;
+                    visGraph.GetEdge(lastVertexIndex, selectedVertexIndex).Color = Color.YellowGreen;
                 else
                     visGraph.GetEdge(lastVertexIndex, selectedVertexIndex).Color = Color.Red;
                 vertex.BorderColor = Color.Red;
@@ -508,11 +508,8 @@ namespace GOES.Problems.MaxBipartiteMatching {
 
         // Начало новой итерации решения
         private void buttonReloadIteration_Click(object sender, EventArgs e) {
-            if (problemState == MaxBipartiteMatchingProblemState.StartWaiting) {
-                if (problemMode == ProblemMode.Demonstration)
-                    UnlockAnswerGroupBox(false);
+            if (problemState == MaxBipartiteMatchingProblemState.StartWaiting)
                 SetNextPathVertexWaitingState();
-            }
             else
                 StartNewIteration();
         }

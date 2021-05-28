@@ -79,21 +79,6 @@ namespace GOES.Problems.MaxBipartiteMatching {
                                 new PointF(150, 450), new PointF(550, 450)
                             }
                         ),
-            new MaxBipartiteMatchingProblemExample("Пример 5", "Тест - на нём алгоритм показывает паросочетание из пяти рёбер",
-                            new[,] {
-                                {0, 1, 0, 1, 0, 0, 0, 0},
-                                {1, 0, 1, 0, 0, 0, 0, 0},
-                                {0, 1, 0, 1, 0, 0, 0, 1},
-                                {1, 0, 1, 0, 1, 0, 0, 0},
-                                {0, 0, 0, 1, 0, 0, 0, 0},
-                                {0, 0, 0, 0, 0, 0, 1, 0},
-                                {0, 0, 0, 0, 0, 1, 0, 1},
-                                {0, 0, 1, 0, 0, 0, 1, 0}},
-                            new PointF[] {
-                                new PointF(225, 50), new PointF(475, 50), new PointF(225, 175), new PointF(475, 175),
-                                new PointF(225, 290), new PointF(475, 290), new PointF(225, 450), new PointF(475, 450)
-                            }
-                        ),
         };
 
         public bool IsRandomExampleAvailable => false;

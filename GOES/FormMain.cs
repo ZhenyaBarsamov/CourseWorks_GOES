@@ -11,6 +11,7 @@ using GOES.Forms;
 using GOES.Problems;
 using GOES.Problems.MaxFlow;
 using GOES.Problems.MaxBipartiteMatching;
+using GOES.Problems.AssignmentProblem;
 
 namespace GOES {
     public partial class FormMain : Form {
@@ -46,7 +47,8 @@ namespace GOES {
         private void buttonProblems_Click(object sender, EventArgs e) {
             FormProblemSelector formProblemsSelector = new FormProblemSelector(new List<IProblem> { 
                 new FormMaxFlowProblem(),
-                new FormMaxBipartiteMatchingProblem()
+                new FormMaxBipartiteMatchingProblem(),
+                new FormAssignmentProblem()
             });
             DialogResult dialogResult = formProblemsSelector.ShowDialog();
             if (dialogResult == DialogResult.Cancel)

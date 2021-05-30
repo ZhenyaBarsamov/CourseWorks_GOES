@@ -76,6 +76,14 @@
     <Compile Include="Forms\FormProblemSelector.Designer.cs">
       <DependentUpon>FormProblemSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="Problems\AssignmentProblem\AssignmentProblemDescriptor.cs" />
+    <Compile Include="Problems\AssignmentProblem\AssignmentProblemExample.cs" />
+    <Compile Include="Problems\AssignmentProblem\FormAssignmentProblem.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Problems\AssignmentProblem\FormAssignmentProblem.Designer.cs">
+      <DependentUpon>FormAssignmentProblem.cs</DependentUpon>
+    </Compile>
     <Compile Include="Problems\EnumProblemMode.cs" />
     <Compile Include="Problems\IProblem.cs" />
     <Compile Include="Problems\IProblemDescriptor.cs" />

@@ -7,7 +7,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
     public class MaxBipartiteMatchingProblemExample : ProblemExample {
         // ----Атрибуты
         /// <summary>
-        /// Матрица смежности графа
+        /// Матрица смежности графа (нечётные вершины - вершины первой доли, чётные вершины - вершины второй доли)
         /// </summary>
         public bool[,] GraphMatrix { get; private set; }
 

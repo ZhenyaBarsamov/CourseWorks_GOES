@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace GOES.Problems.AssignmentProblem {
     class AssignmentProblemDescriptor : IProblemDescriptor {
@@ -92,7 +87,7 @@ namespace GOES.Problems.AssignmentProblem {
                             }
                         ),
         };
-        // TODO: укладка, и в последней укладка
+
         public bool IsRandomExampleAvailable => false;
     }
 }

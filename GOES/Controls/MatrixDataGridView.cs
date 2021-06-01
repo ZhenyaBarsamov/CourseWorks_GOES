@@ -30,6 +30,9 @@ namespace GOES.Controls {
             // Устанавливаем авторазмер матрицы по данным
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
             AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            // Для того, чтобы можно было использовать стили для ячеек-заголовков, выключаем использование для них стилей по умолчанию
+            EnableHeadersVisualStyles = false;
+            //RowHeadersDefaultCellStyle.BackColor = ColumnHeadersDefaultCellStyle.BackColor = Color.Empty;
         }
 
         /// <summary>
@@ -40,6 +43,7 @@ namespace GOES.Controls {
         /// <param name="rowsHeaders">Заголовки для строк</param>
         /// <param name="columnsHeaders">Заголовки для столбцов</param>
         public void FillMatrix(int[,] matrix, string[] rowsHeaders, string[] columnsHeaders) {
+            SuspendLayout();
             int rowsCount = matrix.GetLength(0);
             int columnsCount = matrix.GetLength(1);
             ColumnCount = columnsCount;
@@ -70,6 +74,7 @@ namespace GOES.Controls {
             if (Columns.GetColumnsWidth(DataGridViewElementStates.None) <= ClientSize.Width)
                 foreach (DataGridViewColumn col in Columns)
                     col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            ResumeLayout();
         }
 
         /// <summary>
@@ -87,6 +92,51 @@ namespace GOES.Controls {
             for (int i = 0; i < columnsCount; i++)
                 columnsHeaders[i] = (i + 1).ToString();
             FillMatrix(matrix, rowsHeaders, columnsHeaders);
+        }
+
+        /// <summary>
+        /// Раскрасить фон заголовка заданной строки в заданный цвет
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        /// <param name="color">Цвет</param>
+        public void SetRowHeaderColor(int rowIndex, Color color) {
+            Rows[rowIndex].HeaderCell.Style.BackColor = color;
+        }
+
+        
+
+        /// <summary>
+        /// Раскрасить фон заголовка заданного столбца в заданный цвет
+        /// </summary>
+        /// <param name="colIndex">Индекс столбца</param>
+        /// <param name="color">Цвет</param>
+        public void SetColumnHeaderColor(int colIndex, Color color) {
+            Columns[colIndex].HeaderCell.Style.BackColor = color;
+        }
+
+        /// <summary>
+        /// Раскрасить фон заданной ячейки в заданный цвет
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        /// <param name="colIndex">Индекс столбца</param>
+        /// <param name="color">Цвет</param>
+        public void SetCellColor(int rowIndex, int colIndex, Color color) {
+            this[colIndex, rowIndex].Style.BackColor = color;
+        }
+
+        /// <summary>
+        /// Сбросить цвет всех ячеек таблицы, включая ячейки заголовков
+        /// </summary>
+        public void SetCellsColorsToDefault() {
+            SuspendLayout();
+            foreach (DataGridViewRow row in Rows) {
+                row.HeaderCell.Style.BackColor = Color.Empty;
+                foreach (DataGridViewCell cell in row.Cells)
+                    cell.Style.BackColor = Color.Empty;
+            }
+            foreach (DataGridViewColumn col in Columns)
+                col.HeaderCell.Style.BackColor = Color.Empty;
+            ResumeLayout();
         }
 
         

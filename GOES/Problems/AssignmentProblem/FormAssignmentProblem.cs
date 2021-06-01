@@ -18,22 +18,12 @@ namespace GOES.Problems.AssignmentProblem {
         public IProblemDescriptor ProblemDescriptor => new AssignmentProblemDescriptor();
 
         public void InitializeProblem(ProblemExample example, ProblemMode mode) {
-            //throw new NotImplementedException();
-            matrixDataGridViewExampleMatrix.FillMatrix(new int[,] {
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 },
-                {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }
-                
-            });
+
         }
+
+
+        // ----Методы для работы с отображением матриц
+        private void FillMatrix() { }
 
 
         // ----Обработчики событий

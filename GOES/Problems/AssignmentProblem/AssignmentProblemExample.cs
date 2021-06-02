@@ -4,9 +4,9 @@ namespace GOES.Problems.AssignmentProblem {
     public class AssignmentProblemExample : ProblemExample {
         // ----Атрибуты
         /// <summary>
-        /// Матрица стоимостей работ (нечётные вершины - вершины первой доли, чётные вершины - вершины второй доли)
+        /// Полная матрица смежности графа, содержащая стоимости назначений (нечётные вершины - вершины первой доли, чётные вершины - вершины второй доли)
         /// </summary>
-        public int[,] CostMatrix { get; private set; }
+        public int[,] CostsMatrix { get; private set; }
 
         // ----Свойства
         /// <summary>
@@ -14,10 +14,10 @@ namespace GOES.Problems.AssignmentProblem {
         /// </summary>
         public bool[,] GraphMatrix {
             get {
-                var graphMatrix = new bool[CostMatrix.GetLength(0), CostMatrix.GetLength(1)];
-                for (int row = 0; row < CostMatrix.GetLength(0); row++)
-                    for (int col = 0; col < CostMatrix.GetLength(1); col++)
-                        graphMatrix[row, col] = CostMatrix[row, col] != 0;
+                var graphMatrix = new bool[CostsMatrix.GetLength(0), CostsMatrix.GetLength(1)];
+                for (int row = 0; row < CostsMatrix.GetLength(0); row++)
+                    for (int col = 0; col < CostsMatrix.GetLength(1); col++)
+                        graphMatrix[row, col] = CostsMatrix[row, col] != 0;
                 return graphMatrix;
             }
         }
@@ -35,10 +35,10 @@ namespace GOES.Problems.AssignmentProblem {
         public AssignmentProblemExample(string name, string description, int[,] costMatrix,
             PointF[] defaultGraphLayout) : base(name, description, false, defaultGraphLayout) {
             int verticesCount = costMatrix.GetLength(0);
-            CostMatrix = new int[verticesCount, verticesCount];
+            CostsMatrix = new int[verticesCount, verticesCount];
             for (int row = 0; row < verticesCount; row++)
                 for (int col = 0; col < verticesCount; col++)
-                    CostMatrix[row, col] = costMatrix[row, col];
+                    CostsMatrix[row, col] = costMatrix[row, col];
         }
     }
 }

@@ -180,6 +180,18 @@ namespace SGVL.Visualizers {
             }
         }
 
+        private bool isVertexNumberVisible;
+        /// <summary>
+        /// Признак включения отображения номеров вершин
+        /// </summary>
+        public bool IsVertexNumberVisible {
+            get => isVertexNumberVisible;
+            set {
+                isVertexNumberVisible = value;
+                SettingsChanged.Invoke(this);
+            }
+        }
+
         private bool isVertexLabelVisible;
         /// <summary>
         /// Признак включения отображения меток вершин
@@ -236,6 +248,7 @@ namespace SGVL.Visualizers {
             edgeLabelSelectingColor = Color.LightSeaGreen;
             vertexNumberColor = Color.Green;
             vertexNumberSelectingColor = Color.Red;
+            isVertexNumberVisible = true;
             isVertexLabelVisible = true;
             vertexLabelColor = Color.Blue;
             vertexLabelSelectingColor = Color.Green;

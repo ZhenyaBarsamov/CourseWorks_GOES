@@ -24,7 +24,7 @@ namespace GOES.Problems.AssignmentProblem {
         /// </summary>
         /// <param name="row">Индекс строки (вершины первой доли) в матрице смежности двудольного графа</param>
         /// <param name="rowInAdjacencyMatrix">Результат - индекс вершины в полной матрице смежности графа</param>
-        private static void GetAdjacencyMatrixRowIndex(int row, out int rowInAdjacencyMatrix) {
+        public static void GetAdjacencyMatrixRowIndex(int row, out int rowInAdjacencyMatrix) {
             rowInAdjacencyMatrix = row * 2;
         }
 
@@ -33,7 +33,7 @@ namespace GOES.Problems.AssignmentProblem {
         /// </summary>
         /// <param name="col">Индекс столбца (вершины второй доли) в матрице смежности двудольного графа</param>
         /// <param name="colInAdjacencyMatrix">Результат - индекс вершины в полной матрице смежности графа</param>
-        private static void GetAdjacencyMatrixColIndex(int col, out int colInAdjacencyMatrix) {
+        public static void GetAdjacencyMatrixColIndex(int col, out int colInAdjacencyMatrix) {
             colInAdjacencyMatrix = col * 2 + 1;
         }
 
@@ -189,8 +189,16 @@ namespace GOES.Problems.AssignmentProblem {
                 }
             }
             var matchingPairsArray = BipartiteMatching.Algorithm.GetMaximalMatching(graphMatrix, verticesCount);
-            int matchingCardinality = BipartiteMatching.Algorithm.GetMatchingCardinality(matchingPairsArray);
             return matchingPairsArray;
+        }
+
+        /// <summary>
+        /// Получить мощность паросочетания, заданного массивом пар вершин
+        /// </summary>
+        /// <param name="matchingPairsArray"></param>
+        /// <returns></returns>
+        public static int GetMatchingCardinality(int[] matchingPairsArray) {
+            return BipartiteMatching.Algorithm.GetMatchingCardinality(matchingPairsArray);
         }
     }
 }

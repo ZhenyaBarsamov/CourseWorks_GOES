@@ -61,8 +61,9 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer.VerticesDrawing {
             g.FillEllipse(new SolidBrush(vertex.FillColor), leftUpperPoint.X, leftUpperPoint.Y, diameter, diameter); // заливаем место под вершиной
             g.DrawEllipse(new Pen(borderColor, width), leftUpperPoint.X, leftUpperPoint.Y, diameter, diameter); // рисуем границы вершины
             // Выводим номер вершины и её метку
-            TextRenderer.DrawText(g, vertex.Number.ToString(), font, 
-                new Point((int)numberPosition.X, (int)numberPosition.Y), numberColor, vertex.FillColor);
+            if (Settings.IsVertexNumberVisible)
+                TextRenderer.DrawText(g, vertex.Number.ToString(), font, 
+                    new Point((int)numberPosition.X, (int)numberPosition.Y), numberColor, vertex.FillColor);
             if (Settings.IsVertexLabelVisible)
                 TextRenderer.DrawText(g, vertex.Label, font, 
                     new Point((int)labelPosition.X, (int)labelPosition.Y), labelColor, vertex.FillColor);

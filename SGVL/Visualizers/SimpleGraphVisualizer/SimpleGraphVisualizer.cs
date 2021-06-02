@@ -53,6 +53,9 @@ namespace SGVL.Visualizers.SimpleGraphVisualizer {
             if (Graph != null)
                 Graph.GraphChainged -= OnGraphChanged;
             Graph = graph;
+            // Если графа нет - всё
+            if (graph == null)
+                return;
             // Подписываемся на изменение графа, чтоб, если что, его перерисовывать
             graph.GraphChainged += OnGraphChanged;
             // Задаём настройки отображения графа

@@ -82,6 +82,8 @@
     <Compile Include="Problems\AssignmentProblem\Algorithm.cs" />
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemDescriptor.cs" />
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemExample.cs" />
+    <Compile Include="Problems\AssignmentProblem\EnumAssignmentProblemError.cs" />
+    <Compile Include="Problems\AssignmentProblem\EnumAssignmentProblemState.cs" />
     <Compile Include="Problems\AssignmentProblem\FormAssignmentProblem.cs">
       <SubType>Form</SubType>
     </Compile>

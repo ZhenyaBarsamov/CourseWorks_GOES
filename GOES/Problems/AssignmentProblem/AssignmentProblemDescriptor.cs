@@ -17,8 +17,8 @@ namespace GOES.Problems.AssignmentProblem {
                                 {0, 8, 0, 11, 0, 2},
                                 {7, 0, 3, 0, 2, 0}},
                             new PointF[] {
-                                new PointF(225, 50), new PointF(475, 50), new PointF(225, 150), new PointF(475, 150),
-                                new PointF(225, 250), new PointF(475, 250)
+                                new PointF(75, 50), new PointF(425, 50), new PointF(75, 150), new PointF(425, 150),
+                                new PointF(75, 250), new PointF(425, 250)
                             }
                         ),
             new AssignmentProblemExample("Пример 2", "Четыре работника и четыре работы",
@@ -32,8 +32,8 @@ namespace GOES.Problems.AssignmentProblem {
                                 {0, 1, 0, 6, 0, 10, 0, 4},
                                 {3, 0, 6, 0, 1, 0, 4, 0}},
                             new PointF[] {
-                                new PointF(225, 50), new PointF(475, 50), new PointF(225, 150), new PointF(475, 150),
-                                new PointF(225, 250), new PointF(475, 250), new PointF(225, 350), new PointF(475, 350)
+                                new PointF(75, 50), new PointF(425, 50), new PointF(75, 150), new PointF(425, 150),
+                                new PointF(75, 250), new PointF(425, 250), new PointF(75, 350), new PointF(425, 350)
                             }
                         ),
             new AssignmentProblemExample("Пример 3", "Четыре работника и четыре работы",
@@ -47,8 +47,8 @@ namespace GOES.Problems.AssignmentProblem {
                                 {0, 8, 0, 7, 0, 8, 0, 5},
                                 {3, 0, 9, 0, 7, 0, 5, 0}},
                             new PointF[] {
-                                new PointF(225, 50), new PointF(475, 50), new PointF(225, 150), new PointF(475, 150),
-                                new PointF(225, 250), new PointF(475, 250), new PointF(225, 350), new PointF(475, 350)
+                                new PointF(75, 50), new PointF(425, 50), new PointF(75, 150), new PointF(425, 150),
+                                new PointF(75, 250), new PointF(425, 250), new PointF(75, 350), new PointF(425, 350)
                             }
                         ),
             new AssignmentProblemExample("Пример 4", "Четыре работника и четыре работы",
@@ -62,8 +62,8 @@ namespace GOES.Problems.AssignmentProblem {
                                 {0, 8, 0, 7, 0, 8, 0, 5},
                                 {3, 0, 9, 0, 7, 0, 5, 0}},
                             new PointF[] {
-                                new PointF(225, 50), new PointF(475, 50), new PointF(225, 150), new PointF(475, 150),
-                                new PointF(225, 250), new PointF(475, 250), new PointF(225, 350), new PointF(475, 350),
+                                new PointF(75, 50), new PointF(425, 50), new PointF(75, 150), new PointF(425, 150),
+                                new PointF(75, 250), new PointF(425, 250), new PointF(75, 350), new PointF(425, 350),
                             }
                         ),
             new AssignmentProblemExample("Пример 5", "Шесть работников и шесть работ",
@@ -81,9 +81,9 @@ namespace GOES.Problems.AssignmentProblem {
                                 {0, 3, 0, 2, 0, 5, 0, 1, 0, 3, 0, 4},
                                 {5, 0, 3, 0, 5, 0, 2, 0, 7, 0, 4, 0}},
                             new PointF[] {
-                                new PointF(225, 50), new PointF(475, 50), new PointF(225, 150), new PointF(475, 150),
-                                new PointF(225, 250), new PointF(475, 250), new PointF(225, 350), new PointF(475, 350),
-                                new PointF(225, 450), new PointF(475, 450), new PointF(225, 550), new PointF(475, 550)
+                                new PointF(75, 50), new PointF(425, 50), new PointF(75, 150), new PointF(425, 150),
+                                new PointF(75, 250), new PointF(425, 250), new PointF(75, 350), new PointF(425, 350),
+                                new PointF(75, 450), new PointF(425, 450), new PointF(75, 550), new PointF(425, 550)
                             }
                         ),
         };

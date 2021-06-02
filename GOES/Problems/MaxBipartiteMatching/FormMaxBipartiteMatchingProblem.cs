@@ -61,7 +61,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
             else
                 visGraph = new Graph(maxBipartiteMatchingExample.GraphMatrix, maxBipartiteMatchingExample.IsGraphDirected); // TODO: генерация
             graphVisInterface.Initialize(visGraph);
-            // Сохраняем матрицу графа, исток и сток для решения. Создаём нужные коллекции
+            // Сохраняем матрицу графа для решения. Создаём нужные коллекции
             graph = (bool[,])maxBipartiteMatchingExample.GraphMatrix.Clone();
             verticesCount = maxBipartiteMatchingExample.GraphMatrix.GetLength(0);
             curAugmentalPath = new List<int>();
@@ -71,8 +71,6 @@ namespace GOES.Problems.MaxBipartiteMatching {
             // Пишем условие задачи - номер истока и номер стока
             textLabelExampleDescription.Text =
                 "Максимальное паросочетание?";
-            // Отображаем метки величины потока на дугах
-            //UpdateEdgesLabels();
             // Получаем решение задачи
             correctMaximalMatchingCardinality = Algorithm.GetMatchingCardinality(Algorithm.GetMaximalMatching(graph, verticesCount));
             // Ставим решение в состояние ожидания начала

@@ -42,28 +42,16 @@
         /// </summary>
         ThirdStageIncorrectAugmentalPath,
         /// <summary>
-        /// Третий шаг решения: неправильный формат для значения мощности максимального паросочетания
-        /// </summary>
-        ThirdStageIncorrectMaxMatchingCardinalityFormat,
-        /// <summary>
-        /// Третий шаг решения: неправильное значение мощности максимального паросочетания
-        /// </summary>
-        ThirdStageIncorrectMaxMatchingCardinality,
-        /// <summary>
         /// Неправильная матрица на четвёртом шаге решения
         /// </summary>
         FourthStageIncorrectNextMatrix,
         /// <summary>
-        /// Было построено совершенное паросочетание и на четвёртом шаге ожидалась величина стоимости назначения, но она не была получена
+        /// Неправильный формат ввода величины стоимости назначения
         /// </summary>
-        FourthStageAssignmentCostExpected,
+        IncorrectAssignmentCostFormat,
         /// <summary>
-        /// На четвёртом шаге неправильный формат ввода величины стоимости назначения
+        /// Неправильная стоимость назначения
         /// </summary>
-        FourthStageIncorrectAssignmentCostFormat,
-        /// <summary>
-        /// Неправильная стоимость назначения на четвёртом шаге решения
-        /// </summary>
-        FourthStageIncorrectAssignmentCost,
+        IncorrectAssignmentCost,
     }
 }

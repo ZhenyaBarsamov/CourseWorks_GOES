@@ -66,20 +66,11 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration) {
                 SetDemonstrationMode();
             }
-            // Создаём граф для визуализации по примеру (если нужна генерация, генерируем)
-            //if (example != null) {
-            //    DisplayFullGraph();
-            //}
-            //else
-            //    visGraph = new Graph(assignmentProblemExample.GraphMatrix, assignmentProblemExample.IsGraphDirected); // TODO: генерация
-            //graphVisInterface.Initialize(visGraph);
             // Сохраняем матрицу графа для решения. Создаём нужные коллекции
             adjacencyMatrix = (int[,])assignmentProblemExample.CostsMatrix.Clone();
             verticesCount = assignmentProblemExample.GraphMatrix.GetLength(0);
             curAugmentalPath = new List<int>();
             matchingPairsArray = new int[verticesCount];
-            for (int i = 0; i < verticesCount; i++)
-                matchingPairsArray[i] = -1;
             // Пишем условие задачи
             textLabelExampleDescription.Text =
                 "Задана матрица стоимостей назначений. Найдите самое выгодное назначение - назначение с минимальной стоимостью.";
@@ -183,30 +174,6 @@ namespace GOES.Problems.AssignmentProblem {
 
 
         // ----Методы для работы с визуализацией графа
-        // Задать вершинам графа метки с нумерацией в пределах их доли
-        private void SetVerticesNumberLabels() {
-            graphVisInterface.Settings.IsVertexNumberVisible = false;
-            for (int vertexIndex = 0; vertexIndex < verticesCount; vertexIndex++)
-                visGraph.Vertices[vertexIndex].Label = $"{vertexIndex / 2 + 1}";
-        }
-
-        private void SetEdgesCostsLabels() {
-            for (int leftPairVertexIndex = 0; leftPairVertexIndex < verticesCount; leftPairVertexIndex += 2)
-                for (int rightPairVertexIndex = 1; rightPairVertexIndex < verticesCount; rightPairVertexIndex += 2)
-                    visGraph.GetEdge(leftPairVertexIndex, rightPairVertexIndex).Label = 
-                        adjacencyMatrix[leftPairVertexIndex, rightPairVertexIndex].ToString();
-        }
-
-        private void DisplayMatchingGraph() {
-            visGraph = new Graph(matchingGraphAdjacencyMatrix, false);
-            graphVisInterface.Initialize(visGraph);
-            // Задаём расположение вершин графа
-            for (int i = 0; i < visGraph.VerticesCount; i++)
-                visGraph.Vertices[i].DrawingCoords = assignmentProblemExample.DefaultGraphLayout[i];
-            // Ставим на вершины метки с их нумерацией в пределах своей доли
-            SetVerticesNumberLabels();
-        }
-
         // Обновить отображение текущего паросочетания
         private void UpdateGraphMatching() {
             // Снимаем старое выделение жирным с рёбер и вершин
@@ -221,6 +188,30 @@ namespace GOES.Problems.AssignmentProblem {
                     visGraph.Vertices[vertexPairIndex].Bold = true;
                 }
             }
+        }
+
+        // Подготовить всё для поиска паросочетания: создать нужный граф, отобразить его на экране, обнулить текущее паросочетание 
+        // и текущую аугментальную цепь
+        private void PrepareMatchingGraph() {
+            // Получаем граф, для которого на текущем шаге необходимо найти максимальное паросочетание.
+            // Это двудольный граф, рёбра которого соответствуют нулевым элементам текущей матрицы смежности двудольного графа
+            matchingGraphAdjacencyMatrix = Algorithm.getMatchingGraphAdjacencyMatrix(adjacencyMatrix, verticesCount);
+            // Инициализируем визуализацию
+            visGraph = new Graph(matchingGraphAdjacencyMatrix, false);
+            graphVisInterface.Initialize(visGraph);
+            // Задаём расположение вершин графа в соответствии с настройками задачи
+            for (int i = 0; i < visGraph.VerticesCount; i++)
+                visGraph.Vertices[i].DrawingCoords = assignmentProblemExample.DefaultGraphLayout[i];
+            // Отключаем отображение номеров вершин и ставим на вершины метки с их нумерацией в пределах своей доли
+            graphVisInterface.Settings.IsVertexNumberVisible = false;
+            for (int vertexIndex = 0; vertexIndex < verticesCount; vertexIndex++)
+                visGraph.Vertices[vertexIndex].Label = $"{vertexIndex / 2 + 1}";
+
+            // Очищаем текущее паросочетание
+            for (int i = 0; i < verticesCount; i++)
+                matchingPairsArray[i] = -1;
+            // Очищаем текущий аугментальный путь
+            curAugmentalPath.Clear();
         }
 
 
@@ -535,6 +526,80 @@ namespace GOES.Problems.AssignmentProblem {
             string prevEdge;
             string errorMessage;
             switch (error) {
+                case AssignmentProblemError.IncorrectNextMatrixFormat:
+                    errorMessage = "Ошибка при заполнении матрицы. Матрица должна содержать исключительно целые неотрицательные числа. " +
+                        "Ошибочные ячейки выделены красным цветом.";
+                    break;
+                case AssignmentProblemError.FirstStageIncorrectNextMatrix:
+                    errorMessage = 
+                        "Ошибка в матрице. Выделенные красным значения не совпадают с правильными. Проверьте свои вычисления, " +
+                        "и попробуйте снова." + Environment.NewLine + 
+                        "На данном этапе необходимо добиться того, чтобы в каждой строке матрицы появился нулевой элемент. Для этого из каждой " +
+                        "строки матрицы необходимо вычесть её минимальный элемент.";
+                    break;
+                case AssignmentProblemError.SecondStageIncorrectNextMatrix:
+                    errorMessage = "Ошибка в матрице. Выделенные красным значения не совпадают с правильными. Проверьте свои вычисления, " +
+                        "и попробуйте снова." + Environment.NewLine +
+                        "На данном этапе необходимо добиться того, чтобы в каждом столбце матрицы появился нулевой элемент. Для этого из каждого " +
+                        "столбца матрицы необходимо вычесть его минимальный элемент.";
+                    break;
+                case AssignmentProblemError.ThirdStageStartOnMatchedVertex:
+                    errorMessage = "Построение чередующегося пути необходимо начинать с вершины, которая не покрыта паросочетанием";
+                    break;
+                case AssignmentProblemError.ThirdStageMoveToFarVertex:
+                    errorMessage =
+                        "Вы попытались перейти в вершину, которая не соединена ребром с последней вершиной построенного маршрута." + Environment.NewLine +
+                        $"Последней (текущей) вершиной маршрута является вершина {curAugmentalPath.Last() + 1}.";
+                    break;
+                case AssignmentProblemError.ThirdStageAlternationBreakingOnMatchedEdge:
+                    prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
+                    lastVertex = curAugmentalPath.Last() + 1;
+                    prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
+                    errorMessage =
+                        "Выбранная Вами вершина для продолжения маршрута нарушает чередование непаросочетанных рёбер с паросочетанными." + Environment.NewLine +
+                        $"Последнее ребро построенного маршрута {prevEdge} входит в паросочетание. Значит, следующее ребро не должно входить в него.";
+                    break;
+                case AssignmentProblemError.ThirdStageAlternationBreakingOnNotMatchedEdge:
+                    prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
+                    lastVertex = curAugmentalPath.Last() + 1;
+                    prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
+                    errorMessage =
+                        "Выбранная Вами вершина для продолжения маршрута нарушает чередование непаросочетанных рёбер с паросочетанными." + Environment.NewLine +
+                        $"Последнее ребро построенного маршрута {prevEdge} не входит в паросочетание. Значит, следующее ребро должно входить в него.";
+                    break;
+                case AssignmentProblemError.ThirdStageAugmentalPathIsNotFinished:
+                    errorMessage =
+                        "Вы попытались провести чередование по аугментальной цепи, которая ещё не была закончена: аугментальная цепь не может быть пустой " +
+                        "и не может состоять из одной вершины";
+                    break;
+                case AssignmentProblemError.ThirdStageIncorrectAugmentalPath:
+                    errorMessage =
+                        "Вы попытались провести чередование по неправильной (незаконченной) аугментальной цепи: аугментальная цепь должна " +
+                        "начинаться и заканчиваться вершинами, не покрытыми паросочетанием, и при этом чередовать непаросочетанные рёбра " +
+                        "с паросочетанными";
+                    break;
+                case AssignmentProblemError.FourthStageIncorrectNextMatrix:
+                    errorMessage = "Ошибка в матрице. Выделенные красным значения не совпадают с правильными. Проверьте свои вычисления, " +
+                        "и попробуйте снова." + Environment.NewLine +
+                        "На данном этапе необходимо перераспределить нули в матрице. Для этого:" + Environment.NewLine +
+                        "1. Отметить в текущей матрице нули, соответствуюшие рёбрам найденного паросочетания. " +
+                        "Назовём их \"красными\" нулями." + Environment.NewLine +
+                        "2. Отметить все строки, в которых нет \"красных\" нулей." + Environment.NewLine +
+                        "3. Отметить все столбцы, в которых есть нули в отмеченных строках." + Environment.NewLine +
+                        "4. Отметить все строки, в которых есть \"красные\" нули в отмеченных столбцах." + Environment.NewLine +
+                        "5. Вычеркнуть все отмеченные столбцы и все неотмеченные строки." + Environment.NewLine +
+                        "6. Найти наименьший невычеркнутый элемент." + Environment.NewLine + 
+                        "7. Вычесть его из всех невычеркнутых элементов. Прибавить его к элементам, стоящим на " +
+                        "пересечении вычеркнутых строк и столбцов.";
+                    break;
+                case AssignmentProblemError.IncorrectAssignmentCostFormat:
+                    errorMessage = "Неправильный формат значения стоимости назначения." + Environment.NewLine +
+                        "Значение стоимости вводится в формате одного целого неотрицательного числа.";
+                    break;
+                case AssignmentProblemError.IncorrectAssignmentCost:
+                    errorMessage = "Неправильное значение стоимости назначения. Суммарная стоимость назначения - это сумма стоймостей " +
+                        "выбранных назначений, которые даны в условии задачи. Пересчитайте его, и попробуйте снова.";
+                    break;
                 default:
                     errorMessage = string.Empty;
                     break;
@@ -589,13 +654,8 @@ namespace GOES.Problems.AssignmentProblem {
                 return;
             }
             adjacencyMatrix = correctNextAdjacencyMatrix;
-            SetMatchingGraph();
+            PrepareMatchingGraph();
             SetNextPathVertexWaitingState();
-        }
-
-        private void SetMatchingGraph() {
-            matchingGraphAdjacencyMatrix = Algorithm.getMatchingGraphAdjacencyMatrix(adjacencyMatrix, verticesCount);
-            DisplayMatchingGraph();
         }
 
         // Проверить выбранную в аугментальный путь вершину
@@ -689,14 +749,14 @@ namespace GOES.Problems.AssignmentProblem {
                 SetProblemFinish();
             }
             else {
-                MarkError(AssignmentProblemError.FourthStageIncorrectAssignmentCost);
+                MarkError(AssignmentProblemError.IncorrectAssignmentCost);
             }
         }
 
         private void CheckAssignmentCost() {
             string answer = textBoxAnswer.Text.Trim().ToLower();
             if (!IsAnswerCorrect(answer)) {
-                MarkError(AssignmentProblemError.FourthStageIncorrectAssignmentCostFormat);
+                MarkError(AssignmentProblemError.IncorrectAssignmentCostFormat);
                 return;
             }
             CheckAssignmentCost(answer);
@@ -713,12 +773,8 @@ namespace GOES.Problems.AssignmentProblem {
                 return;
             }
             adjacencyMatrix = correctNextAdjacencyMatrix;
-            SetMatchingGraph();
+            PrepareMatchingGraph();
             SetNextPathVertexWaitingState();
-            // Очищаем текущее паросочетание
-            for (int i = 0; i < verticesCount; i++)
-                matchingPairsArray[i] = -1;
-            StartNewIteration();
         }
 
 

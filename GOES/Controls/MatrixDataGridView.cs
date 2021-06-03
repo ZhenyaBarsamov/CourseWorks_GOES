@@ -168,7 +168,7 @@ namespace GOES.Controls {
         /// Сбросить цвет фона заголовка заданной строки
         /// </summary>
         /// <param name="rowIndex">Индекс строки</param>
-        public void SetRowHeaderColor(int rowIndex) {
+        public void SetRowHeaderColorToDefault(int rowIndex) {
             Rows[rowIndex].HeaderCell.Style.BackColor = Color.Empty;
         }
 

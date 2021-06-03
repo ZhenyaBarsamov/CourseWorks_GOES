@@ -114,6 +114,34 @@ namespace GOES.Problems.AssignmentProblem {
             return colInAdjacecnyMatrix;
         }
 
+        public static int GetColOfMinimumInRow(int[,] adjacencyMatrix, int verticesCount, int row) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            // Находим минимум строки
+            int rowMin = int.MaxValue;
+            int colIndex = 0;
+            for (int col = 0; col < colsCount; col++)
+                if (GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col) < rowMin) {
+                    rowMin = GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col);
+                    colIndex = col;
+                }
+            return colIndex;
+        }
+
+        public static int GetRowOfMinimumInCol(int[,] adjacencyMatrix, int verticesCount, int col) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            // Находим минимум столбца
+            int colMin = int.MaxValue;
+            int rowIndex = 0;
+            for (int row = 0; row < rowsCount; row++)
+                if (GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col) < colMin) {
+                    colMin = GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col);
+                    rowIndex = row;
+                }
+
+            return rowIndex;
+        }
+
+
         /// <summary>
         /// Первый шаг решения задачи о назначениях - вычесть из каждой строки матрицы смежности двудольного графа её минимальное значение
         /// </summary>
@@ -177,6 +205,10 @@ namespace GOES.Problems.AssignmentProblem {
             return cost;
         }
 
+        public static List<int> GetRandomAugmentalPath(bool[,] graph, int verticesCount, int[] matchingPairsArray) {
+            return BipartiteMatching.Algorithm.GetRandomAugmentalPath(graph, verticesCount, matchingPairsArray);
+        }
+
         public static int[] GetMaximalMatching(bool[,] adjacencyMatrix, int verticesCount) {
             var matchingPairsArray = BipartiteMatching.Algorithm.GetMaximalMatching(adjacencyMatrix, verticesCount);
             return matchingPairsArray;
@@ -237,6 +269,43 @@ namespace GOES.Problems.AssignmentProblem {
                     if (redZeroes.Contains(new Tuple<int, int>(row, col)))
                         res.Add(row);
             return res;
+        }
+
+        public static void GetLinedRowsAndCols(int[,] adjacencyMatrix, int[] matchingPairsArray, int verticesCount, out HashSet<int> linedRows, out HashSet<int> linedCols, out int minElemRow, out int minElemCol) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            // Получаем индексы красных нулей
+            var redZeroes = GetRedZeroes(matchingPairsArray, verticesCount);
+            // Отмечаем строки, в которых нет красных нулей
+            var rowsWithoutRedZeroes = GetRowsWithoutRedZeroes(redZeroes, verticesCount);
+            // Отмечаем все столбцы с нулями в этих строках
+            var colsWithZeroesInMarkedRows = GetColsWithZeroesInMarkedRows(adjacencyMatrix, verticesCount, rowsWithoutRedZeroes);
+            // Отмечаем все строки с красными нулями в этих столбцах
+            var rowsWithRedZeroesInMarkedCols = GetRowsWithRedZeroesInMarkedCols(adjacencyMatrix, verticesCount, colsWithZeroesInMarkedRows, redZeroes);
+            // Вычёркиваем все отмеченные столбцы и все неотмеченные строки
+            linedRows = new HashSet<int>();            
+            for (int row = 0; row < rowsCount; row++)
+                linedRows.Add(row);
+            linedRows.ExceptWith(rowsWithoutRedZeroes.Union(rowsWithRedZeroesInMarkedCols));
+            linedCols = colsWithZeroesInMarkedRows;
+
+            // Ищем минимальный невычеркнутый элемент
+            int min = int.MaxValue;
+            minElemRow = 0;
+            minElemCol = 0;
+            for (int row = 0; row < rowsCount; row++) {
+                if (linedRows.Contains(row))
+                    continue;
+                for (int col = 0; col < colsCount; col++) {
+                    if (linedCols.Contains(col))
+                        continue;
+                    int cost = GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col);
+                    if (cost < min) {
+                        min = cost;
+                        minElemRow = row;
+                        minElemCol = col;
+                    }
+                }
+            }
         }
 
         public static void FourthStage(int[,] adjacencyMatrix, int[] matchingPairsArray, int verticesCount) {

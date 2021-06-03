@@ -346,9 +346,18 @@ namespace GOES.Problems.AssignmentProblem {
             // Сохраняем правильную следующую матрицу
             correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
             Algorithm.FirstStage(correctNextAdjacencyMatrix, verticesCount);
+            // Если демонстрация
             if (problemMode == ProblemMode.Demonstration) {
-                //matrixDataGridViewCurMatrix.SetCellFontColor(1, 1, Color.Red);
-
+                // Очищаем все пометки
+                ClearMatrixColors(matrixDataGridViewCurMatrix);
+                // Отмечаем в каждой строке на текущей матрице минимальные элементы
+                Algorithm.GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+                for (int row = 0; row < rowsCount; row++) {
+                    int col = Algorithm.GetColOfMinimumInRow(adjacencyMatrix, verticesCount, row);
+                    matrixDataGridViewCurMatrix.SetCellColor(row, col, Color.Green);
+                }
+                // И показываем следующую матрицу
+                DisplayCostsMatrix(matrixDataGridViewNextMatrix, correctNextAdjacencyMatrix, verticesCount);
             }
         }
 
@@ -392,6 +401,19 @@ namespace GOES.Problems.AssignmentProblem {
             // Сохраняем правильную следующую матрицу
             correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
             Algorithm.SecondStage(correctNextAdjacencyMatrix, verticesCount);
+            // Если демонстрация
+            if (problemMode == ProblemMode.Demonstration) {
+                // Очищаем все пометки
+                ClearMatrixColors(matrixDataGridViewCurMatrix);
+                // Отмечаем в каждом столбце на текущей матрице минимальные элементы
+                Algorithm.GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+                for (int col = 0; col < rowsCount; col++) {
+                    int row = Algorithm.GetRowOfMinimumInCol(adjacencyMatrix, verticesCount, col);
+                    matrixDataGridViewCurMatrix.SetCellColor(row, col, Color.Green);
+                }
+                // И показываем следующую матрицу
+                DisplayCostsMatrix(matrixDataGridViewNextMatrix, correctNextAdjacencyMatrix, verticesCount);
+            }
         }
 
         // Перевести задачу в состояние ожидания вершины для аугментального маршрута
@@ -446,6 +468,11 @@ namespace GOES.Problems.AssignmentProblem {
             buttonReloadIteration.Enabled = true;
             // Сохраняем правильную мощность текущего максимального паросочетания
             correctMaximalMatchingCardinality = Algorithm.GetMatchingCardinality(Algorithm.GetMaximalMatching(matchingGraphAdjacencyMatrix, verticesCount));
+            // Если демонстрация
+            if (problemMode == ProblemMode.Demonstration) {
+                // Очищаем все пометки
+                ClearMatrixColors(matrixDataGridViewCurMatrix);
+            }
         }
 
         private void SetFourthStageState() {
@@ -487,6 +514,26 @@ namespace GOES.Problems.AssignmentProblem {
             // Сохраняем правильную следующую матрицу
             correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
             Algorithm.FourthStage(correctNextAdjacencyMatrix, matchingPairsArray, verticesCount);
+            // Если демонстрация
+            if (problemMode == ProblemMode.Demonstration) {
+                // Очищаем все пометки
+                ClearMatrixColors(matrixDataGridViewCurMatrix);
+                // Отмечаем "красные" нули
+                var redZeroesCells = Algorithm.GetRedZeroes(matchingPairsArray, verticesCount);
+                foreach (var cellCoord in redZeroesCells)
+                    matrixDataGridViewCurMatrix.SetCellColor(cellCoord.Item1, cellCoord.Item2, Color.Red);
+                // Отмечаем вычеркнутые строки и столбцы, минимум среди невычеркнутых элементов
+                Algorithm.GetLinedRowsAndCols(adjacencyMatrix, matchingPairsArray, verticesCount, out HashSet<int> linedRows, out HashSet<int> linedCols, out int minElemRow, out int minElemCol);
+                foreach (var row in linedRows)
+                    matrixDataGridViewCurMatrix.SetRowHeaderColor(row, Color.Gray);
+                foreach (var col in linedCols)
+                    matrixDataGridViewCurMatrix.SetColumnHeaderColor(col, Color.Gray);
+                matrixDataGridViewCurMatrix.SetCellColor(minElemRow, minElemCol, Color.Green);
+                // Отмечаем минимальный невычеркнутый элемент
+
+                // И показываем следующую матрицу
+                DisplayCostsMatrix(matrixDataGridViewNextMatrix, correctNextAdjacencyMatrix, verticesCount);
+            }
         }
 
 
@@ -525,6 +572,21 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(false, false, "Сделать шаг");
             buttonReloadIteration.Enabled = false;
+        }
+
+        // Перевести задачу в псевдосостояние ожидания чередования по построенному аугментальному пути (для режима демонстрации)
+        private void SetAlternationWaitState() {
+            problemState = AssignmentProblemState.NextPathVertexWaiting; // Само состояние совпадает с состоянием ожидания очередной вершины
+            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
+            graphVisInterface.IsVerticesMoving = true;
+            string message =
+                "Аугментальная цепь построена." + Environment.NewLine +
+                "Нажмите кнопку \"Сделать шаг\", чтобы провести чередование рёбер по построенному аугментальному пути. " +
+                "При этом рёбра, входящие в паросочетание (выделены жирным и красным), будут удалены из него, " +
+                "а оставшиеся рёбра цепи (выделены зелёным), наоборот, будут добавлены в него. Таким образом мощность паросочетания увеличится на единицу.";
+            ShowSuccessTip(message);
+            SetAnswerGroupBoxState(true, false, "Сделать шаг");
+            buttonReloadIteration.Enabled = true;
         }
 
 
@@ -792,7 +854,40 @@ namespace GOES.Problems.AssignmentProblem {
         private void DoAnswerForDemonstration() {
             switch (problemState) {
                 case AssignmentProblemState.FirstStage:
-
+                    CheckFirstStage();
+                    break;
+                case AssignmentProblemState.SecondStage:
+                    CheckSecondStage();
+                    break;
+                case AssignmentProblemState.NextPathVertexWaiting:
+                    // Если мы уже целиком построили аугментальный путь - проводим чередование и строим новый путь
+                    if (curAugmentalPath.Count > 0 && selectedPathVertexIndex >= selectedAugmentalPath.Count) {
+                        AlternateOnAugmentalPath();
+                    }
+                    // Иначе - продолжаем строить путь
+                    else {
+                        // Если аугментального пути ещё не было или он кончился, строим новый
+                        if (selectedAugmentalPath == null || selectedPathVertexIndex >= selectedAugmentalPath.Count) {
+                            selectedAugmentalPath =
+                                Algorithm.GetRandomAugmentalPath(matchingGraphAdjacencyMatrix, verticesCount, matchingPairsArray);
+                            selectedPathVertexIndex = 0;
+                        }
+                        // И добавляем вершину в путь
+                        int selectedVertex = selectedAugmentalPath[selectedPathVertexIndex];
+                        selectedPathVertexIndex++;
+                        CheckAugmentalPathVertex(visGraph[selectedVertex]);
+                        // Проверяем, а не построен ли был аугментальный путь. Если да - говорим об этом
+                        if (selectedPathVertexIndex >= selectedAugmentalPath.Count)
+                            SetAlternationWaitState();
+                    }
+                    break;
+                case AssignmentProblemState.FourthStage:
+                    CheckFourthStage();
+                    break;
+                case AssignmentProblemState.AssignmentCostWaiting:
+                    string answer = correctAssignmentMinCost.ToString();
+                    CheckAssignmentCost(answer);
+                    break;
                 default:
                     break;
             }

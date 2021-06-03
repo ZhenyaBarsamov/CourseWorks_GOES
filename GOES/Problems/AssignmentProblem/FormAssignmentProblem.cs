@@ -29,7 +29,7 @@ namespace GOES.Problems.AssignmentProblem {
         // ----Атрибуты для алгоритма решения (работа с матрицей)
         private int[,] correctNextAdjacencyMatrix;
         // ----Атрибуты для алгоритма решения (этап поиска паросочетания)
-        private bool[,] matchingGraphAdjacencyMatrix;
+        private bool[,] matchingGraphAdjacencyMatrix; // полная матрица смежности графа, для которого ищется максимальное паросочетание
         private List<int> curAugmentalPath; // текущий строящийся аугментальный маршрут
         private int[] matchingPairsArray; // текущее паросочетание, заданное массивом пар: по индексу вершины хранится индекс пары этой вершины (-1, если пары нет)
         // ----Атрибуты для демонстрации
@@ -78,6 +78,7 @@ namespace GOES.Problems.AssignmentProblem {
             matrixDataGridViewExampleMatrix.ReadOnly = true;
             matrixDataGridViewExampleMatrix.IsCellsSelectable = false;
             matrixDataGridViewCurMatrix.IsCellsSelectable = false;
+            matrixDataGridViewNextMatrix.IsCellsSelectable = problemMode == ProblemMode.Solution;
             // Получаем решение задачи
             Algorithm.GetAssignmentProblemSolution(adjacencyMatrix, verticesCount, out correctAssignmentMinCost);
             // Ставим решение в состояние ожидания начала
@@ -204,7 +205,7 @@ namespace GOES.Problems.AssignmentProblem {
         private void PrepareMatchingGraph() {
             // Получаем граф, для которого на текущем шаге необходимо найти максимальное паросочетание.
             // Это двудольный граф, рёбра которого соответствуют нулевым элементам текущей матрицы смежности двудольного графа
-            matchingGraphAdjacencyMatrix = Algorithm.getMatchingGraphAdjacencyMatrix(adjacencyMatrix, verticesCount);
+            matchingGraphAdjacencyMatrix = Algorithm.GetMatchingGraphAdjacencyMatrix(adjacencyMatrix, verticesCount);
             // Инициализируем визуализацию
             visGraph = new Graph(matchingGraphAdjacencyMatrix, false);
             graphVisInterface.Initialize(visGraph);
@@ -253,6 +254,7 @@ namespace GOES.Problems.AssignmentProblem {
             return isCorrect;
         }
 
+        // Очистить все цветовые метки в заданном элементе управления matrixDgv
         private void ClearMatrixColors(MatrixDataGridView matrixDgv) {
             matrixDgv.SetCellsColorsToDefault();
             matrixDgv.SetCellsFontColorToDefault();
@@ -267,7 +269,11 @@ namespace GOES.Problems.AssignmentProblem {
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
-            matrixDataGridViewNextMatrix.ReadOnly = true;
+            // Если демонстрация - очищаем все пометки
+            if (problemMode == ProblemMode.Demonstration)
+                ClearMatrixColors(matrixDataGridViewCurMatrix);
+            if (problemMode == ProblemMode.Solution)
+                matrixDataGridViewNextMatrix.ReadOnly = true;
             // Убираем все отметки на матрице, которые были (ошибки и т.д.)
             ClearMatrixColors(matrixDataGridViewNextMatrix);
             string message = "";
@@ -313,7 +319,8 @@ namespace GOES.Problems.AssignmentProblem {
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
-            matrixDataGridViewNextMatrix.ReadOnly = false;
+            if (problemMode == ProblemMode.Solution)
+                matrixDataGridViewNextMatrix.ReadOnly = false;
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -332,8 +339,10 @@ namespace GOES.Problems.AssignmentProblem {
                 message =
                     "Шаг первый - добиться, чтобы в каждой строке матрицы был хотя бы один нулевой элемент." + Environment.NewLine +
                     "Для этого необходимо вычесть из каждой строки матрицы её минимальный элемент." + Environment.NewLine +
-                    "Минимальные элементы в каждой строке выделены цветом." + Environment.NewLine +
+                    "В матрице, находящейся в блоке \"Текущая матрица\", минимальные элементы в каждой строке выделены зелёным." + Environment.NewLine +
+                    "В матрице, находящейся в блоке \"Следующая матрица\", указаны значения после завершения данного шага." + Environment.NewLine +
                     "Для того, чтобы сделать очередной шаг решения, нажимайте кнопку \"Сделать шаг\"." + Environment.NewLine +
+                    "Для каких-либо заметок Вы можете использовать текстовое поле в блоке \"Черновик\". Он не проверяется." + Environment.NewLine +
                     "Вы можете вернуться к началу текущего шага кнопкой \"К началу шага\"." +
                     "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
                     "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine;
@@ -368,7 +377,8 @@ namespace GOES.Problems.AssignmentProblem {
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
-            matrixDataGridViewNextMatrix.ReadOnly = false;
+            if (problemMode == ProblemMode.Solution)
+                matrixDataGridViewNextMatrix.ReadOnly = false;
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -385,13 +395,17 @@ namespace GOES.Problems.AssignmentProblem {
                     "Чтобы начать решение, нажмите кнопку \"К началу шага\".";
             else if (problemMode == ProblemMode.Demonstration)
                 message =
-                    "Шаг первый - добиться, чтобы в каждом столбце матрицы был хотя бы один нулевой элемент." + Environment.NewLine +
+                    "Шаг второй - добиться, чтобы в каждом столбце матрицы был хотя бы один нулевой элемент." + Environment.NewLine +
                     "Для этого необходимо вычесть из каждого столбца матрицы его минимальный элемент." + Environment.NewLine +
-                    "Минимальные элементы в каждой строке выделены цветом." + Environment.NewLine +
+                    "В матрице, находящейся в блоке \"Текущая матрица\", минимальные элементы в каждом столбце выделены зелёным." + Environment.NewLine +
+                    "В матрице, находящейся в блоке \"Следующая матрица\", указаны значения после завершения данного шага." + Environment.NewLine + 
                     "Для того, чтобы сделать очередной шаг решения, нажимайте кнопку \"Сделать шаг\"." + Environment.NewLine +
-                    "Вы можете вернуться к началу текущего шага кнопкой \"К началу шага\"." +
+                    "Для каких-либо заметок Вы можете использовать текстовое поле в блоке \"Черновик\". Он не проверяется." + Environment.NewLine +
+                    "Если Вы хотите сбросить значения в матрице блока \"Следующая матрица\" на текущие, " +
+                    "нажмите кнопку \"К началу шага\". Это не повлияет на оценку." + Environment.NewLine +
                     "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
-                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine;
+                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine +
+                    "Чтобы начать решение, нажмите кнопку \"К началу шага\".";
             ShowSuccessTip(message);
             if (problemMode == ProblemMode.Solution)
                 SetAnswerGroupBoxState(true, false, "Принять ответ");
@@ -421,6 +435,8 @@ namespace GOES.Problems.AssignmentProblem {
             problemState = AssignmentProblemState.NextPathVertexWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
             graphVisInterface.IsVerticesMoving = true;
+            if (problemMode == ProblemMode.Solution)
+                matrixDataGridViewNextMatrix.ReadOnly = true;
             string message = ""; 
             if (curAugmentalPath.Count == 0 && Algorithm.GetMatchingCardinality(matchingPairsArray) == 0) 
                 message = 
@@ -475,19 +491,28 @@ namespace GOES.Problems.AssignmentProblem {
             }
         }
 
+        // Перевести задачу в состояние ожидания матрицы четвёртого шага
         private void SetFourthStageState() {
             problemState = AssignmentProblemState.FourthStage;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
-            matrixDataGridViewNextMatrix.ReadOnly = false;
+            if (problemMode == ProblemMode.Solution)
+                matrixDataGridViewNextMatrix.ReadOnly = false;
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
-                    "Шаг четвёртый - проверить построенное назначение и, если оно не является законченным, перераспределить нули матрицы." + Environment.NewLine +
-                    "Если назначение полностью построено, введите в поле для ответов в блоке \"Ответы\" его стоимость, и нажмите " +
-                    "кнопку \"Принять ответ\"." + Environment.NewLine +
-                    "Если назначение не закончено, перераспределите нули в матрице." +
+                    "Шаг четвёртый - перераспределить нули матрицы, если назначение построить пока не удалось." + Environment.NewLine +
+                    "Для этого нужно проделать следующее." + Environment.NewLine +
+                    "1. Отметить в текущей матрице нули, соответствуюшие рёбрам найденного паросочетания. " +
+                    "Назовём их \"красными\" нулями." + Environment.NewLine +
+                    "2. Отметить все строки, в которых нет \"красных\" нулей." + Environment.NewLine +
+                    "3. Отметить все столбцы, в которых есть нули в отмеченных строках." + Environment.NewLine +
+                    "4. Отметить все строки, в которых есть \"красные\" нули в отмеченных столбцах." + Environment.NewLine +
+                    "5. Вычеркнуть все отмеченные столбцы и все неотмеченные строки." + Environment.NewLine +
+                    "6. Найти наименьший невычеркнутый элемент." + Environment.NewLine +
+                    "7. Вычесть его из всех невычеркнутых элементов. Прибавить его к элементам, стоящим на " +
+                    "пересечении вычеркнутых строк и столбцов." + Environment.NewLine +
                     "Проведите все нужные действия в матрице, находящейся в блоке \"Следующая матрица\", " +
                     "и нажмите кнопку \"Принять ответ\"." + Environment.NewLine +
                     "Для каких-либо заметок Вы можете использовать текстовое поле в блоке \"Черновик\". Он не проверяется." + Environment.NewLine +
@@ -498,13 +523,26 @@ namespace GOES.Problems.AssignmentProblem {
                     "Чтобы начать решение, нажмите кнопку \"К началу шага\".";
             else if (problemMode == ProblemMode.Demonstration)
                 message =
-                    "Шаг первый - добиться, чтобы в каждом столбце матрицы был хотя бы один нулевой элемент." + Environment.NewLine +
-                    "Для этого необходимо вычесть из каждого столбца матрицы его минимальный элемент." + Environment.NewLine +
-                    "Минимальные элементы в каждой строке выделены цветом." + Environment.NewLine +
-                    "Для того, чтобы сделать очередной шаг решения, нажимайте кнопку \"Сделать шаг\"." + Environment.NewLine +
-                    "Вы можете вернуться к началу текущего шага кнопкой \"К началу шага\"." +
+                    "Шаг четвёртый - проверить построенное назначение и, если оно не является законченным, перераспределить нули матрицы." + Environment.NewLine +
+                    "Если назначение полностью построено, то задача решена. Если нет, то необходимо проделать следующее." + Environment.NewLine +
+                    "1. Отметить в текущей матрице нули, соответствуюшие рёбрам найденного паросочетания. " +
+                    "Назовём их \"красными\" нулями." + Environment.NewLine +
+                    "2. Отметить все строки, в которых нет \"красных\" нулей." + Environment.NewLine +
+                    "3. Отметить все столбцы, в которых есть нули в отмеченных строках." + Environment.NewLine +
+                    "4. Отметить все строки, в которых есть \"красные\" нули в отмеченных столбцах." + Environment.NewLine +
+                    "5. Вычеркнуть все отмеченные столбцы и все неотмеченные строки." + Environment.NewLine +
+                    "6. Найти наименьший невычеркнутый элемент." + Environment.NewLine +
+                    "7. Вычесть его из всех невычеркнутых элементов. Прибавить его к элементам, стоящим на " +
+                    "пересечении вычеркнутых строк и столбцов." + Environment.NewLine +
+                    "В матрице, находящейся в блоке \"Текущая матрица\", сделаны отметки. Серым выделены вычеркнутые строки и столбцы, красным " +
+                    "выделены клетки с \"красными\" нулями. Зелёным выделен минимальный невычеркнутый элемент." + Environment.NewLine +
+                    "В матрице, находящейся в блоке \"Следующая матрица\", указаны значения после завершения данного шага." + Environment.NewLine +
+                    "Для каких-либо заметок Вы можете использовать текстовое поле в блоке \"Черновик\". Он не проверяется." + Environment.NewLine +
+                    "Если Вы хотите сбросить значения в матрице блока \"Следующая матрица\" на текущие, " +
+                    "нажмите кнопку \"К началу шага\". Это не повлияет на оценку." + Environment.NewLine +
                     "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
-                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine;
+                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine +
+                    "Чтобы начать решение, нажмите кнопку \"К началу шага\".";
             ShowSuccessTip(message);
             if (problemMode == ProblemMode.Solution)
                 SetAnswerGroupBoxState(true, false, "Принять ответ");
@@ -529,8 +567,6 @@ namespace GOES.Problems.AssignmentProblem {
                 foreach (var col in linedCols)
                     matrixDataGridViewCurMatrix.SetColumnHeaderColor(col, Color.Gray);
                 matrixDataGridViewCurMatrix.SetCellColor(minElemRow, minElemCol, Color.Green);
-                // Отмечаем минимальный невычеркнутый элемент
-
                 // И показываем следующую матрицу
                 DisplayCostsMatrix(matrixDataGridViewNextMatrix, correctNextAdjacencyMatrix, verticesCount);
             }
@@ -542,7 +578,8 @@ namespace GOES.Problems.AssignmentProblem {
             problemState = AssignmentProblemState.AssignmentCostWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
-            matrixDataGridViewNextMatrix.ReadOnly = true;
+            if (problemMode == ProblemMode.Solution)
+                matrixDataGridViewNextMatrix.ReadOnly = true;
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -551,7 +588,7 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration)
                 message =
                     "Оптимальное назначение построено." + Environment.NewLine +
-                    $"Его общая стоимость равна {correctAssignmentMinCost}.";
+                    $"Его общая стоимость в соответствии с условием задачи равна {correctAssignmentMinCost}.";
             ShowSuccessTip(message);
             if (problemMode == ProblemMode.Solution)
                 SetAnswerGroupBoxState(true, true, "Принять ответ");
@@ -815,6 +852,7 @@ namespace GOES.Problems.AssignmentProblem {
             }
         }
 
+        // Проверить общую стоимость назначения
         private void CheckAssignmentCost(string answer) {
             int minCost = int.Parse(answer);
             if (minCost == correctAssignmentMinCost) {
@@ -825,6 +863,7 @@ namespace GOES.Problems.AssignmentProblem {
             }
         }
 
+        // Проверить общую стоимость назначения
         private void CheckAssignmentCost() {
             string answer = textBoxAnswer.Text.Trim().ToLower();
             if (!IsAnswerCorrect(answer)) {

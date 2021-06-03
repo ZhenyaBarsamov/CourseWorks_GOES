@@ -49,14 +49,14 @@
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonAcceptAnswer = new System.Windows.Forms.Button();
             this.textBoxAnswer = new System.Windows.Forms.TextBox();
-            this.groupBoxSolution = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.buttonReloadIteration = new System.Windows.Forms.Button();
-            this.buttonReloadProblem = new System.Windows.Forms.Button();
             this.groupBoxDraft = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.textBoxDraft = new System.Windows.Forms.TextBox();
             this.buttonDraftClear = new System.Windows.Forms.Button();
+            this.groupBoxSolution = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonReloadIteration = new System.Windows.Forms.Button();
+            this.buttonReloadProblem = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.matrixDataGridViewNextMatrix = new GOES.Controls.MatrixDataGridView();
             this.tableLayoutPanel1.SuspendLayout();
@@ -71,10 +71,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.matrixDataGridViewExampleMatrix)).BeginInit();
             this.groupBoxAnswers.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
-            this.groupBoxSolution.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.groupBoxDraft.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
+            this.groupBoxSolution.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.matrixDataGridViewNextMatrix)).BeginInit();
             this.SuspendLayout();
@@ -214,6 +214,7 @@
             this.matrixDataGridViewCurMatrix.DefaultCellStyle = dataGridViewCellStyle2;
             this.matrixDataGridViewCurMatrix.Dock = System.Windows.Forms.DockStyle.Fill;
             this.matrixDataGridViewCurMatrix.EnableHeadersVisualStyles = false;
+            this.matrixDataGridViewCurMatrix.IsCellsSelectable = false;
             this.matrixDataGridViewCurMatrix.Location = new System.Drawing.Point(3, 20);
             this.matrixDataGridViewCurMatrix.Name = "matrixDataGridViewCurMatrix";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -269,6 +270,7 @@
             // textLabelTip
             // 
             this.textLabelTip.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textLabelTip.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textLabelTip.Location = new System.Drawing.Point(3, 20);
             this.textLabelTip.Multiline = true;
             this.textLabelTip.Name = "textLabelTip";
@@ -332,6 +334,7 @@
             this.matrixDataGridViewExampleMatrix.DefaultCellStyle = dataGridViewCellStyle5;
             this.matrixDataGridViewExampleMatrix.Dock = System.Windows.Forms.DockStyle.Fill;
             this.matrixDataGridViewExampleMatrix.EnableHeadersVisualStyles = false;
+            this.matrixDataGridViewExampleMatrix.IsCellsSelectable = false;
             this.matrixDataGridViewExampleMatrix.Location = new System.Drawing.Point(3, 3);
             this.matrixDataGridViewExampleMatrix.Name = "matrixDataGridViewExampleMatrix";
             dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -350,6 +353,7 @@
             // textLabelExampleDescription
             // 
             this.textLabelExampleDescription.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textLabelExampleDescription.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.textLabelExampleDescription.Location = new System.Drawing.Point(3, 210);
             this.textLabelExampleDescription.Multiline = true;
             this.textLabelExampleDescription.Name = "textLabelExampleDescription";
@@ -405,55 +409,6 @@
             this.textBoxAnswer.Size = new System.Drawing.Size(336, 27);
             this.textBoxAnswer.TabIndex = 1;
             // 
-            // groupBoxSolution
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.groupBoxSolution, 5);
-            this.groupBoxSolution.Controls.Add(this.tableLayoutPanel4);
-            this.groupBoxSolution.Location = new System.Drawing.Point(888, 483);
-            this.groupBoxSolution.Name = "groupBoxSolution";
-            this.tableLayoutPanel1.SetRowSpan(this.groupBoxSolution, 3);
-            this.groupBoxSolution.Size = new System.Drawing.Size(291, 90);
-            this.groupBoxSolution.TabIndex = 5;
-            this.groupBoxSolution.TabStop = false;
-            this.groupBoxSolution.Text = "Ход решения";
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Controls.Add(this.buttonReloadIteration, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.buttonReloadProblem, 0, 1);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 20);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(285, 67);
-            this.tableLayoutPanel4.TabIndex = 0;
-            // 
-            // buttonReloadIteration
-            // 
-            this.buttonReloadIteration.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonReloadIteration.Location = new System.Drawing.Point(3, 3);
-            this.buttonReloadIteration.Name = "buttonReloadIteration";
-            this.buttonReloadIteration.Size = new System.Drawing.Size(279, 27);
-            this.buttonReloadIteration.TabIndex = 0;
-            this.buttonReloadIteration.Text = "К началу шага";
-            this.buttonReloadIteration.UseVisualStyleBackColor = true;
-            this.buttonReloadIteration.Click += new System.EventHandler(this.buttonReloadIteration_Click);
-            // 
-            // buttonReloadProblem
-            // 
-            this.buttonReloadProblem.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonReloadProblem.Location = new System.Drawing.Point(3, 36);
-            this.buttonReloadProblem.Name = "buttonReloadProblem";
-            this.buttonReloadProblem.Size = new System.Drawing.Size(279, 28);
-            this.buttonReloadProblem.TabIndex = 1;
-            this.buttonReloadProblem.Text = "Начать заново";
-            this.buttonReloadProblem.UseVisualStyleBackColor = true;
-            this.buttonReloadProblem.Click += new System.EventHandler(this.buttonReloadProblem_Click);
-            // 
             // groupBoxDraft
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.groupBoxDraft, 6);
@@ -503,6 +458,55 @@
             this.buttonDraftClear.UseVisualStyleBackColor = true;
             this.buttonDraftClear.Click += new System.EventHandler(this.buttonDraftClear_Click);
             // 
+            // groupBoxSolution
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.groupBoxSolution, 5);
+            this.groupBoxSolution.Controls.Add(this.tableLayoutPanel4);
+            this.groupBoxSolution.Location = new System.Drawing.Point(888, 483);
+            this.groupBoxSolution.Name = "groupBoxSolution";
+            this.tableLayoutPanel1.SetRowSpan(this.groupBoxSolution, 3);
+            this.groupBoxSolution.Size = new System.Drawing.Size(291, 90);
+            this.groupBoxSolution.TabIndex = 5;
+            this.groupBoxSolution.TabStop = false;
+            this.groupBoxSolution.Text = "Ход решения";
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.Controls.Add(this.buttonReloadIteration, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.buttonReloadProblem, 0, 1);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 20);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(285, 67);
+            this.tableLayoutPanel4.TabIndex = 0;
+            // 
+            // buttonReloadIteration
+            // 
+            this.buttonReloadIteration.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonReloadIteration.Location = new System.Drawing.Point(3, 3);
+            this.buttonReloadIteration.Name = "buttonReloadIteration";
+            this.buttonReloadIteration.Size = new System.Drawing.Size(279, 27);
+            this.buttonReloadIteration.TabIndex = 0;
+            this.buttonReloadIteration.Text = "К началу шага";
+            this.buttonReloadIteration.UseVisualStyleBackColor = true;
+            this.buttonReloadIteration.Click += new System.EventHandler(this.buttonReloadIteration_Click);
+            // 
+            // buttonReloadProblem
+            // 
+            this.buttonReloadProblem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.buttonReloadProblem.Location = new System.Drawing.Point(3, 36);
+            this.buttonReloadProblem.Name = "buttonReloadProblem";
+            this.buttonReloadProblem.Size = new System.Drawing.Size(279, 28);
+            this.buttonReloadProblem.TabIndex = 1;
+            this.buttonReloadProblem.Text = "Начать заново";
+            this.buttonReloadProblem.UseVisualStyleBackColor = true;
+            this.buttonReloadProblem.Click += new System.EventHandler(this.buttonReloadProblem_Click);
+            // 
             // groupBox1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.groupBox1, 6);
@@ -543,6 +547,7 @@
             this.matrixDataGridViewNextMatrix.DefaultCellStyle = dataGridViewCellStyle8;
             this.matrixDataGridViewNextMatrix.Dock = System.Windows.Forms.DockStyle.Fill;
             this.matrixDataGridViewNextMatrix.EnableHeadersVisualStyles = false;
+            this.matrixDataGridViewNextMatrix.IsCellsSelectable = false;
             this.matrixDataGridViewNextMatrix.Location = new System.Drawing.Point(3, 20);
             this.matrixDataGridViewNextMatrix.Name = "matrixDataGridViewNextMatrix";
             dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
@@ -583,11 +588,11 @@
             this.groupBoxAnswers.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
-            this.groupBoxSolution.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
             this.groupBoxDraft.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
+            this.groupBoxSolution.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.matrixDataGridViewNextMatrix)).EndInit();
             this.ResumeLayout(false);

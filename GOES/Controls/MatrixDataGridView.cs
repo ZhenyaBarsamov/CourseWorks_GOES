@@ -38,6 +38,7 @@ namespace GOES.Controls {
         }
 
         public MatrixDataGridView() : base() {
+            IsCellsSelectable = true;
             // Запрещаем пользователю действия по изменению матрицы
             AllowUserToAddRows =
                 AllowUserToDeleteRows =

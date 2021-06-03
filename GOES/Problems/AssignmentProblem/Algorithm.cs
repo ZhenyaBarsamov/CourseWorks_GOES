@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using BipartiteMatching = GOES.Problems.MaxBipartiteMatching;
 
 namespace GOES.Problems.AssignmentProblem {
     static class Algorithm {
+        // Мы везде используем полную матрицу графа, хранящую связи всех вершин со всеми вершинами. При этом считаем, 
+        // что нечётные элементы принадлежат к первой доле, чётные - ко второй.
+        // Но задачу о назначениях удобней решать в терминах матрицы смежности двудольного графа, храня при этом связи между 
+        // вершинами первой и второй долей (строки - вершины первой доли, столбцы - вершины второй доли)
+        // Для этого нам постоянно необходимо преобразовывать индексы вершин из полной матрицы в матрицу двудольного графа, и т.д.
+
         /// <summary>
         /// Получить размерности матрицы смежности двудольного графа по количеству вершин графа.
         /// Считается, что в полной матрице смежности нечётные вершины принадлежат первой доле, а чётные - второй
@@ -102,18 +107,12 @@ namespace GOES.Problems.AssignmentProblem {
         }
 
         /// <summary>
-        /// По индексу вершины первой доли (строки матрицы смежности двудольного графа) получить индекс вершины второй доли, парной ей (или -1, если пары нет)
+        /// Получить индекс столбца, в котором находится минимальный элемент по заданной строке
         /// </summary>
-        /// <param name="matchingPairsArray">Массив, по индексу вершины (индекс вершины в полной матрице смежности) хранящий индекс её пары (так же).
-        /// Если пары нет, хранится -1</param>
-        /// <param name="row">Индекс вершины первой доли (индекс строки матрицы смежности двудольного графа)</param>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="row">Строка, в которой ищется минимум</param>
         /// <returns></returns>
-        public static int GetPairFromMatchingPairsArray(int[] matchingPairsArray, int row) {
-            GetAdjacencyMatrixRowIndex(row, out int rowInAdjacecnyMatrix);
-            GetAdjacencyMatrixColIndex(matchingPairsArray[rowInAdjacecnyMatrix], out int colInAdjacecnyMatrix);
-            return colInAdjacecnyMatrix;
-        }
-
         public static int GetColOfMinimumInRow(int[,] adjacencyMatrix, int verticesCount, int row) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             // Находим минимум строки
@@ -127,6 +126,13 @@ namespace GOES.Problems.AssignmentProblem {
             return colIndex;
         }
 
+        /// <summary>
+        /// Получить индекс строки, в которой находится минимальный элемент по заданному столбцу
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="col">Столбец, в котором ищется минимум</param>
+        /// <returns></returns>
         public static int GetRowOfMinimumInCol(int[,] adjacencyMatrix, int verticesCount, int col) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             // Находим минимум столбца
@@ -140,7 +146,6 @@ namespace GOES.Problems.AssignmentProblem {
 
             return rowIndex;
         }
-
 
         /// <summary>
         /// Первый шаг решения задачи о назначениях - вычесть из каждой строки матрицы смежности двудольного графа её минимальное значение
@@ -205,15 +210,33 @@ namespace GOES.Problems.AssignmentProblem {
             return cost;
         }
 
+        /// <summary>
+        /// Получить случайный аугментальный путь для поиска максимального паросочетания в заданном графе
+        /// </summary>
+        /// <param name="graph">Граф</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="matchingPairsArray">Массив, по индексу (индекс вершины) хранящий индекс её пары</param>
+        /// <returns></returns>
         public static List<int> GetRandomAugmentalPath(bool[,] graph, int verticesCount, int[] matchingPairsArray) {
             return BipartiteMatching.Algorithm.GetRandomAugmentalPath(graph, verticesCount, matchingPairsArray);
         }
 
+        /// <summary>
+        /// Получить максимальное паросочетание в заданном двудольном графе
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин</param>
+        /// <returns></returns>
         public static int[] GetMaximalMatching(bool[,] adjacencyMatrix, int verticesCount) {
             var matchingPairsArray = BipartiteMatching.Algorithm.GetMaximalMatching(adjacencyMatrix, verticesCount);
             return matchingPairsArray;
         }
 
+        /// <summary>
+        /// Провести чередование по построенному аугментальному пути для поиска максимального паросочетания
+        /// </summary>
+        /// <param name="augmentalPath">Построенный аугментальный путь</param>
+        /// <param name="matchingPairsArray">Массив, по индексу (индекс вершины) хранящий индекс её пары</param>
         public static void AlternateOnAugmentalPath(List<int> augmentalPath, int[] matchingPairsArray) {
             BipartiteMatching.Algorithm.AlternateOnAugmentalPath(augmentalPath, matchingPairsArray);
         }
@@ -221,12 +244,19 @@ namespace GOES.Problems.AssignmentProblem {
         /// <summary>
         /// Получить мощность паросочетания, заданного массивом пар вершин
         /// </summary>
-        /// <param name="matchingPairsArray"></param>
+        /// <param name="matchingPairsArray">Массив, по индексу (индекс вершины) хранящий индекс её пары</param>
         /// <returns></returns>
         public static int GetMatchingCardinality(int[] matchingPairsArray) {
             return BipartiteMatching.Algorithm.GetMatchingCardinality(matchingPairsArray);
         }
 
+        /// <summary>
+        /// Получить координаты "красных" нулей в матрице смежности двудольного графа по полной матрице смежности
+        /// в виде кортежей (строка, столбец)
+        /// </summary>
+        /// <param name="matchingPairsArray">Массив, по индексу (индекс вершины) хранящий индекс её пары</param>
+        /// <param name="verticesCount">Количество вершин</param>
+        /// <returns></returns>
         public static HashSet<Tuple<int, int>> GetRedZeroes(int[] matchingPairsArray, int verticesCount) {
             // Аккуратней с кортежом во множестве. Сравнение кортежей, кажется, появилось в C# 7.3
             var res = new HashSet<Tuple<int, int>>();
@@ -239,6 +269,12 @@ namespace GOES.Problems.AssignmentProblem {
             return res;
         }
 
+        /// <summary>
+        /// Получить индексы строк в матрице смежности двудольного графа, в которых нет "красных" нулей
+        /// </summary>
+        /// <param name="redZeroesCoords">Координаты красных нулей</param>
+        /// <param name="verticesCount">Количество вершин графа</param>
+        /// <returns></returns>
         public static HashSet<int> GetRowsWithoutRedZeroes(HashSet<Tuple<int, int>> redZeroesCoords, int verticesCount) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             var res = new HashSet<int>();
@@ -251,6 +287,13 @@ namespace GOES.Problems.AssignmentProblem {
             return res;
         }
 
+        /// <summary>
+        /// Получить индексы столбцов, в которых на пересечении с выделенными строками находятся нули
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="rowsWithoutRedZeroesCoords">Индексы строк, в которых нет "красных" нулей</param>
+        /// <returns></returns>
         public static HashSet<int> GetColsWithZeroesInMarkedRows(int[,] adjacencyMatrix, int verticesCount, HashSet<int> rowsWithoutRedZeroesCoords) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             var res = new HashSet<int>();
@@ -261,6 +304,14 @@ namespace GOES.Problems.AssignmentProblem {
             return res;
         }
 
+        /// <summary>
+        /// Получить индексы строк, в которых на пересечении с отмеченными столбцами находятся "красные" нули
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="markedCols">Индексы отмеченных столбцов</param>
+        /// <param name="redZeroes">Координаты "красных" нулей</param>
+        /// <returns></returns>
         public static HashSet<int> GetRowsWithRedZeroesInMarkedCols(int[,] adjacencyMatrix, int verticesCount, HashSet<int> markedCols, HashSet<Tuple<int, int>> redZeroes) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             var res = new HashSet<int>();
@@ -271,6 +322,16 @@ namespace GOES.Problems.AssignmentProblem {
             return res;
         }
 
+        /// <summary>
+        /// Получить индексы зачёркнутых строк и столбцов
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="matchingPairsArray">Массив, по индексу (индекс вершины) хранящий индекс её пары</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="linedRows">Результат - индексы зачёркнутых строк</param>
+        /// <param name="linedCols">Результат - индексы зачёркнутых столбцов</param>
+        /// <param name="minElemRow">Индекс строки минимального невычеркнутого элемента</param>
+        /// <param name="minElemCol">Индекс столбца минимального невычеркнутого элемента</param>
         public static void GetLinedRowsAndCols(int[,] adjacencyMatrix, int[] matchingPairsArray, int verticesCount, out HashSet<int> linedRows, out HashSet<int> linedCols, out int minElemRow, out int minElemCol) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             // Получаем индексы красных нулей
@@ -308,6 +369,12 @@ namespace GOES.Problems.AssignmentProblem {
             }
         }
 
+        /// <summary>
+        /// Четвёртый шаг решения задачи о назначениях - перераспределение нулей в матрице
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="matchingPairsArray">Массив, по индексу (индекс вершины) хранящий индекс её пары</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
         public static void FourthStage(int[,] adjacencyMatrix, int[] matchingPairsArray, int verticesCount) {
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             if (rowsCount == GetMatchingCardinality(matchingPairsArray))
@@ -360,7 +427,14 @@ namespace GOES.Problems.AssignmentProblem {
             }
         }
 
-        public static bool[,] getMatchingGraphAdjacencyMatrix(int[,] adjacencyMatrix, int verticesCount) {
+        /// <summary>
+        /// Получить двудольный граф, для которого необходимо найти паросочетания (его рёбра соответствуют нулевым элементам 
+        /// матрицы двудольного графа, содержащей стоимости назначений)
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <returns>Полная матрица смедности графа</returns>
+        public static bool[,] GetMatchingGraphAdjacencyMatrix(int[,] adjacencyMatrix, int verticesCount) {
             bool[,] matchingGraphAdjacencyMatrix = new bool[verticesCount, verticesCount];
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
             for (int row = 0; row < rowsCount; row++) {
@@ -375,6 +449,13 @@ namespace GOES.Problems.AssignmentProblem {
             return matchingGraphAdjacencyMatrix;
         }
 
+        /// <summary>
+        /// Получить решение задачи о назначениях в виде паросочетания, отражающего оптимальное назначение
+        /// </summary>
+        /// <param name="adjacencyMatrix">Полная матрица смежности графа</param>
+        /// <param name="verticesCount">Количество вершин в графе</param>
+        /// <param name="assignmentCost">Результат - стоимость найденного оптимального назначения</param>
+        /// <returns>Массив, по индексу (индекс вершины) хранящий индекс её пары</returns>
         public static int[] GetAssignmentProblemSolution(int[,] adjacencyMatrix, int verticesCount, out int assignmentCost) {
             int[,] matrix = (int[,])adjacencyMatrix.Clone();
             GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
@@ -382,7 +463,7 @@ namespace GOES.Problems.AssignmentProblem {
             SecondStage(matrix, verticesCount);
             int[] matchingPairsArray;
             while (true) {
-                bool[,] matchingGraphAdjacencyMatrix = getMatchingGraphAdjacencyMatrix(matrix, verticesCount);
+                bool[,] matchingGraphAdjacencyMatrix = GetMatchingGraphAdjacencyMatrix(matrix, verticesCount);
 
                 matchingPairsArray = GetMaximalMatching(matchingGraphAdjacencyMatrix, verticesCount);
                 if (GetMatchingCardinality(matchingPairsArray) < rowsCount)

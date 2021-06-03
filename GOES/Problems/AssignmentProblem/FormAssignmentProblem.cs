@@ -26,8 +26,10 @@ namespace GOES.Problems.AssignmentProblem {
         // ----Атрибуты графа
         private int[,] adjacencyMatrix; // полная матрица смежности графа, содержащая стоимости назначений
         private int verticesCount; // полное количество вершин графа
+        // ----Атрибуты для алгоритма решения (работа с матрицей)
+        private int[,] correctNextAdjacencyMatrix;
         // ----Атрибуты для алгоритма решения (этап поиска паросочетания)
-        private bool[,] matchingGraph; 
+        private bool[,] matchingGraphAdjacencyMatrix;
         private List<int> curAugmentalPath; // текущий строящийся аугментальный маршрут
         private int[] matchingPairsArray; // текущее паросочетание, заданное массивом пар: по индексу вершины хранится индекс пары этой вершины (-1, если пары нет)
         // ----Атрибуты для демонстрации
@@ -84,7 +86,7 @@ namespace GOES.Problems.AssignmentProblem {
             DisplayCostsMatrix(matrixDataGridViewExampleMatrix, assignmentProblemExample.CostsMatrix, verticesCount);
             matrixDataGridViewExampleMatrix.ReadOnly = true;
             // Получаем решение задачи
-            correctAssignmentMinCost = 0; // TODO
+            Algorithm.GetAssignmentProblemSolution(adjacencyMatrix, verticesCount, out correctAssignmentMinCost);
             // Ставим решение в состояние ожидания начала
             SetStartWaitingState();
         }
@@ -95,14 +97,24 @@ namespace GOES.Problems.AssignmentProblem {
         // ----Методы для работы с ходом решения/демонстрации
         // Начать новую итерацию решения
         private void StartNewIteration() {
-            // Очищаем текущий маршрут
-            curAugmentalPath.Clear();
-            // Убираем выделение маршрута цветом
-            graphVisInterface.ResetVerticesBorderColor();
-            graphVisInterface.ResetEdgesColor();
-            // Если это демонстрация, мы должны обнулить уже рассматриваемое решение
-            selectedAugmentalPath = null;
-            //SetNextPathVertexWaitingState();
+            if (problemState == AssignmentProblemState.FirstStage) {
+                DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
+                SetFirstStageState();
+            }
+            else if (problemState == AssignmentProblemState.SecondStage) {
+                DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
+                SetSecondStageState();
+            }
+            else if (problemState == AssignmentProblemState.NextPathVertexWaiting) {
+                // Очищаем текущий маршрут
+                curAugmentalPath.Clear();
+                // Убираем выделение маршрута цветом
+                graphVisInterface.ResetVerticesBorderColor();
+                graphVisInterface.ResetEdgesColor();
+                // Если это демонстрация, мы должны обнулить уже рассматриваемое решение
+                selectedAugmentalPath = null;
+                SetNextPathVertexWaitingState();
+            }
         }
 
 
@@ -132,7 +144,8 @@ namespace GOES.Problems.AssignmentProblem {
         // Задать блоку для ответов состояние для демонстрации решения
         void SetDemonstrationMode() {
             // Таблицы с текущей и следующей матрицами тоже делаем только для чтения
-            matrixDataGridViewCurMatrix.ReadOnly = matrixDataGridViewNextMatrix.ReadOnly = true;
+            matrixDataGridViewCurMatrix.ReadOnly = 
+                matrixDataGridViewNextMatrix.ReadOnly = true;
             groupBoxAnswers.Text = "Демонстрация";
             buttonAcceptAnswer.Text = "Сделать шаг";
         }
@@ -159,9 +172,10 @@ namespace GOES.Problems.AssignmentProblem {
         private bool IsAnswerCorrect(string answer) {
             Regex regex;
             switch (problemState) {
-                //case AssignmentProblemState.FirstStage:
-                //    // В матрице Должно быть одно целое число
-                //    regex = new Regex(@"^\d+$");
+                case AssignmentProblemState.AssignmentCostWaiting:
+                    // Стоимость назначения - это одно целое неотрицательное число
+                    regex = new Regex(@"^\d+$");
+                    return regex.IsMatch(answer);
                 default:
                     return false;
             }
@@ -183,8 +197,8 @@ namespace GOES.Problems.AssignmentProblem {
                         adjacencyMatrix[leftPairVertexIndex, rightPairVertexIndex].ToString();
         }
 
-        private void DisplayGraph() {
-            visGraph = new Graph(matchingGraph, assignmentProblemExample.IsGraphDirected);
+        private void DisplayMatchingGraph() {
+            visGraph = new Graph(matchingGraphAdjacencyMatrix, false);
             graphVisInterface.Initialize(visGraph);
             // Задаём расположение вершин графа
             for (int i = 0; i < visGraph.VerticesCount; i++)
@@ -244,6 +258,7 @@ namespace GOES.Problems.AssignmentProblem {
         // Перевести задачу в состояние ожидания начала
         private void SetStartWaitingState() {
             problemState = AssignmentProblemState.StartWaiting;
+            graphVisInterface.Initialize(null);
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
@@ -291,14 +306,13 @@ namespace GOES.Problems.AssignmentProblem {
         // Перевести задачу в состояние ожидания матрицы первого шага
         private void SetFirstStageState() {
             problemState = AssignmentProblemState.FirstStage;
+            graphVisInterface.Initialize(null);
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
             matrixDataGridViewNextMatrix.ReadOnly = false;
-            // Убираем все отмеченные ошибки, которые были (матрица правильная, уберутся автоматически)
-            IsNextMatrixCorrect();
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -328,19 +342,21 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(true, false, "Сделать шаг");
             buttonReloadIteration.Enabled = true;
+            // Сохраняем правильную следующую матрицу
+            correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
+            Algorithm.FirstStage(correctNextAdjacencyMatrix, verticesCount);
         }
 
         // Перевести задачу в состояние ожидания матрицы второго шага
         private void SetSecondStageState() {
             problemState = AssignmentProblemState.SecondStage;
+            graphVisInterface.Initialize(null);
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
             graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
             matrixDataGridViewNextMatrix.ReadOnly = false;
-            // Убираем все отмеченные ошибки, которые были (матрица правильная, уберутся автоматически)
-            IsNextMatrixCorrect();
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -370,6 +386,9 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(true, false, "Сделать шаг");
             buttonReloadIteration.Enabled = true;
+            // Сохраняем правильную следующую матрицу
+            correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
+            Algorithm.SecondStage(correctNextAdjacencyMatrix, verticesCount);
         }
 
         // Перевести задачу в состояние ожидания вершины для аугментального маршрута
@@ -422,6 +441,89 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(true, false, "Сделать шаг");
             buttonReloadIteration.Enabled = true;
+            // Сохраняем правильную мощность текущего максимального паросочетания
+            correctMaximalMatchingCardinality = Algorithm.GetMatchingCardinality(Algorithm.GetMaximalMatching(matchingGraphAdjacencyMatrix, verticesCount));
+        }
+
+        private void SetFourthStageState() {
+            problemState = AssignmentProblemState.FourthStage;
+            //graphVisInterface.Initialize(null);
+            //graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+            //graphVisInterface.IsVerticesMoving = false;
+            // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
+            DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
+            DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
+            matrixDataGridViewNextMatrix.ReadOnly = false;
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Шаг четвёртый - проверить построенное назначение и, если оно не является законченным, перераспределить нули матрицы." + Environment.NewLine +
+                    "Если назначение полностью построено, введите в поле для ответов в блоке \"Ответы\" его стоимость, и нажмите " +
+                    "кнопку \"Принять ответ\"." + Environment.NewLine +
+                    "Если назначение не закончено, перераспределите нули в матрице." +
+                    "Проведите все нужные действия в матрице, находящейся в блоке \"Следующая матрица\", " +
+                    "и нажмите кнопку \"Принять ответ\"." + Environment.NewLine +
+                    "Для каких-либо заметок Вы можете использовать текстовое поле в блоке \"Черновик\". Он не проверяется." + Environment.NewLine +
+                    "Если Вы хотите сбросить значения в матрице блока \"Следующая матрица\" на текущие, " +
+                    "нажмите кнопку \"К началу шага\". Это не повлияет на оценку." + Environment.NewLine +
+                    "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
+                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine +
+                    "Чтобы начать решение, нажмите кнопку \"К началу шага\".";
+            else if (problemMode == ProblemMode.Demonstration)
+                message =
+                    "Шаг первый - добиться, чтобы в каждом столбце матрицы был хотя бы один нулевой элемент." + Environment.NewLine +
+                    "Для этого необходимо вычесть из каждого столбца матрицы его минимальный элемент." + Environment.NewLine +
+                    "Минимальные элементы в каждой строке выделены цветом." + Environment.NewLine +
+                    "Для того, чтобы сделать очередной шаг решения, нажимайте кнопку \"Сделать шаг\"." + Environment.NewLine +
+                    "Вы можете вернуться к началу текущего шага кнопкой \"К началу шага\"." +
+                    "Если Вы хотите начать задание заново, нажмите кнопку \"Начать заново\"." + Environment.NewLine +
+                    "Если Вы хотите вспомнить тему, откройте текст лекции с помощью кнопки \"Текст лекции\"." + Environment.NewLine;
+            ShowSuccessTip(message);
+            if (problemMode == ProblemMode.Solution)
+                SetAnswerGroupBoxState(true, false, "Принять ответ");
+            else if (problemMode == ProblemMode.Demonstration)
+                SetAnswerGroupBoxState(true, false, "Сделать шаг");
+            buttonReloadIteration.Enabled = true;
+            // Сохраняем правильную следующую матрицу
+            correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
+            Algorithm.FourthStage(correctNextAdjacencyMatrix, matchingPairsArray, verticesCount);
+        }
+
+
+        // Проверить значение мощности построенного максимального паросочетания
+        private void SetAssignmentCostWaitingState() {
+            problemState = AssignmentProblemState.AssignmentCostWaiting;
+            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+            graphVisInterface.IsVerticesMoving = false;
+            matrixDataGridViewNextMatrix.ReadOnly = true;
+            string message = "";
+            if (problemMode == ProblemMode.Solution)
+                message =
+                    "Оптимальное назначение построено." + Environment.NewLine +
+                    "Введите в поле для ответов его общую стоимость в виде одного целого числа.";
+            else if (problemMode == ProblemMode.Demonstration)
+                message =
+                    "Оптимальное назначение построено." + Environment.NewLine +
+                    $"Его общая стоимость равна {correctAssignmentMinCost}.";
+            ShowSuccessTip(message);
+            if (problemMode == ProblemMode.Solution)
+                SetAnswerGroupBoxState(true, true, "Принять ответ");
+            buttonReloadIteration.Enabled = false;
+        }
+
+        private void SetProblemFinish() {
+            problemState = AssignmentProblemState.ProblemFinish;
+            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+            graphVisInterface.IsVerticesMoving = false;
+            string message =
+                "Оптимальное назначение найдено." + Environment.NewLine +
+                "Задание успешно выполнено!";
+            ShowSuccessTip(message);
+            if (problemMode == ProblemMode.Solution)
+                SetAnswerGroupBoxState(false, false, "Принять ответ");
+            else if (problemMode == ProblemMode.Demonstration)
+                SetAnswerGroupBoxState(false, false, "Сделать шаг");
+            buttonReloadIteration.Enabled = false;
         }
 
 
@@ -468,13 +570,11 @@ namespace GOES.Problems.AssignmentProblem {
                 MarkError(AssignmentProblemError.IncorrectNextMatrixFormat);
                 return;
             }
-            int[,] correctNextMatrix = (int[,])adjacencyMatrix.Clone();
-            Algorithm.FirstStage(correctNextMatrix, verticesCount);
-            if (!CheckNextMatrixSimilarTo(correctNextMatrix, verticesCount)) {
+            if (!CheckNextMatrixSimilarTo(correctNextAdjacencyMatrix, verticesCount)) {
                 MarkError(AssignmentProblemError.FirstStageIncorrectNextMatrix);
                 return;
             }
-            adjacencyMatrix = correctNextMatrix;
+            adjacencyMatrix = correctNextAdjacencyMatrix;
             SetSecondStageState();
         }
 
@@ -484,27 +584,18 @@ namespace GOES.Problems.AssignmentProblem {
                 MarkError(AssignmentProblemError.IncorrectNextMatrixFormat);
                 return;
             }
-            int[,] correctNextMatrix = (int[,])adjacencyMatrix.Clone();
-            Algorithm.SecondStage(correctNextMatrix, verticesCount);
-            if (!CheckNextMatrixSimilarTo(correctNextMatrix, verticesCount)) {
+            if (!CheckNextMatrixSimilarTo(correctNextAdjacencyMatrix, verticesCount)) {
                 MarkError(AssignmentProblemError.FirstStageIncorrectNextMatrix);
                 return;
             }
-            adjacencyMatrix = correctNextMatrix;
+            adjacencyMatrix = correctNextAdjacencyMatrix;
+            SetMatchingGraph();
             SetNextPathVertexWaitingState();
         }
 
         private void SetMatchingGraph() {
-            matchingGraph = new bool[verticesCount, verticesCount];
-            Algorithm.GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
-            for (int row = 0; row < rowsCount; row++) {
-                Algorithm.GetAdjacencyMatrixRowIndex(row, out int rowInAdjacency);
-                for (int col = 0; col < colsCount; col++) {
-                    Algorithm.GetAdjacencyMatrixColIndex(row, out int colInAdjacency);
-                    if (Algorithm.GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col) == 0)
-                        matchingGraph[rowInAdjacency, colInAdjacency] = true;
-                }
-            }
+            matchingGraphAdjacencyMatrix = Algorithm.getMatchingGraphAdjacencyMatrix(adjacencyMatrix, verticesCount);
+            DisplayMatchingGraph();
         }
 
         // Проверить выбранную в аугментальный путь вершину
@@ -528,7 +619,7 @@ namespace GOES.Problems.AssignmentProblem {
             else {
                 int lastVertexIndex = curAugmentalPath.Last();
                 // Если ребра нет, то ошибка - перейти нельзя
-                if (!matchingGraph[lastVertexIndex, selectedVertexIndex]) {
+                if (!matchingGraphAdjacencyMatrix[lastVertexIndex, selectedVertexIndex]) {
                     MarkError(AssignmentProblemError.ThirdStageMoveToFarVertex);
                     return;
                 }
@@ -558,6 +649,76 @@ namespace GOES.Problems.AssignmentProblem {
                 vertex.BorderColor = Color.Red;
             }
             SetNextPathVertexWaitingState();
+        }
+
+        // Проверить попытку чередования по построенному аугменатльному маршруту
+        private void AlternateOnAugmentalPath() {
+            // Если маршрут пустой, или состоит из одной вершины - цепь не построена
+            if (curAugmentalPath.Count <= 1) {
+                MarkError(AssignmentProblemError.ThirdStageAugmentalPathIsNotFinished);
+                return;
+            }
+            // Последняя вершина цепи должна быть непокрытой, в любом случае (как и первая, но это мы проверяем при выборе вершины)
+            if (matchingPairsArray[curAugmentalPath.Last()] != -1) {
+                MarkError(AssignmentProblemError.ThirdStageIncorrectAugmentalPath);
+                return;
+            }
+            // Проводим чередование по построенной аугментальной цепи
+            Algorithm.AlternateOnAugmentalPath(curAugmentalPath, matchingPairsArray);
+            UpdateGraphMatching();
+            StartNewIteration();
+            // Проверяем, а не построено ли уже максимальное паросочетание
+            if (Algorithm.GetMatchingCardinality(matchingPairsArray) == correctMaximalMatchingCardinality) {
+                Algorithm.GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+                // Если было построено ещё не совершенное паросочетание - проверяем следующую матрицу
+                if (Algorithm.GetMatchingCardinality(matchingPairsArray) < rowsCount) {
+                    SetFourthStageState();
+                }
+                else {
+                    SetAssignmentCostWaitingState();
+                }
+            }
+            else {
+                SetNextPathVertexWaitingState();
+            }
+        }
+
+        private void CheckAssignmentCost(string answer) {
+            int minCost = int.Parse(answer);
+            if (minCost == correctAssignmentMinCost) {
+                SetProblemFinish();
+            }
+            else {
+                MarkError(AssignmentProblemError.FourthStageIncorrectAssignmentCost);
+            }
+        }
+
+        private void CheckAssignmentCost() {
+            string answer = textBoxAnswer.Text.Trim().ToLower();
+            if (!IsAnswerCorrect(answer)) {
+                MarkError(AssignmentProblemError.FourthStageIncorrectAssignmentCostFormat);
+                return;
+            }
+            CheckAssignmentCost(answer);
+        }
+
+        // Проверить следующую матрицу, построенную на втором шаге
+        private void CheckFourthStage() {
+            if (!IsNextMatrixCorrect()) {
+                MarkError(AssignmentProblemError.IncorrectNextMatrixFormat);
+                return;
+            }
+            if (!CheckNextMatrixSimilarTo(correctNextAdjacencyMatrix, verticesCount)) {
+                MarkError(AssignmentProblemError.FourthStageIncorrectNextMatrix);
+                return;
+            }
+            adjacencyMatrix = correctNextAdjacencyMatrix;
+            SetMatchingGraph();
+            SetNextPathVertexWaitingState();
+            // Очищаем текущее паросочетание
+            for (int i = 0; i < verticesCount; i++)
+                matchingPairsArray[i] = -1;
+            StartNewIteration();
         }
 
 
@@ -600,11 +761,25 @@ namespace GOES.Problems.AssignmentProblem {
 
         // Принятие ответа
         private void buttonAcceptAnswer_Click(object sender, EventArgs e) {
-            if (problemState == AssignmentProblemState.FirstStage) {
-                CheckFirstStage();
+            if (problemMode == ProblemMode.Solution) {
+                if (problemState == AssignmentProblemState.FirstStage) {
+                    CheckFirstStage();
+                }
+                else if (problemState == AssignmentProblemState.SecondStage) {
+                    CheckSecondStage();
+                }
+                else if (problemState == AssignmentProblemState.NextPathVertexWaiting) {
+                    AlternateOnAugmentalPath();
+                }
+                else if (problemState == AssignmentProblemState.FourthStage) {
+                    CheckFourthStage();
+                }
+                else if (problemState == AssignmentProblemState.AssignmentCostWaiting) {
+                    CheckAssignmentCost();
+                }
             }
-            else if (problemState == AssignmentProblemState.SecondStage) {
-                CheckSecondStage();
+            else if (problemMode == ProblemMode.Demonstration) {
+                //DoAnswerForDemonstration();
             }
         }
 
@@ -618,7 +793,7 @@ namespace GOES.Problems.AssignmentProblem {
 
         // Перезагрузка задачи
         private void buttonReloadProblem_Click(object sender, EventArgs e) {
-            //InitializeProblem(maxBipartiteMatchingExample, problemMode);
+            InitializeProblem(assignmentProblemExample, problemMode);
         }
     }
 }

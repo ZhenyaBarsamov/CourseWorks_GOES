@@ -49,5 +49,21 @@
         /// Третий шаг решения: неправильное значение мощности максимального паросочетания
         /// </summary>
         ThirdStageIncorrectMaxMatchingCardinality,
+        /// <summary>
+        /// Неправильная матрица на четвёртом шаге решения
+        /// </summary>
+        FourthStageIncorrectNextMatrix,
+        /// <summary>
+        /// Было построено совершенное паросочетание и на четвёртом шаге ожидалась величина стоимости назначения, но она не была получена
+        /// </summary>
+        FourthStageAssignmentCostExpected,
+        /// <summary>
+        /// На четвёртом шаге неправильный формат ввода величины стоимости назначения
+        /// </summary>
+        FourthStageIncorrectAssignmentCostFormat,
+        /// <summary>
+        /// Неправильная стоимость назначения на четвёртом шаге решения
+        /// </summary>
+        FourthStageIncorrectAssignmentCost,
     }
 }

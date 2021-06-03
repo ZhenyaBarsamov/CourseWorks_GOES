@@ -177,19 +177,13 @@ namespace GOES.Problems.AssignmentProblem {
             return cost;
         }
 
-        public static int[] GetMaximalMatching(int[,] adjacencyMatrix, int verticesCount) {
-            bool[,] graphMatrix = new bool[verticesCount, verticesCount];
-            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
-            for (int row = 0; row < rowsCount; row++) {
-                GetAdjacencyMatrixRowIndex(row, out int rowInAdjacencyMatrix);
-                for (int col = 0; col < colsCount; col++) {
-                    GetAdjacencyMatrixColIndex(col, out int colInAdjacencyMatrix);
-                    if (adjacencyMatrix[rowInAdjacencyMatrix, colInAdjacencyMatrix] == 0)
-                        graphMatrix[rowInAdjacencyMatrix, colInAdjacencyMatrix] = true;
-                }
-            }
-            var matchingPairsArray = BipartiteMatching.Algorithm.GetMaximalMatching(graphMatrix, verticesCount);
+        public static int[] GetMaximalMatching(bool[,] adjacencyMatrix, int verticesCount) {
+            var matchingPairsArray = BipartiteMatching.Algorithm.GetMaximalMatching(adjacencyMatrix, verticesCount);
             return matchingPairsArray;
+        }
+
+        public static void AlternateOnAugmentalPath(List<int> augmentalPath, int[] matchingPairsArray) {
+            BipartiteMatching.Algorithm.AlternateOnAugmentalPath(augmentalPath, matchingPairsArray);
         }
 
         /// <summary>
@@ -199,6 +193,136 @@ namespace GOES.Problems.AssignmentProblem {
         /// <returns></returns>
         public static int GetMatchingCardinality(int[] matchingPairsArray) {
             return BipartiteMatching.Algorithm.GetMatchingCardinality(matchingPairsArray);
+        }
+
+        public static HashSet<Tuple<int, int>> GetRedZeroes(int[] matchingPairsArray, int verticesCount) {
+            // Аккуратней с кортежом во множестве. Сравнение кортежей, кажется, появилось в C# 7.3
+            var res = new HashSet<Tuple<int, int>>();
+            for (int leftPairIndex = 0; leftPairIndex < verticesCount; leftPairIndex+=2)
+                if (matchingPairsArray[leftPairIndex] != -1) {
+                    int row = leftPairIndex / 2;
+                    int col = matchingPairsArray[leftPairIndex] / 2;
+                    res.Add(new Tuple<int, int>(row, col));
+                }
+            return res;
+        }
+
+        public static HashSet<int> GetRowsWithoutRedZeroes(HashSet<Tuple<int, int>> redZeroesCoords, int verticesCount) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            var res = new HashSet<int>();
+            for (int row = 0; row < rowsCount; row++)
+                res.Add(row);
+            var redZeroesRows = new HashSet<int>();
+            foreach (var redZeroCoords in redZeroesCoords)
+                redZeroesRows.Add(redZeroCoords.Item1);
+            res.ExceptWith(redZeroesRows);
+            return res;
+        }
+
+        public static HashSet<int> GetColsWithZeroesInMarkedRows(int[,] adjacencyMatrix, int verticesCount, HashSet<int> rowsWithoutRedZeroesCoords) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            var res = new HashSet<int>();
+            for (int col = 0; col < colsCount; col++)
+                foreach (var row in rowsWithoutRedZeroesCoords)
+                    if (GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col) == 0)
+                        res.Add(col);
+            return res;
+        }
+
+        public static HashSet<int> GetRowsWithRedZeroesInMarkedCols(int[,] adjacencyMatrix, int verticesCount, HashSet<int> markedCols, HashSet<Tuple<int, int>> redZeroes) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            var res = new HashSet<int>();
+            for (int row = 0; row < rowsCount; row++)
+                foreach (var col in markedCols)
+                    if (redZeroes.Contains(new Tuple<int, int>(row, col)))
+                        res.Add(row);
+            return res;
+        }
+
+        public static void FourthStage(int[,] adjacencyMatrix, int[] matchingPairsArray, int verticesCount) {
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            if (rowsCount == GetMatchingCardinality(matchingPairsArray))
+                return;
+            // Получаем индексы красных нулей
+            var redZeroes = GetRedZeroes(matchingPairsArray, verticesCount);
+            // Отмечаем строки, в которых нет красных нулей
+            var rowsWithoutRedZeroes = GetRowsWithoutRedZeroes(redZeroes, verticesCount);
+            // Отмечаем все столбцы с нулями в этих строках
+            var colsWithZeroesInMarkedRows = GetColsWithZeroesInMarkedRows(adjacencyMatrix, verticesCount, rowsWithoutRedZeroes);
+            // Отмечаем все строки с красными нулями в этих столбцах
+            var rowsWithRedZeroesInMarkedCols = GetRowsWithRedZeroesInMarkedCols(adjacencyMatrix, verticesCount, colsWithZeroesInMarkedRows, redZeroes);
+            // Вычёркиваем все отмеченные столбцы и все неотмеченные строки
+            var markedRows = new HashSet<int>(rowsWithoutRedZeroes.Union(rowsWithRedZeroesInMarkedCols));
+            var markedCols = new HashSet<int>(colsWithZeroesInMarkedRows);
+            // Ищем минимальный невычеркнутый элемент
+            int min = int.MaxValue;
+            for (int row = 0; row < rowsCount; row++) {
+                if (!markedRows.Contains(row))
+                    continue;
+                for (int col = 0; col < colsCount; col++) {
+                    if (markedCols.Contains(col))
+                        continue;
+                    int cost = GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col);
+                    if (cost < min)
+                        min = cost;
+                }
+            }
+            // Вычитаем найденный минимум из всех невычеркнутых элементов
+            for (int row = 0; row < rowsCount; row++) {
+                if (!markedRows.Contains(row))
+                    continue;
+                for (int col = 0; col < colsCount; col++) {
+                    if (markedCols.Contains(col))
+                        continue;
+                    int cost = GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col);
+                    SetCostToAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col, cost - min);
+                }
+            }
+            // Прибавляем найденный минимум к элементам, стоящим на пересечении линий
+            for (int row = 0; row < rowsCount; row++) {
+                if (markedRows.Contains(row))
+                    continue;
+                for (int col = 0; col < colsCount; col++) {
+                    if (!markedCols.Contains(col))
+                        continue;
+                    int cost = GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col);
+                    SetCostToAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col, cost + min);
+                }
+            }
+        }
+
+        public static bool[,] getMatchingGraphAdjacencyMatrix(int[,] adjacencyMatrix, int verticesCount) {
+            bool[,] matchingGraphAdjacencyMatrix = new bool[verticesCount, verticesCount];
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            for (int row = 0; row < rowsCount; row++) {
+                GetAdjacencyMatrixRowIndex(row, out int rowInAdjacency);
+                for (int col = 0; col < colsCount; col++) {
+                    GetAdjacencyMatrixColIndex(col, out int colInAdjacency);
+                    if (GetCostFromAdjacencyMatrix(adjacencyMatrix, verticesCount, row, col) == 0)
+                        matchingGraphAdjacencyMatrix[rowInAdjacency, colInAdjacency] =
+                            matchingGraphAdjacencyMatrix[colInAdjacency, rowInAdjacency] = true;
+                }
+            }
+            return matchingGraphAdjacencyMatrix;
+        }
+
+        public static int[] GetAssignmentProblemSolution(int[,] adjacencyMatrix, int verticesCount, out int assignmentCost) {
+            int[,] matrix = (int[,])adjacencyMatrix.Clone();
+            GetCostsMatrixDimensions(verticesCount, out int rowsCount, out int colsCount);
+            FirstStage(matrix, verticesCount);
+            SecondStage(matrix, verticesCount);
+            int[] matchingPairsArray;
+            while (true) {
+                bool[,] matchingGraphAdjacencyMatrix = getMatchingGraphAdjacencyMatrix(matrix, verticesCount);
+
+                matchingPairsArray = GetMaximalMatching(matchingGraphAdjacencyMatrix, verticesCount);
+                if (GetMatchingCardinality(matchingPairsArray) < rowsCount)
+                    FourthStage(matrix, matchingPairsArray, verticesCount);
+                else
+                    break;
+            }
+            assignmentCost = GetCostOfAssignment(adjacencyMatrix, verticesCount, matchingPairsArray);
+            return matchingPairsArray;
         }
     }
 }

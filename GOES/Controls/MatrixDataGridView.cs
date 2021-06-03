@@ -71,9 +71,9 @@ namespace GOES.Controls {
                 for (int col = 0; col < columnsCount; col++)
                     this[col, row].Value = matrix[row, col].ToString();
             // Если у нас остаётся пустое место для того, чтобы растянуть столбцы - растягиваем их поровну
-            if (Columns.GetColumnsWidth(DataGridViewElementStates.None) <= ClientSize.Width)
-                foreach (DataGridViewColumn col in Columns)
-                    col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            //if (Columns.GetColumnsWidth(DataGridViewElementStates.None) <= ClientSize.Width) // <= Width - RowHeadersWidth
+            //    foreach (DataGridViewColumn col in Columns)
+            //        col.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             ResumeLayout();
         }
 

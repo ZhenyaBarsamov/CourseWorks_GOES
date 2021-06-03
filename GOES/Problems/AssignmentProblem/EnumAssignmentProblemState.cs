@@ -20,13 +20,13 @@
         /// </summary>
         NextPathVertexWaiting,
         /// <summary>
-        /// Ожидание от ученика назначений
-        /// </summary>
-        AssignmentsWaiting,
-        /// <summary>
         /// Четвёртый этап задания - перераспределение нулей
         /// </summary>
         FourthStage,
+        /// <summary>
+        /// Ожидание от ученика стоимости назначений
+        /// </summary>
+        AssignmentCostWaiting,
         /// <summary>
         /// Выполнение задания завершено
         /// </summary>

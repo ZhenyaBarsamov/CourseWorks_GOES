@@ -76,6 +76,8 @@ namespace GOES.Problems.AssignmentProblem {
                 "Задана матрица стоимостей назначений. Найдите самое выгодное назначение - назначение с минимальной стоимостью.";
             DisplayCostsMatrix(matrixDataGridViewExampleMatrix, assignmentProblemExample.CostsMatrix, verticesCount);
             matrixDataGridViewExampleMatrix.ReadOnly = true;
+            matrixDataGridViewExampleMatrix.IsCellsSelectable = false;
+            matrixDataGridViewCurMatrix.IsCellsSelectable = false;
             // Получаем решение задачи
             Algorithm.GetAssignmentProblemSolution(adjacencyMatrix, verticesCount, out correctAssignmentMinCost);
             // Ставим решение в состояние ожидания начала
@@ -89,12 +91,14 @@ namespace GOES.Problems.AssignmentProblem {
         // Начать новую итерацию решения
         private void StartNewIteration() {
             if (problemState == AssignmentProblemState.FirstStage) {
-                DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
                 SetFirstStageState();
+                // Убираем все отметки на матрице, которые были (ошибки и т.д.)
+                ClearMatrixColors(matrixDataGridViewNextMatrix);
             }
             else if (problemState == AssignmentProblemState.SecondStage) {
-                DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
                 SetSecondStageState();
+                // Убираем все отметки на матрице, которые были (ошибки и т.д.)
+                ClearMatrixColors(matrixDataGridViewNextMatrix);
             }
             else if (problemState == AssignmentProblemState.NextPathVertexWaiting) {
                 // Очищаем текущий маршрут
@@ -105,6 +109,11 @@ namespace GOES.Problems.AssignmentProblem {
                 // Если это демонстрация, мы должны обнулить уже рассматриваемое решение
                 selectedAugmentalPath = null;
                 SetNextPathVertexWaitingState();
+            }
+            else if (problemState == AssignmentProblemState.FourthStage) {
+                SetFourthStageState();
+                // Убираем все отметки на матрице, которые были (ошибки и т.д.)
+                ClearMatrixColors(matrixDataGridViewNextMatrix);
             }
         }
 
@@ -236,12 +245,17 @@ namespace GOES.Problems.AssignmentProblem {
                 foreach (DataGridViewCell cell in row.Cells)
                     if (!regex.IsMatch(cell.Value as string)) {
                         isCorrect = false;
-                        cell.ErrorText = "В ячейке матрицы может быть только целое неотрицательное число";
+                        matrixDataGridViewNextMatrix.SetCellColor(cell.RowIndex, cell.ColumnIndex, Color.Red);
                     }
                     else {
-                        cell.ErrorText = string.Empty;
+                        matrixDataGridViewNextMatrix.SetCellColorToDefault(cell.RowIndex, cell.ColumnIndex);
                     }
             return isCorrect;
+        }
+
+        private void ClearMatrixColors(MatrixDataGridView matrixDgv) {
+            matrixDgv.SetCellsColorsToDefault();
+            matrixDgv.SetCellsFontColorToDefault();
         }
 
 
@@ -250,14 +264,12 @@ namespace GOES.Problems.AssignmentProblem {
         private void SetStartWaitingState() {
             problemState = AssignmentProblemState.StartWaiting;
             graphVisInterface.Initialize(null);
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
             matrixDataGridViewNextMatrix.ReadOnly = true;
-            // Убираем все отмеченные ошибки, которые были (матрица правильная, уберутся автоматически)
-            IsNextMatrixCorrect();
+            // Убираем все отметки на матрице, которые были (ошибки и т.д.)
+            ClearMatrixColors(matrixDataGridViewNextMatrix);
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -298,8 +310,6 @@ namespace GOES.Problems.AssignmentProblem {
         private void SetFirstStageState() {
             problemState = AssignmentProblemState.FirstStage;
             graphVisInterface.Initialize(null);
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
@@ -336,14 +346,16 @@ namespace GOES.Problems.AssignmentProblem {
             // Сохраняем правильную следующую матрицу
             correctNextAdjacencyMatrix = (int[,])adjacencyMatrix.Clone();
             Algorithm.FirstStage(correctNextAdjacencyMatrix, verticesCount);
+            if (problemMode == ProblemMode.Demonstration) {
+                //matrixDataGridViewCurMatrix.SetCellFontColor(1, 1, Color.Red);
+
+            }
         }
 
         // Перевести задачу в состояние ожидания матрицы второго шага
         private void SetSecondStageState() {
             problemState = AssignmentProblemState.SecondStage;
             graphVisInterface.Initialize(null);
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
@@ -438,9 +450,6 @@ namespace GOES.Problems.AssignmentProblem {
 
         private void SetFourthStageState() {
             problemState = AssignmentProblemState.FourthStage;
-            //graphVisInterface.Initialize(null);
-            //graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            //graphVisInterface.IsVerticesMoving = false;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);
             DisplayCostsMatrix(matrixDataGridViewNextMatrix, adjacencyMatrix, verticesCount);
@@ -481,7 +490,7 @@ namespace GOES.Problems.AssignmentProblem {
         }
 
 
-        // Проверить значение мощности построенного максимального паросочетания
+        // Проверить значение стоимости построенного оптимального назначения
         private void SetAssignmentCostWaitingState() {
             problemState = AssignmentProblemState.AssignmentCostWaiting;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
@@ -502,6 +511,7 @@ namespace GOES.Problems.AssignmentProblem {
             buttonReloadIteration.Enabled = false;
         }
 
+        // Перевести задачу в состояние выполненной задачи
         private void SetProblemFinish() {
             problemState = AssignmentProblemState.ProblemFinish;
             graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
@@ -619,10 +629,10 @@ namespace GOES.Problems.AssignmentProblem {
                     int factCostValue = int.Parse(matrixDataGridViewNextMatrix[col, row].Value as string);
                     if (correctCostValue != factCostValue) {
                         isSimilar = false;
-                        matrixDataGridViewNextMatrix[col, row].ErrorText = "Ошибка";
+                        matrixDataGridViewNextMatrix.SetCellColor(row, col, Color.Red);
                     }
                     else {
-                        matrixDataGridViewNextMatrix[col, row].ErrorText = string.Empty;
+                        matrixDataGridViewNextMatrix.SetCellColorToDefault(row, col);
                     }
                 }
             }
@@ -778,6 +788,17 @@ namespace GOES.Problems.AssignmentProblem {
         }
 
 
+        // ----Методы для демонстрации решения
+        private void DoAnswerForDemonstration() {
+            switch (problemState) {
+                case AssignmentProblemState.FirstStage:
+
+                default:
+                    break;
+            }
+        }
+
+
         // ----Обработчики событий
         // Выбор вершины графа
         private void VertexSelectedHandler(Vertex vertex) {
@@ -835,7 +856,7 @@ namespace GOES.Problems.AssignmentProblem {
                 }
             }
             else if (problemMode == ProblemMode.Demonstration) {
-                //DoAnswerForDemonstration();
+                DoAnswerForDemonstration();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -12,7 +13,29 @@ namespace GOES.Controls {
     class MatrixDataGridView : DataGridView {
         // Переопределение метода Sort(dataGridViewColumn, direction) на пустой полностью отключает сортировку
         // по столбцам в элементе управления
-        public override void Sort(DataGridViewColumn dataGridViewColumn, ListSortDirection direction) {}
+        public override void Sort(DataGridViewColumn dataGridViewColumn, ListSortDirection direction) { }
+
+        // Метод, который используется для нейтрализации выделения ячеек
+        private void OnSelectionChanged(object sender, EventArgs e) {
+            ClearSelection();
+        }
+
+        private bool isCellsSelectable;
+        /// <summary>
+        /// Флаг, указывающий, работает ли выделение ячеек
+        /// </summary>
+        public bool IsCellsSelectable {
+            get {
+                return isCellsSelectable;
+            }
+            set {
+                isCellsSelectable = value;
+                if (!value)
+                    SelectionChanged += OnSelectionChanged;
+                else
+                    SelectionChanged -= OnSelectionChanged;
+            }
+        }
 
         public MatrixDataGridView() : base() {
             // Запрещаем пользователю действия по изменению матрицы
@@ -103,8 +126,6 @@ namespace GOES.Controls {
             Rows[rowIndex].HeaderCell.Style.BackColor = color;
         }
 
-        
-
         /// <summary>
         /// Раскрасить фон заголовка заданного столбца в заданный цвет
         /// </summary>
@@ -125,6 +146,50 @@ namespace GOES.Controls {
         }
 
         /// <summary>
+        /// Задать цвет шрифта для заданной ячейки
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        /// <param name="colIndex">Индекс столбца</param>
+        /// <param name="color">Цвет</param>
+        public void SetCellFontColor(int rowIndex, int colIndex, Color color) {
+            this[colIndex, rowIndex].Style.ForeColor = color;
+        }
+
+        /// <summary>
+        /// Сбросить цвет шрифта для заданной ячейки
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        /// <param name="colIndex">Индекс столбца</param>
+        public void SetCellFontColorToDefault(int rowIndex, int colIndex) {
+            this[colIndex, rowIndex].Style.ForeColor = Color.Empty;
+        }
+
+        /// <summary>
+        /// Сбросить цвет фона заголовка заданной строки
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        public void SetRowHeaderColor(int rowIndex) {
+            Rows[rowIndex].HeaderCell.Style.BackColor = Color.Empty;
+        }
+
+        /// <summary>
+        /// Сбросить цвет фона заголовка заданного столбца
+        /// </summary>
+        /// <param name="colIndex">Индекс столбца</param>
+        public void SetColumnHeaderColorToDefault(int colIndex) {
+            Columns[colIndex].HeaderCell.Style.BackColor = Color.Empty; ;
+        }
+
+        /// <summary>
+        /// Сбросить цвет фона заданной ячейки таблицы
+        /// </summary>
+        /// <param name="rowIndex">Индекс строки</param>
+        /// <param name="colIndex">Индекс столбца</param>
+        public void SetCellColorToDefault(int rowIndex, int colIndex) {
+            this[colIndex, rowIndex].Style.BackColor = Color.Empty;
+        }
+
+        /// <summary>
         /// Сбросить цвет всех ячеек таблицы, включая ячейки заголовков
         /// </summary>
         public void SetCellsColorsToDefault() {
@@ -139,6 +204,19 @@ namespace GOES.Controls {
             ResumeLayout();
         }
 
-        
+        /// <summary>
+        /// Сбросить цвет шрифта всех ячеек таблицы, включая ячейки заголовков
+        /// </summary>
+        public void SetCellsFontColorToDefault() {
+            SuspendLayout();
+            foreach (DataGridViewRow row in Rows) {
+                row.HeaderCell.Style.ForeColor = Color.Empty;
+                foreach (DataGridViewCell cell in row.Cells)
+                    cell.Style.ForeColor = Color.Empty;
+            }
+            foreach (DataGridViewColumn col in Columns)
+                col.HeaderCell.Style.ForeColor = Color.Empty;
+            ResumeLayout();
+        }
     }
 }

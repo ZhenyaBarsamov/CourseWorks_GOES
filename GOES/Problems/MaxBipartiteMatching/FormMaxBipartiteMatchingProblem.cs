@@ -73,11 +73,17 @@ namespace GOES.Problems.MaxBipartiteMatching {
                 "Максимальное паросочетание?";
             // Получаем решение задачи
             correctMaximalMatchingCardinality = Algorithm.GetMatchingCardinality(Algorithm.GetMaximalMatching(graph, verticesCount));
+            // Инициализируем статистику решения
+            if (problemMode == ProblemMode.Solution)
+                maxBipartiteMatchingProblemStatistics = new MaxBipartiteMatchingProblemStatistics();
             // Ставим решение в состояние ожидания начала
             SetStartWaitingState();
         }
 
         public IProblemDescriptor ProblemDescriptor => new MaxBipartiteMatchingProblemDescriptor();
+
+        private MaxBipartiteMatchingProblemStatistics maxBipartiteMatchingProblemStatistics;
+        public IProblemStatistics ProblemStatistics => maxBipartiteMatchingProblemStatistics;
 
 
         // ----Конструкторы
@@ -306,6 +312,11 @@ namespace GOES.Problems.MaxBipartiteMatching {
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(false, false, "Сделать шаг");
             buttonReloadIteration.Enabled = false;
+            // Отмечаем, что задача решена
+            if (problemMode == ProblemMode.Solution) {
+                maxBipartiteMatchingProblemStatistics.IsSolved = true;
+                Close();
+            }
         }
 
 
@@ -318,14 +329,17 @@ namespace GOES.Problems.MaxBipartiteMatching {
             string errorMessage;
             switch (error) {
                 case MaxBipartiteMatchingError.StartOnMatchedVertex:
+                    maxBipartiteMatchingProblemStatistics.StartOnMatchedVertexCount += 1;
                     errorMessage = "Построение аугментального пути необходимо начинать с вершины, которая не покрыта паросочетанием";
                     break;
                 case MaxBipartiteMatchingError.MoveToFarVertex:
+                    maxBipartiteMatchingProblemStatistics.MoveToFarVertexCount += 1;
                     errorMessage =
                         "Вы попытались перейти в вершину, которая не соединена ребром с последней вершиной построенного маршрута." + Environment.NewLine +
                         $"Последней (текущей) вершиной маршрута является вершина {curAugmentalPath.Last() + 1}.";
                     break;
                 case MaxBipartiteMatchingError.AlternationBreakingOnMatchedEdge:
+                    maxBipartiteMatchingProblemStatistics.AlternationBreakingOnMatchedEdgeCount += 1;
                     prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
                     lastVertex = curAugmentalPath.Last() + 1;
                     prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
@@ -334,6 +348,7 @@ namespace GOES.Problems.MaxBipartiteMatching {
                         $"Последнее ребро построенного маршрута {prevEdge} входит в паросочетание. Значит, следующее ребро не должно входить в него.";
                     break;
                 case MaxBipartiteMatchingError.AlternationBreakingOnNotMatchedEdge:
+                    maxBipartiteMatchingProblemStatistics.AlternationBreakingOnNotMatchedEdgeCount += 1;
                     prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
                     lastVertex = curAugmentalPath.Last() + 1;
                     prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
@@ -342,22 +357,26 @@ namespace GOES.Problems.MaxBipartiteMatching {
                         $"Последнее ребро построенного маршрута {prevEdge} не входит в паросочетание. Значит, следующее ребро должно входить в него.";
                     break;
                 case MaxBipartiteMatchingError.AugmentalPathIsNotFinished:
+                    maxBipartiteMatchingProblemStatistics.AugmentalPathIsNotFinishedCount += 1;
                     errorMessage =
                         "Вы попытались провести чередование по аугментальной цепи, которая ещё не была закончена: аугментальная цепь не может быть пустой " +
                         "и не может состоять из одной вершины";
                     break;
                 case MaxBipartiteMatchingError.IncorrectAugmentalPath:
+                    maxBipartiteMatchingProblemStatistics.IncorrectAugmentalPathCount += 1;
                     errorMessage =
                         "Вы попытались провести чередование по неправильной (незаконченной) аугментальной цепи: аугментальная цепь должна " +
                         "начинаться и заканчиваться вершинами, не покрытыми паросочетанием, и при этом чередовать непаросочетанные рёбра " +
                         "с паросочетанными";
                     break;
                 case MaxBipartiteMatchingError.IncorrectMaxMatchingCardinalityFormat:
+                    maxBipartiteMatchingProblemStatistics.IncorrectMaxMatchingCardinalityFormatCount += 1;
                     errorMessage =
                         "Неправильный формат значения мощности максимального паросочетания." + Environment.NewLine +
                         "Значение мощности максимального паросочетания вводится в формате одного целого числа.";
                     break;
                 case MaxBipartiteMatchingError.IncorrectMaxMatchingCardinality:
+                    maxBipartiteMatchingProblemStatistics.IncorrectMaxMatchingCardinalityCount += 1;
                     errorMessage =
                         "Неправильное значение мощности построенного максимального паросочетания. Пересчитайте его, и попробуйте снова.";
                     break;

@@ -81,11 +81,17 @@ namespace GOES.Problems.AssignmentProblem {
             matrixDataGridViewNextMatrix.IsCellsSelectable = problemMode == ProblemMode.Solution;
             // Получаем решение задачи
             Algorithm.GetAssignmentProblemSolution(adjacencyMatrix, verticesCount, out correctAssignmentMinCost);
+            // Инициализируем статистику решения
+            if (problemMode == ProblemMode.Solution)
+                assignmentProblemStatistics = new AssignmentProblemStatistics();
             // Ставим решение в состояние ожидания начала
             SetStartWaitingState();
         }
 
         public IProblemDescriptor ProblemDescriptor => new AssignmentProblemDescriptor();
+
+        private AssignmentProblemStatistics assignmentProblemStatistics;
+        public IProblemStatistics ProblemStatistics => assignmentProblemStatistics;
 
 
         // ----Методы для работы с ходом решения/демонстрации
@@ -243,8 +249,8 @@ namespace GOES.Problems.AssignmentProblem {
             // В матрице должны быть только целые числа
             Regex regex = new Regex(@"^\d+$");
             foreach (DataGridViewRow row in matrixDataGridViewNextMatrix.Rows)
-                foreach (DataGridViewCell cell in row.Cells)
-                    if (!regex.IsMatch(cell.Value as string)) {
+                foreach (DataGridViewCell cell in row.Cells) 
+                    if (cell.Value as string == null || !regex.IsMatch(cell.Value as string)) {
                         isCorrect = false;
                         matrixDataGridViewNextMatrix.SetCellColor(cell.RowIndex, cell.ColumnIndex, Color.Red);
                     }
@@ -609,6 +615,11 @@ namespace GOES.Problems.AssignmentProblem {
             else if (problemMode == ProblemMode.Demonstration)
                 SetAnswerGroupBoxState(false, false, "Сделать шаг");
             buttonReloadIteration.Enabled = false;
+            // Отмечаем, что задача была решена
+            if (problemMode == ProblemMode.Solution) {
+                assignmentProblemStatistics.IsSolved = true;
+                Close();
+            }
         }
 
         // Перевести задачу в псевдосостояние ожидания чередования по построенному аугментальному пути (для режима демонстрации)
@@ -636,10 +647,12 @@ namespace GOES.Problems.AssignmentProblem {
             string errorMessage;
             switch (error) {
                 case AssignmentProblemError.IncorrectNextMatrixFormat:
+                    assignmentProblemStatistics.IncorrectNextMatrixFormatCount += 1;
                     errorMessage = "Ошибка при заполнении матрицы. Матрица должна содержать исключительно целые неотрицательные числа. " +
                         "Ошибочные ячейки выделены красным цветом.";
                     break;
                 case AssignmentProblemError.FirstStageIncorrectNextMatrix:
+                    assignmentProblemStatistics.FirstStageIncorrectNextMatrixCount += 1;
                     errorMessage = 
                         "Ошибка в матрице. Выделенные красным значения не совпадают с правильными. Проверьте свои вычисления, " +
                         "и попробуйте снова." + Environment.NewLine + 
@@ -647,20 +660,24 @@ namespace GOES.Problems.AssignmentProblem {
                         "строки матрицы необходимо вычесть её минимальный элемент.";
                     break;
                 case AssignmentProblemError.SecondStageIncorrectNextMatrix:
+                    assignmentProblemStatistics.SecondStageIncorrectNextMatrixCount += 1;
                     errorMessage = "Ошибка в матрице. Выделенные красным значения не совпадают с правильными. Проверьте свои вычисления, " +
                         "и попробуйте снова." + Environment.NewLine +
                         "На данном этапе необходимо добиться того, чтобы в каждом столбце матрицы появился нулевой элемент. Для этого из каждого " +
                         "столбца матрицы необходимо вычесть его минимальный элемент.";
                     break;
                 case AssignmentProblemError.ThirdStageStartOnMatchedVertex:
+                    assignmentProblemStatistics.ThirdStageStartOnMatchedVertexCount += 1;
                     errorMessage = "Построение чередующегося пути необходимо начинать с вершины, которая не покрыта паросочетанием";
                     break;
                 case AssignmentProblemError.ThirdStageMoveToFarVertex:
+                    assignmentProblemStatistics.ThirdStageMoveToFarVertexCount += 1;
                     errorMessage =
                         "Вы попытались перейти в вершину, которая не соединена ребром с последней вершиной построенного маршрута." + Environment.NewLine +
                         $"Последней (текущей) вершиной маршрута является вершина {curAugmentalPath.Last() + 1}.";
                     break;
                 case AssignmentProblemError.ThirdStageAlternationBreakingOnMatchedEdge:
+                    assignmentProblemStatistics.ThirdStageAlternationBreakingOnMatchedEdgeCount += 1;
                     prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
                     lastVertex = curAugmentalPath.Last() + 1;
                     prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
@@ -669,6 +686,7 @@ namespace GOES.Problems.AssignmentProblem {
                         $"Последнее ребро построенного маршрута {prevEdge} входит в паросочетание. Значит, следующее ребро не должно входить в него.";
                     break;
                 case AssignmentProblemError.ThirdStageAlternationBreakingOnNotMatchedEdge:
+                    assignmentProblemStatistics.ThirdStageAlternationBreakingOnNotMatchedEdgeCount += 1;
                     prevLastVertex = curAugmentalPath[curAugmentalPath.Count - 2] + 1;
                     lastVertex = curAugmentalPath.Last() + 1;
                     prevEdge = $"{{{prevLastVertex};{lastVertex}}}";
@@ -677,17 +695,20 @@ namespace GOES.Problems.AssignmentProblem {
                         $"Последнее ребро построенного маршрута {prevEdge} не входит в паросочетание. Значит, следующее ребро должно входить в него.";
                     break;
                 case AssignmentProblemError.ThirdStageAugmentalPathIsNotFinished:
+                    assignmentProblemStatistics.ThirdStageAugmentalPathIsNotFinishedCount += 1;
                     errorMessage =
                         "Вы попытались провести чередование по аугментальной цепи, которая ещё не была закончена: аугментальная цепь не может быть пустой " +
                         "и не может состоять из одной вершины";
                     break;
                 case AssignmentProblemError.ThirdStageIncorrectAugmentalPath:
+                    assignmentProblemStatistics.ThirdStageIncorrectAugmentalPathCount += 1;
                     errorMessage =
                         "Вы попытались провести чередование по неправильной (незаконченной) аугментальной цепи: аугментальная цепь должна " +
                         "начинаться и заканчиваться вершинами, не покрытыми паросочетанием, и при этом чередовать непаросочетанные рёбра " +
                         "с паросочетанными";
                     break;
                 case AssignmentProblemError.FourthStageIncorrectNextMatrix:
+                    assignmentProblemStatistics.FourthStageIncorrectNextMatrixCount += 1;
                     errorMessage = "Ошибка в матрице. Выделенные красным значения не совпадают с правильными. Проверьте свои вычисления, " +
                         "и попробуйте снова." + Environment.NewLine +
                         "На данном этапе необходимо перераспределить нули в матрице. Для этого:" + Environment.NewLine +
@@ -702,10 +723,12 @@ namespace GOES.Problems.AssignmentProblem {
                         "пересечении вычеркнутых строк и столбцов.";
                     break;
                 case AssignmentProblemError.IncorrectAssignmentCostFormat:
+                    assignmentProblemStatistics.IncorrectAssignmentCostFormatCount += 1;
                     errorMessage = "Неправильный формат значения стоимости назначения." + Environment.NewLine +
                         "Значение стоимости вводится в формате одного целого неотрицательного числа.";
                     break;
                 case AssignmentProblemError.IncorrectAssignmentCost:
+                    assignmentProblemStatistics.IncorrectAssignmentCostCount += 1;
                     errorMessage = "Неправильное значение стоимости назначения. Суммарная стоимость назначения - это сумма стоймостей " +
                         "выбранных назначений, которые даны в условии задачи. Пересчитайте его, и попробуйте снова.";
                     break;

@@ -79,9 +79,16 @@
     <Compile Include="Forms\FormProblemSelector.Designer.cs">
       <DependentUpon>FormProblemSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormProblemStatistics.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormProblemStatistics.Designer.cs">
+      <DependentUpon>FormProblemStatistics.cs</DependentUpon>
+    </Compile>
     <Compile Include="Problems\AssignmentProblem\Algorithm.cs" />
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemDescriptor.cs" />
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemExample.cs" />
+    <Compile Include="Problems\AssignmentProblem\AssignmentProblemStatistics.cs" />
     <Compile Include="Problems\AssignmentProblem\EnumAssignmentProblemError.cs" />
     <Compile Include="Problems\AssignmentProblem\EnumAssignmentProblemState.cs" />
     <Compile Include="Problems\AssignmentProblem\FormAssignmentProblem.cs">
@@ -93,6 +100,7 @@
     <Compile Include="Problems\EnumProblemMode.cs" />
     <Compile Include="Problems\IProblem.cs" />
     <Compile Include="Problems\IProblemDescriptor.cs" />
+    <Compile Include="Problems\IProblemStatistics.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\Algorithm.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\EnumMaxBipartiteMatchingError.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\EnumMaxBipartiteMatchingProblemState.cs" />
@@ -104,6 +112,7 @@
     </Compile>
     <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemDescriptor.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemExample.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\MaxBipartiteMatchingProblemStatistics.cs" />
     <Compile Include="Problems\MaxFlow\Algorithm.cs" />
     <Compile Include="Problems\MaxFlow\EnumMaxFlowError.cs" />
     <Compile Include="Problems\MaxFlow\EnumMaxFlowProblemState.cs" />
@@ -115,6 +124,7 @@
     </Compile>
     <Compile Include="Problems\MaxFlow\MaxFlowProblemDescriptor.cs" />
     <Compile Include="Problems\MaxFlow\MaxFlowProblemExample.cs" />
+    <Compile Include="Problems\MaxFlow\MaxFlowProblemStatistics.cs" />
     <Compile Include="Problems\ProblemExample.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -129,6 +139,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormProblemSelector.resx">
       <DependentUpon>FormProblemSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormProblemStatistics.resx">
+      <DependentUpon>FormProblemStatistics.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Problems\AssignmentProblem\FormAssignmentProblem.resx">
       <DependentUpon>FormAssignmentProblem.cs</DependentUpon>

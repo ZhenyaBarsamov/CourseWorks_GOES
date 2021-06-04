@@ -87,11 +87,17 @@ namespace GOES.Problems.MaxFlow {
             UpdateEdgesLabels();
             // Получаем решение задачи
             Algorithm.GetMaxFlowSolve(capacityMatrix, sourceVertexIndex, targetVertexIndex, out correctMinimalCut, out correctMaxFlowValue);
+            // Инициализируем статистику решения 
+            if (problemMode == ProblemMode.Solution)
+                maxFlowProblemStatistics = new MaxFlowProblemStatistics();
             // Ставим решение в состояние ожидания начала
             SetStartWaitingState();
         }
 
         public IProblemDescriptor ProblemDescriptor => new MaxFlowProblemDescriptor();
+
+        private MaxFlowProblemStatistics maxFlowProblemStatistics;
+        public IProblemStatistics ProblemStatistics => maxFlowProblemStatistics;
 
 
         // ----Конструкторы
@@ -376,6 +382,11 @@ namespace GOES.Problems.MaxFlow {
             ShowSuccessTip(message);
             LockAnswerGroupBox();
             buttonReloadIteration.Enabled = false;
+            // Отмечаем, что задача решена
+            if (problemMode == ProblemMode.Solution) {
+                ProblemStatistics.IsSolved = true;
+                Close();
+            }
         }
 
 
@@ -385,22 +396,27 @@ namespace GOES.Problems.MaxFlow {
             string errorMessage;
             switch (error) {
                 case MaxFlowError.StartOnNonSourceVertex:
+                    maxFlowProblemStatistics.StartOnNonSourceVertexCount += 1;
                     errorMessage = "Построение аугментального пути необходимо начинать с истока! Какая вершина является для данной сети истоком?";
                     break;
                 case MaxFlowError.MoveToFarVertex:
+                    maxFlowProblemStatistics.MoveToFarVertexCount += 1;
                     errorMessage =
                         "Вы попытались перейти в вершину, которая не соединена дугой с последней вершиной построенного маршрута." + Environment.NewLine +
                         $"Последней (текущей) вершиной маршрута является вершина {curAugmentalPath.Last() + 1}.";
                     break;
                 case MaxFlowError.ForwardEdgeIsFull:
+                    maxFlowProblemStatistics.ForwardEdgeIsFullCount += 1;
                     errorMessage =
                         "Вы попытались пройти по прямой дуге, поток в которой уже максимален, и увеличить его невозможно.";
                     break;
                 case MaxFlowError.BackEdgeIsEmpty:
+                    maxFlowProblemStatistics.BackEdgeIsEmptyCount += 1;
                     errorMessage =
                         "Вы попытались пройти по обратной дуге, поток в которой нулевой, и уменьшить его невозможно.";
                     break;
                 case MaxFlowError.IncorrectVertexLabelFormat:
+                    maxFlowProblemStatistics.IncorrectVertexLabelFormatCount += 1;
                     errorMessage =
                         "Неправильный формат метки." +
                         "Метка вводится в формате:" + Environment.NewLine +
@@ -409,6 +425,7 @@ namespace GOES.Problems.MaxFlow {
                         "Для вершины-истока текущий аугментальный поток следует принять бесконечным: \"inf\".";
                     break;
                 case MaxFlowError.IncorrectVertexLabel:
+                    maxFlowProblemStatistics.IncorrectVertexLabelCount += 1;
                     errorMessage =
                         "Ошибка в метке. Перепроверьте её, и попробуйте снова." + Environment.NewLine +
                         "Знак в метке отражает направление добавленной к маршруту дуги: прямое (+) или обратное (-)." + 
@@ -419,24 +436,29 @@ namespace GOES.Problems.MaxFlow {
 
                     break;
                 case MaxFlowError.IncorrectFlowRaiseFormat:
+                    maxFlowProblemStatistics.IncorrectFlowRaiseFormatCount += 1;
                     errorMessage =
                         "Неправильный формат величины аугментального потока." + Environment.NewLine +
                         "Величина аугментального потока вводится в формате одного целого числа.";
                     break;
                 case MaxFlowError.IncorrectFlowRaise:
+                    maxFlowProblemStatistics.IncorrectFlowRaiseCount += 1;
                     errorMessage =
                         "Неправильная величина аугментального потока. Пересчитайте её, и попробуйте снова.";
                     break;
                 case MaxFlowError.IncorrectMaxFlowFormat:
+                    maxFlowProblemStatistics.IncorrectMaxFlowFormatCount += 1;
                     errorMessage =
                         "Неправильный формат величины максимального потока." + Environment.NewLine +
                         "Величина максимального потока вводится в формате одного целого числа.";
                     break;
                 case MaxFlowError.IncorrectMaxFlowValue:
+                    maxFlowProblemStatistics.IncorrectMaxFlowValueCount += 1;
                     errorMessage =
                         "Неправильная величина построенного максимального потока. Пересчитайте её, и попробуйте снова.";
                     break;
                 case MaxFlowError.IncorrectMinCutEdge:
+                    maxFlowProblemStatistics.IncorrectMinCutEdgeCount += 1;
                     errorMessage =
                         "Выбранная Вами дуга не входит в минимальный разрез. Подумайте снова.";
                     break;

@@ -14,5 +14,9 @@
         /// или null, если необходимо сгенерировать случайный пример</param>
         /// <param name="mode">Режим, в котором будет работать задача</param>
         void InitializeProblem(ProblemExample example, ProblemMode mode);
+        /// <summary>
+        /// Получить статистику решения задачи
+        /// </summary>
+        IProblemStatistics ProblemStatistics { get; }
     }
 }

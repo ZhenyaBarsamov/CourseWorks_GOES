@@ -67,6 +67,10 @@ namespace GOES {
                 return;
             }
             problemForm.ShowDialog();
+            if (problemInterface.ProblemStatistics != null && problemInterface.ProblemStatistics.IsSolved) {
+                FormProblemStatistics formStatistics = new FormProblemStatistics(problemInterface.ProblemStatistics);
+                formStatistics.ShowDialog();
+            }
         }
     }
 }

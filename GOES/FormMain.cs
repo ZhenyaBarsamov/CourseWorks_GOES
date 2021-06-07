@@ -1,11 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GOES.Forms;
 using GOES.Problems;
@@ -66,11 +60,32 @@ namespace GOES {
                 MessageBox.Show(ex.Message, "Ошибка запуска задания");
                 return;
             }
-            problemForm.ShowDialog();
-            if (problemInterface.ProblemStatistics != null && problemInterface.ProblemStatistics.IsSolved) {
-                FormProblemStatistics formStatistics = new FormProblemStatistics(problemInterface.ProblemStatistics);
-                formStatistics.ShowDialog();
+            bool isProblemFinished = false;
+            do {
+                problemForm.ShowDialog();
+                // Если у задачи есть статистика, и задача была выполнена (т.е. статистика полная - отображаем её)
+                if (problemInterface.ProblemStatistics != null && problemInterface.ProblemStatistics.IsSolved) {
+                    FormProblemStatistics formStatistics = new FormProblemStatistics(problemInterface.ProblemStatistics);
+                    DialogResult dlgRes = formStatistics.ShowDialog();
+                    // Завершение выполнения задачи
+                    if (dlgRes == DialogResult.OK) {
+                        isProblemFinished = true;
+                    }
+                    // Возврат к решённой задаче
+                    else if (dlgRes == DialogResult.Retry) {
+                        isProblemFinished = false;
+                    }
+                    // Отправка результатов
+                    else if (dlgRes == DialogResult.Yes) {
+                        throw new NotImplementedException("Отправка результатов ещё не реализована");
+                    }
+                }
+                // Иначе - работа задачи завершена
+                else {
+                    isProblemFinished = true;
+                }
             }
+            while (!isProblemFinished);
         }
     }
 }

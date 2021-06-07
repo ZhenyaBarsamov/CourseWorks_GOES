@@ -16,5 +16,15 @@ namespace GOES.Forms {
             DialogResult = DialogResult.OK;
             Close();
         }
+
+        private void buttonRestart_Click(object sender, EventArgs e) {
+            DialogResult = DialogResult.Retry;
+            Close();
+        }
+
+        private void buttonSend_Click(object sender, EventArgs e) {
+            DialogResult = DialogResult.Yes;
+            Close();
+        }
     }
 }

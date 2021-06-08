@@ -85,6 +85,12 @@
     <Compile Include="Forms\FormProblemStatistics.Designer.cs">
       <DependentUpon>FormProblemStatistics.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\FormStudentInformation.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FormStudentInformation.Designer.cs">
+      <DependentUpon>FormStudentInformation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Problems\AssignmentProblem\Algorithm.cs" />
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemDescriptor.cs" />
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemExample.cs" />
@@ -143,6 +149,9 @@
     <EmbeddedResource Include="Forms\FormProblemStatistics.resx">
       <DependentUpon>FormProblemStatistics.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FormStudentInformation.resx">
+      <DependentUpon>FormStudentInformation.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Problems\AssignmentProblem\FormAssignmentProblem.resx">
       <DependentUpon>FormAssignmentProblem.cs</DependentUpon>
     </EmbeddedResource>
@@ -185,6 +194,8 @@
     <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_128x128.ico" />
     <Content Include="Resources\education_school_blocks_building_study_learn_numbers_icon_512x512.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="StatisticsSender\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

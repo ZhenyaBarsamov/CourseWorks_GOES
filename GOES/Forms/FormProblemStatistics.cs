@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using GOES.Problems;
+using GOES.Forms;
 
 namespace GOES.Forms {
     public partial class FormProblemStatistics : Form {
@@ -10,6 +11,7 @@ namespace GOES.Forms {
 
         public FormProblemStatistics(IProblemStatistics statistics) : this() {
             textLabelStatistics.Text = statistics.GetStatisticsText();
+            DialogResult = DialogResult.OK; // по умолчанию будет выход из задания
         }
 
         private void buttonAccept_Click(object sender, EventArgs e) {
@@ -23,8 +25,9 @@ namespace GOES.Forms {
         }
 
         private void buttonSend_Click(object sender, EventArgs e) {
-            DialogResult = DialogResult.Yes;
-            Close();
+            var studentInfoForm = new FormStudentInformation();
+            studentInfoForm.ShowDialog();
+
         }
     }
 }

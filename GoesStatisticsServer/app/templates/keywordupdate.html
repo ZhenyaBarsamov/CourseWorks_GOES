@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="/registration" method="POST" class="mb-3">
+    <legend>Изменить ключевое слово</legend>
+    <div class="form-group">
+        <label for="oldkeyword">Ключевое слово: </label>
+        <input class="form-control" name="oldkeyword" type="password"/>
+    </div>
+    <div class="form-group">
+        <label for="newkeyword">Новое ключевое слово: </label>
+        <input class="form-control" name="newkeyword" type="password"/>
+    </div>
+    <div class="form-group">
+        <label for="repeatednewkeyword">Повторите новое ключевое слово: </label>
+        <input class="form-control"  name="repeatednewkeyword" type="password"/>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Изменить"/>
+</form>
+<div>
+    {% for error in errors %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endblock %}

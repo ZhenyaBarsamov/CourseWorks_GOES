@@ -89,9 +89,11 @@ namespace GOES.Problems.AssignmentProblem {
         }
 
         public IProblemDescriptor ProblemDescriptor => new AssignmentProblemDescriptor();
+        public ProblemExample ProblemExample => assignmentProblemExample;
 
         private AssignmentProblemStatistics assignmentProblemStatistics;
         public IProblemStatistics ProblemStatistics => assignmentProblemStatistics;
+
 
 
         // ----Методы для работы с ходом решения/демонстрации

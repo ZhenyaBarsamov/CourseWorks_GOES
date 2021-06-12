@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="/login" method="POST" class="mb-3">
+    <legend>Вход</legend>
+    <div class="form-group">
+        <label for="keyword">Ключевое слово: </label>
+        <input class="form-control" name="keyword" type="password"/>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Войти"/>
+</form>
+<div>
+    {% for error in errors %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endfor %}
+</div>
+{% endblock %}

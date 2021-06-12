@@ -71,8 +71,8 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Controls.Add(this.buttonProblems, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonLectures, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.buttonProblems, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.buttonLectures, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonAbout, 0, 3);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 20);
@@ -88,7 +88,7 @@
             // buttonProblems
             // 
             this.buttonProblems.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonProblems.Location = new System.Drawing.Point(3, 3);
+            this.buttonProblems.Location = new System.Drawing.Point(3, 52);
             this.buttonProblems.Name = "buttonProblems";
             this.buttonProblems.Size = new System.Drawing.Size(298, 43);
             this.buttonProblems.TabIndex = 0;
@@ -99,7 +99,7 @@
             // buttonLectures
             // 
             this.buttonLectures.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonLectures.Location = new System.Drawing.Point(3, 52);
+            this.buttonLectures.Location = new System.Drawing.Point(3, 3);
             this.buttonLectures.Name = "buttonLectures";
             this.buttonLectures.Size = new System.Drawing.Size(298, 43);
             this.buttonLectures.TabIndex = 1;

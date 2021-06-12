@@ -81,9 +81,11 @@ namespace GOES.Problems.MaxBipartiteMatching {
         }
 
         public IProblemDescriptor ProblemDescriptor => new MaxBipartiteMatchingProblemDescriptor();
+        public ProblemExample ProblemExample => maxBipartiteMatchingExample;
 
         private MaxBipartiteMatchingProblemStatistics maxBipartiteMatchingProblemStatistics;
         public IProblemStatistics ProblemStatistics => maxBipartiteMatchingProblemStatistics;
+
 
 
         // ----Конструкторы

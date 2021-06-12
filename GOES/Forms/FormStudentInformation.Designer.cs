@@ -24,11 +24,11 @@
         /// </summary>
         private void InitializeComponent() {
             this.groupBoxStudentName = new System.Windows.Forms.GroupBox();
+            this.comboBoxStudentName = new System.Windows.Forms.ComboBox();
             this.groupBoxStudentGroup = new System.Windows.Forms.GroupBox();
+            this.comboBoxStudentGroup = new System.Windows.Forms.ComboBox();
             this.buttonAccept = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.comboBoxStudentName = new System.Windows.Forms.ComboBox();
-            this.comboBoxStudentGroup = new System.Windows.Forms.ComboBox();
             this.groupBoxStudentName.SuspendLayout();
             this.groupBoxStudentGroup.SuspendLayout();
             this.SuspendLayout();
@@ -43,6 +43,17 @@
             this.groupBoxStudentName.TabStop = false;
             this.groupBoxStudentName.Text = "Имя";
             // 
+            // comboBoxStudentName
+            // 
+            this.comboBoxStudentName.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.comboBoxStudentName.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.comboBoxStudentName.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxStudentName.FormattingEnabled = true;
+            this.comboBoxStudentName.Location = new System.Drawing.Point(3, 20);
+            this.comboBoxStudentName.Name = "comboBoxStudentName";
+            this.comboBoxStudentName.Size = new System.Drawing.Size(682, 26);
+            this.comboBoxStudentName.TabIndex = 0;
+            // 
             // groupBoxStudentGroup
             // 
             this.groupBoxStudentGroup.Controls.Add(this.comboBoxStudentGroup);
@@ -52,6 +63,17 @@
             this.groupBoxStudentGroup.TabIndex = 1;
             this.groupBoxStudentGroup.TabStop = false;
             this.groupBoxStudentGroup.Text = "Класс, группа";
+            // 
+            // comboBoxStudentGroup
+            // 
+            this.comboBoxStudentGroup.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.comboBoxStudentGroup.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.comboBoxStudentGroup.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.comboBoxStudentGroup.FormattingEnabled = true;
+            this.comboBoxStudentGroup.Location = new System.Drawing.Point(3, 20);
+            this.comboBoxStudentGroup.Name = "comboBoxStudentGroup";
+            this.comboBoxStudentGroup.Size = new System.Drawing.Size(682, 26);
+            this.comboBoxStudentGroup.TabIndex = 0;
             // 
             // buttonAccept
             // 
@@ -72,24 +94,6 @@
             this.buttonCancel.Text = "Отмена";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
-            // 
-            // comboBoxStudentName
-            // 
-            this.comboBoxStudentName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.comboBoxStudentName.FormattingEnabled = true;
-            this.comboBoxStudentName.Location = new System.Drawing.Point(3, 20);
-            this.comboBoxStudentName.Name = "comboBoxStudentName";
-            this.comboBoxStudentName.Size = new System.Drawing.Size(682, 26);
-            this.comboBoxStudentName.TabIndex = 0;
-            // 
-            // comboBoxStudentGroup
-            // 
-            this.comboBoxStudentGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.comboBoxStudentGroup.FormattingEnabled = true;
-            this.comboBoxStudentGroup.Location = new System.Drawing.Point(3, 20);
-            this.comboBoxStudentGroup.Name = "comboBoxStudentGroup";
-            this.comboBoxStudentGroup.Size = new System.Drawing.Size(682, 26);
-            this.comboBoxStudentGroup.TabIndex = 0;
             // 
             // FormStudentInformation
             // 

@@ -65,19 +65,16 @@ namespace GOES {
                 problemForm.ShowDialog();
                 // Если у задачи есть статистика, и задача была выполнена (т.е. статистика полная - отображаем её)
                 if (problemInterface.ProblemStatistics != null && problemInterface.ProblemStatistics.IsSolved) {
-                    FormProblemStatistics formStatistics = new FormProblemStatistics(problemInterface.ProblemStatistics);
+                    FormProblemStatistics formStatistics = new FormProblemStatistics(
+                        problemInterface.ProblemDescriptor, problemInterface.ProblemExample, problemInterface.ProblemStatistics);
                     DialogResult dlgRes = formStatistics.ShowDialog();
                     // Завершение выполнения задачи
-                    if (dlgRes == DialogResult.OK) {
+                    if (dlgRes == DialogResult.OK || dlgRes == DialogResult.Cancel) {
                         isProblemFinished = true;
                     }
                     // Возврат к решённой задаче
                     else if (dlgRes == DialogResult.Retry) {
                         isProblemFinished = false;
-                    }
-                    // Отправка результатов
-                    else if (dlgRes == DialogResult.Yes) {
-                        throw new NotImplementedException("Отправка результатов ещё не реализована");
                     }
                 }
                 // Иначе - работа задачи завершена

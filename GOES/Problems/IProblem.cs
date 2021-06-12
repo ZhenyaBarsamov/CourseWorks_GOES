@@ -15,6 +15,10 @@
         /// <param name="mode">Режим, в котором будет работать задача</param>
         void InitializeProblem(ProblemExample example, ProblemMode mode);
         /// <summary>
+        /// Получить текущий пример, которым инициализирована задача
+        /// </summary>
+        ProblemExample ProblemExample { get; }
+        /// <summary>
         /// Получить статистику решения задачи
         /// </summary>
         IProblemStatistics ProblemStatistics { get; }

@@ -95,9 +95,11 @@ namespace GOES.Problems.MaxFlow {
         }
 
         public IProblemDescriptor ProblemDescriptor => new MaxFlowProblemDescriptor();
+        public ProblemExample ProblemExample => maxFlowExample;
 
         private MaxFlowProblemStatistics maxFlowProblemStatistics;
         public IProblemStatistics ProblemStatistics => maxFlowProblemStatistics;
+
 
 
         // ----Конструкторы

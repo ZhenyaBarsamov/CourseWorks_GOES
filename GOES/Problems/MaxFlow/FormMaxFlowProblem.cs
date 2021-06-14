@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using System.Media;
 using System.Drawing;
 using SGVL.Visualizers;
+using SGVL.Visualizers.MsaglGraphVisualizer;
+using SGVL.Visualizers.SimpleGraphVisualizer;
 using SGVL.Graphs;
 using GOES.Forms;
 using System.Text;
@@ -18,6 +20,8 @@ namespace GOES.Problems.MaxFlow {
         MaxFlowProblemState problemState;
         IGraphVisualizer graphVisInterface;
         Graph visGraph;
+        SimpleGraphVisualizer simpleGraphVisualizer;
+        MsaglGraphVisualizer msaglGraphVisualizer;
 
 
         // ----Атрибуты сети
@@ -41,9 +45,15 @@ namespace GOES.Problems.MaxFlow {
 
         // ----Интерфейс задачи
         public void InitializeProblem(ProblemExample example, ProblemMode mode) {
-            // Если требуется случайная генерация, а её нет, говорим, что не реализовано
-            if (example == null && !ProblemDescriptor.IsRandomExampleAvailable)
-                throw new NotImplementedException("Случайная генерация примеров не реализована");
+            // Если требуется случайная генерация
+            if (example == null) {
+                // Если случайной генерации нет, говорим, что не реализовано
+                if (!ProblemDescriptor.IsRandomExampleAvailable)
+                    throw new NotImplementedException("Случайная генерация примеров не реализована");
+                // Иначе - генерируем задание
+                else
+                    example = ExampleGenerator.GenerateExample();
+            }
             // Если нам дан пример не задачи о максимальном потоке - ошибка
             maxFlowExample = example as MaxFlowProblemExample;
             if (maxFlowExample == null)
@@ -56,15 +66,19 @@ namespace GOES.Problems.MaxFlow {
             else if (problemMode == ProblemMode.Demonstration) {
                 SetAnswerGroupBoxDemonstrationMode();
             }
-            // Создаём граф для визуализации по примеру (если нужна генерация, генерируем)
-            if (example != null) {
-                visGraph = new Graph(maxFlowExample.GraphMatrix, maxFlowExample.IsGraphDirected);
+            // Создаём граф для визуализации по примеру
+            visGraph = new Graph(maxFlowExample.GraphMatrix, maxFlowExample.IsGraphDirected);
+            // Если у нас есть укладка по умолчанию - визуализируем граф в SimpleGraphVisualizer
+            if (example.DefaultGraphLayout != null) {
                 // Задаём расположение вершин графа
                 for (int i = 0; i < visGraph.VerticesCount; i++)
                     visGraph.Vertices[i].DrawingCoords = maxFlowExample.DefaultGraphLayout[i];
+                SetVisualizer(true);
             }
-            else
-                visGraph = new Graph(maxFlowExample.GraphMatrix, maxFlowExample.IsGraphDirected); // TODO: генерация
+            // Если укладки по умолчанию нет (граф случайно сгенерирован) - визуализируем в MSAGL
+            else {
+                SetVisualizer(false);
+            }
             graphVisInterface.Initialize(visGraph);
             // Сохраняем матрицу графа, исток и сток для решения. Создаём нужные коллекции
             capacityMatrix = (int[,])maxFlowExample.CapacityMatrix.Clone();
@@ -108,7 +122,28 @@ namespace GOES.Problems.MaxFlow {
         /// </summary>
         public FormMaxFlowProblem() {
             InitializeComponent();
-            graphVisInterface = graphVisualizer;
+        }
+
+
+        // ----Методы для настройки визуализатора
+        private void SetVisualizer(bool isSimple) {
+            groupBoxVisualization.SuspendLayout();
+            groupBoxVisualization.Controls.Clear();
+            if (isSimple) {
+                msaglGraphVisualizer = null;
+                simpleGraphVisualizer = new SimpleGraphVisualizer();
+                groupBoxVisualization.Controls.Add(simpleGraphVisualizer);
+                simpleGraphVisualizer.Dock = DockStyle.Fill;
+                graphVisInterface = simpleGraphVisualizer;
+            }
+            else {
+                simpleGraphVisualizer = null;
+                msaglGraphVisualizer = new MsaglGraphVisualizer();
+                groupBoxVisualization.Controls.Add(msaglGraphVisualizer);
+                msaglGraphVisualizer.Dock = DockStyle.Fill;
+                graphVisInterface = msaglGraphVisualizer;
+            }
+            groupBoxVisualization.ResumeLayout();
             graphVisInterface.EdgeSelectedEvent += EdgeSelectedHandler;
             graphVisInterface.VertexSelectedEvent += VertexSelectedHandler;
         }
@@ -256,8 +291,10 @@ namespace GOES.Problems.MaxFlow {
         // Перевести задачу в состояние ожидания следующей вершины для аугментального пути
         void SetNextPathVertexWaiting() {
             problemState = MaxFlowProblemState.NextPathVertexWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
-            graphVisInterface.IsVerticesMoving = true;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
+                graphVisInterface.IsVerticesMoving = true;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution) {
                 message =
@@ -290,8 +327,10 @@ namespace GOES.Problems.MaxFlow {
         // Перевести задачу в состояние ожидания метки выбранной вершины для аугментального пути
         void SetPathVertexLabelWaiting() {
             problemState = MaxFlowProblemState.PathVertexLabelWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+                graphVisInterface.IsVerticesMoving = false;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -311,8 +350,10 @@ namespace GOES.Problems.MaxFlow {
         // Перевести задачу в состояние ожидания величины аугментального потока для построенного аугментального пути
         void SetFlowRaiseWaiting() {
             problemState = MaxFlowProblemState.FlowRaiseWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+                graphVisInterface.IsVerticesMoving = false;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -330,8 +371,10 @@ namespace GOES.Problems.MaxFlow {
         // Перевести задачу в состояние ожидания величины максимального потока для построеннного максимального потока сети
         void SetMaximalFlowWaiting() {
             problemState = MaxFlowProblemState.MaximalFlowWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+                graphVisInterface.IsVerticesMoving = false;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -350,8 +393,10 @@ namespace GOES.Problems.MaxFlow {
         // Перевести задачу в состояние ожидания следующей дуги минимального разреза
         void SetNextCutEdgeWaiting() {
             problemState = MaxFlowProblemState.NextCutEdgeWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
-            graphVisInterface.IsVerticesMoving = true;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
+                graphVisInterface.IsVerticesMoving = true;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =
@@ -376,8 +421,10 @@ namespace GOES.Problems.MaxFlow {
         // Перевести задачу в состояние выполненной задачи
         void SetProblemFinish() {
             problemState = MaxFlowProblemState.ProblemFinish;
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+                graphVisInterface.IsVerticesMoving = false;
+            }
             string message = 
                 "Максимальный поток и минимальный разрез в сети найдены." + Environment.NewLine +
                 "Задание успешно выполнено!";

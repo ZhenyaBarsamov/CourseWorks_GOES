@@ -36,9 +36,15 @@ namespace GOES.Problems.MaxBipartiteMatching {
 
         // ----Интерфейс задач
         public void InitializeProblem(ProblemExample example, ProblemMode mode) {
-            // Если требуется случайная генерация, а её нет, говорим, что не реализовано
-            if (example == null && !ProblemDescriptor.IsRandomExampleAvailable)
-                throw new NotImplementedException("Случайная генерация примеров не реализована");
+            // Если требуется случайная генерация
+            if (example == null) {
+                // Если случайной генерации нет, говорим, что не реализовано
+                if (!ProblemDescriptor.IsRandomExampleAvailable)
+                    throw new NotImplementedException("Случайная генерация примеров не реализована");
+                // Иначе - генерируем задание
+                else
+                    example = ExampleGenerator.GenerateExample();
+            }
             // Если нам дан пример не задачи о максимальном паросочетании в двудольном графе - ошибка
             maxBipartiteMatchingExample = example as MaxBipartiteMatchingProblemExample;
             if (maxBipartiteMatchingExample == null)
@@ -51,15 +57,11 @@ namespace GOES.Problems.MaxBipartiteMatching {
             else if (problemMode == ProblemMode.Demonstration) {
                 SetAnswerGroupBoxDemonstrationMode();
             }
-            // Создаём граф для визуализации по примеру (если нужна генерация, генерируем)
-            if (example != null) {
-                visGraph = new Graph(maxBipartiteMatchingExample.GraphMatrix, maxBipartiteMatchingExample.IsGraphDirected);
-                // Задаём расположение вершин графа
-                for (int i = 0; i < visGraph.VerticesCount; i++)
-                    visGraph.Vertices[i].DrawingCoords = maxBipartiteMatchingExample.DefaultGraphLayout[i];
-            }
-            else
-                visGraph = new Graph(maxBipartiteMatchingExample.GraphMatrix, maxBipartiteMatchingExample.IsGraphDirected); // TODO: генерация
+            // Создаём граф для визуализации по примеру
+            visGraph = new Graph(maxBipartiteMatchingExample.GraphMatrix, maxBipartiteMatchingExample.IsGraphDirected);
+            // Задаём расположение вершин графа
+            for (int i = 0; i < visGraph.VerticesCount; i++)
+                visGraph.Vertices[i].DrawingCoords = maxBipartiteMatchingExample.DefaultGraphLayout[i];
             graphVisInterface.Initialize(visGraph);
             // Сохраняем матрицу графа для решения. Создаём нужные коллекции
             graph = (bool[,])maxBipartiteMatchingExample.GraphMatrix.Clone();
@@ -228,8 +230,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
         // Перевести задачу в состояние ожидания вершины для аугментального маршрута
         private void SetNextPathVertexWaitingState() {
             problemState = MaxBipartiteMatchingProblemState.NextPathVertexWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
-            graphVisInterface.IsVerticesMoving = true;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
+                graphVisInterface.IsVerticesMoving = true;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution) {
                 message =
@@ -268,8 +272,6 @@ namespace GOES.Problems.MaxBipartiteMatching {
         // Перевести задачу в псевдосостояние ожидания чередования по построенному аугментальному пути (для режима демонстрации)
         private void SetAlternationWaitState() {
             problemState = MaxBipartiteMatchingProblemState.NextPathVertexWaiting; // Само состояние совпадает с состоянием ожидания очередной вершины
-            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
-            graphVisInterface.IsVerticesMoving = true;
             string message = 
                 "Аугментальная цепь построена." + Environment.NewLine +
                 "Нажмите кнопку \"Сделать шаг\", чтобы провести чередование рёбер по построенному аугментальному пути. " + 
@@ -283,8 +285,10 @@ namespace GOES.Problems.MaxBipartiteMatching {
         // Перевести задачу в состояние ожидания значения мощности найденного максимального паросочетания
         private void SetMaxMatchingCardinalityWaitingState() {
             problemState = MaxBipartiteMatchingProblemState.MaxMatchingCardinalityWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
-            graphVisInterface.IsVerticesMoving = false;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+                graphVisInterface.IsVerticesMoving = false;
+            }
             string message = "";
             if (problemMode == ProblemMode.Solution)
                 message =

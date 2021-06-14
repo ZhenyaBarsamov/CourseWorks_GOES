@@ -81,6 +81,6 @@ namespace GOES.Problems.MaxBipartiteMatching {
                         ),
         };
 
-        public bool IsRandomExampleAvailable => false;
+        public bool IsRandomExampleAvailable => true;
     }
 }

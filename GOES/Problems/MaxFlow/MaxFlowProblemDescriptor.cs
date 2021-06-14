@@ -94,6 +94,6 @@ namespace GOES.Problems.MaxFlow {
                         )
         };
 
-        public bool IsRandomExampleAvailable => false;
+        public bool IsRandomExampleAvailable => true;
     }
 }

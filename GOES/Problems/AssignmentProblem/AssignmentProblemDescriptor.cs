@@ -86,8 +86,26 @@ namespace GOES.Problems.AssignmentProblem {
                                 new PointF(75, 450), new PointF(425, 450), new PointF(75, 550), new PointF(425, 550)
                             }
                         ),
+            new AssignmentProblemExample("Тест", "Бесконечное решение - всегда находит паросочетание мощности 4. В общем, влияет порядок обхода графа.",
+                            new[,] {
+                                {0, 8, 0, 23, 0, 4, 0, 18, 0, 17},
+                                {8, 0, 2, 0, 10, 0, 24, 0, 19, 0},
+                                {0, 2, 0, 13, 0, 10, 0, 16, 0, 4},
+                                {23, 0, 13, 0, 14, 0, 15, 0, 20, 0},
+                                {0, 10, 0, 14, 0, 2, 0, 18, 0, 16},
+                                {4, 0, 10, 0, 2, 0, 19, 0, 10, 0},
+                                {0, 24, 0, 15, 0, 19, 0, 21, 0, 12},
+                                {18, 0, 16, 0, 18, 0, 21, 0, 24, 0},
+                                {0, 19, 0, 20, 0, 10, 0, 24, 0, 8},
+                                {17, 0, 4, 0, 16, 0, 12, 0, 8, 0}},
+                            new PointF[] {
+                                new PointF(75, 50), new PointF(425, 50), new PointF(75, 150), new PointF(425, 150),
+                                new PointF(75, 250), new PointF(425, 250), new PointF(75, 350), new PointF(425, 350),
+                                new PointF(75, 450), new PointF(425, 450)
+                            }
+                        ),
         };
 
-        public bool IsRandomExampleAvailable => false;
+        public bool IsRandomExampleAvailable => true;
     }
 }

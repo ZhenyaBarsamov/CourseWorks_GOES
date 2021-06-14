@@ -25,7 +25,6 @@
         private void InitializeComponent() {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBoxVisualization = new System.Windows.Forms.GroupBox();
-            this.graphVisualizer = new SGVL.Visualizers.SimpleGraphVisualizer.SimpleGraphVisualizer();
             this.groupBoxTip = new System.Windows.Forms.GroupBox();
             this.textLabelTip = new GOES.Controls.TextLabel();
             this.groupBoxHelp = new System.Windows.Forms.GroupBox();
@@ -41,8 +40,6 @@
             this.groupBoxExampleDescription = new System.Windows.Forms.GroupBox();
             this.textLabelExampleDescription = new GOES.Controls.TextLabel();
             this.tableLayoutPanel1.SuspendLayout();
-            this.groupBoxVisualization.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.graphVisualizer)).BeginInit();
             this.groupBoxTip.SuspendLayout();
             this.groupBoxHelp.SuspendLayout();
             this.groupBoxAnswers.SuspendLayout();
@@ -91,7 +88,6 @@
             // groupBoxVisualization
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.groupBoxVisualization, 7);
-            this.groupBoxVisualization.Controls.Add(this.graphVisualizer);
             this.groupBoxVisualization.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxVisualization.Location = new System.Drawing.Point(3, 3);
             this.groupBoxVisualization.Name = "groupBoxVisualization";
@@ -100,18 +96,6 @@
             this.groupBoxVisualization.TabIndex = 0;
             this.groupBoxVisualization.TabStop = false;
             this.groupBoxVisualization.Text = "Визуализация графа";
-            // 
-            // graphVisualizer
-            // 
-            this.graphVisualizer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.graphVisualizer.InteractiveMode = SGVL.Visualizers.InteractiveMode.NonInteractive;
-            this.graphVisualizer.IsInteractiveUpdating = false;
-            this.graphVisualizer.IsVerticesMoving = false;
-            this.graphVisualizer.Location = new System.Drawing.Point(3, 20);
-            this.graphVisualizer.Name = "graphVisualizer";
-            this.graphVisualizer.Size = new System.Drawing.Size(702, 540);
-            this.graphVisualizer.TabIndex = 0;
-            this.graphVisualizer.TabStop = false;
             // 
             // groupBoxTip
             // 
@@ -293,8 +277,6 @@
             this.Name = "FormMaxFlowProblem";
             this.Text = "Задачи о максимальном потоке и минимальном разрезе";
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.groupBoxVisualization.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.graphVisualizer)).EndInit();
             this.groupBoxTip.ResumeLayout(false);
             this.groupBoxTip.PerformLayout();
             this.groupBoxHelp.ResumeLayout(false);
@@ -316,7 +298,6 @@
         private System.Windows.Forms.GroupBox groupBoxTip;
         private System.Windows.Forms.GroupBox groupBoxAnswers;
         private System.Windows.Forms.GroupBox groupBoxHelp;
-        private SGVL.Visualizers.SimpleGraphVisualizer.SimpleGraphVisualizer graphVisualizer;
         private System.Windows.Forms.GroupBox groupBoxSolution;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button buttonAcceptAnswer;

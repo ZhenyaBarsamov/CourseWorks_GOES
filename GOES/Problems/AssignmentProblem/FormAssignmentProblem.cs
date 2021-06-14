@@ -51,9 +51,15 @@ namespace GOES.Problems.AssignmentProblem {
 
         // ----Интерфейс задач
         public void InitializeProblem(ProblemExample example, ProblemMode mode) {
-            // Если требуется случайная генерация, а её нет, говорим, что не реализовано
-            if (example == null && !ProblemDescriptor.IsRandomExampleAvailable)
-                throw new NotImplementedException("Случайная генерация примеров не реализована");
+            // Если требуется случайная генерация
+            if (example == null) {
+                // Если случайной генерации нет, говорим, что не реализовано
+                if (!ProblemDescriptor.IsRandomExampleAvailable)
+                    throw new NotImplementedException("Случайная генерация примеров не реализована");
+                // Иначе - генерируем задание
+                else
+                    example = ExampleGenerator.GenerateExample();
+            }
             // Если нам дан пример не задачи о максимальном паросочетании в двудольном графе - ошибка
             assignmentProblemExample = example as AssignmentProblemExample;
             if (assignmentProblemExample == null)
@@ -441,8 +447,10 @@ namespace GOES.Problems.AssignmentProblem {
         // Перевести задачу в состояние ожидания вершины для аугментального маршрута
         private void SetNextPathVertexWaitingState() {
             problemState = AssignmentProblemState.NextPathVertexWaiting;
-            graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
-            graphVisInterface.IsVerticesMoving = true;
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.Interactive;
+                graphVisInterface.IsVerticesMoving = true;
+            }
             if (problemMode == ProblemMode.Solution)
                 matrixDataGridViewNextMatrix.ReadOnly = true;
             string message = ""; 
@@ -501,6 +509,10 @@ namespace GOES.Problems.AssignmentProblem {
 
         // Перевести задачу в состояние ожидания матрицы четвёртого шага
         private void SetFourthStageState() {
+            if (problemMode == ProblemMode.Solution) {
+                graphVisInterface.InteractiveMode = InteractiveMode.NonInteractive;
+                graphVisInterface.IsVerticesMoving = false;
+            }
             problemState = AssignmentProblemState.FourthStage;
             // Отображаем текущую матрицу и текущую матрицу для внесения в неё изменений
             DisplayCostsMatrix(matrixDataGridViewCurMatrix, adjacencyMatrix, verticesCount);

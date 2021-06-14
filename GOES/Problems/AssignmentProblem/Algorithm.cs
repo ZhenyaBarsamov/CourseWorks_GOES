@@ -464,7 +464,6 @@ namespace GOES.Problems.AssignmentProblem {
             int[] matchingPairsArray;
             while (true) {
                 bool[,] matchingGraphAdjacencyMatrix = GetMatchingGraphAdjacencyMatrix(matrix, verticesCount);
-
                 matchingPairsArray = GetMaximalMatching(matchingGraphAdjacencyMatrix, verticesCount);
                 if (GetMatchingCardinality(matchingPairsArray) < rowsCount)
                     FourthStage(matrix, matchingPairsArray, verticesCount);

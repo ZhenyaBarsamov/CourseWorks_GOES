@@ -100,6 +100,7 @@
     <Compile Include="Problems\AssignmentProblem\AssignmentProblemStatistics.cs" />
     <Compile Include="Problems\AssignmentProblem\EnumAssignmentProblemError.cs" />
     <Compile Include="Problems\AssignmentProblem\EnumAssignmentProblemState.cs" />
+    <Compile Include="Problems\AssignmentProblem\ExampleGenerator.cs" />
     <Compile Include="Problems\AssignmentProblem\FormAssignmentProblem.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,6 +114,7 @@
     <Compile Include="Problems\MaxBipartiteMatching\Algorithm.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\EnumMaxBipartiteMatchingError.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\EnumMaxBipartiteMatchingProblemState.cs" />
+    <Compile Include="Problems\MaxBipartiteMatching\ExampleGenerator.cs" />
     <Compile Include="Problems\MaxBipartiteMatching\FormMaxBipartiteMatchingProblem.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -125,6 +127,7 @@
     <Compile Include="Problems\MaxFlow\Algorithm.cs" />
     <Compile Include="Problems\MaxFlow\EnumMaxFlowError.cs" />
     <Compile Include="Problems\MaxFlow\EnumMaxFlowProblemState.cs" />
+    <Compile Include="Problems\MaxFlow\ExampleGenerator.cs" />
     <Compile Include="Problems\MaxFlow\FormMaxFlowProblem.cs">
       <SubType>Form</SubType>
     </Compile>

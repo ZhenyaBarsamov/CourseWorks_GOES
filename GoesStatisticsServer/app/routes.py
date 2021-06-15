@@ -2,7 +2,6 @@
 
 from app.statistics import Statistics
 from flask import render_template, request, redirect, url_for, session, abort, jsonify, Response
-from werkzeug.security import generate_password_hash, check_password_hash
 from app import app
 from app import storage
 
@@ -20,9 +19,9 @@ def showStats():
 
 def checkKeyword(keyword):
     '''
-    Функция проверки ключевого слова
+    Функция проверки ключевого слова на соответствие требуемому формату.
     Возврат: errors.
-    errors - список ошибок в виде строк
+    errors - список ошибок в виде строк.
     '''
     errors = []
     if not keyword or len(keyword) < 4 or len(keyword) > 32:
@@ -31,7 +30,7 @@ def checkKeyword(keyword):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Если пользователь уже аутентифицирован, вход запрещён
+    # Если пользователь уже аутентифицирован, отправляем его на страницу с записями
     if 'sessionFlag' in session:
         return redirect(url_for('showStats'))
     # Запрос на отображение формы
@@ -44,11 +43,11 @@ def login():
         errors = checkKeyword(keyword)
         if errors:
             return render_template('login.html', title='Вход', errors=errors, authorized=False)
-        # Получаем правильное ключевое слово
+        # Получаем правильное ключевое слово и сравниваем с введённым
         correctKeyword, error = storage.getKeyword()
         if error:
             abort(503)  # сервис недоступен
-        if keyword != correctKeyword:  #check_password_hash(passwordHash, password):
+        if keyword != correctKeyword:
             errors.append('Неправильное ключевое слово')
         # Если теперь были ошибки - выводим их
         if errors:
@@ -59,12 +58,11 @@ def login():
 
 @app.route('/keywordupdate', methods=['GET', 'POST'])
 def keywordUpdate():
-    # Если пользователь не аутентифицирован, менять ключевое слово нельзя
-    #if 'sessionFlag' not in session:
-    #    return redirect(url_for('login'))
+    # Проверяем, аутентифицирован ли пользователь
+    isAuthorized = 'sessionFlag' in session
     # Запрос на отображение формы
     if request.method == 'GET':
-        return render_template('keywordupdate.html', title='Изменить ключевое слово', authorized=True)
+        return render_template('keywordupdate.html', title='Изменить ключевое слово', authorized=isAuthorized)
     # Запрос на обработку формы
     elif request.method == 'POST':
         # Проверяем правильность введённых данных
@@ -76,29 +74,31 @@ def keywordUpdate():
             errors.append('Введённое повторно новое ключевое слово не совпадает с первым')
         # Если к этому моменту были ошибки - выводим их
         if errors:
-            return render_template('keywordupdate.html', title='Вход', errors=errors, authorized=True)
-        # Получаем правильное ключевое слово
+            return render_template('keywordupdate.html', title='Изменить ключевое слово', errors=errors, authorized=isAuthorized)
+        # Получаем текущее правильное ключевое слово, сравниваем его с введённым
         correctKeyword, error = storage.getKeyword()
         if error:
             abort(503)  # сервис недоступен
-        if oldKeyword != correctKeyword:  #check_password_hash(passwordHash, password):
+        if oldKeyword != correctKeyword:
             errors.append('Вы ввели неправильное ключевое слово')
         # Если к этому моменту были ошибки - выводим их
         if errors:
-            return render_template('keywordupdate.html', title='Вход', errors=errors, authorized=True)
+            return render_template('keywordupdate.html', title='Изменить ключевое слово', errors=errors, authorized=isAuthorized)
         # Меняем ключевое слово
         error = storage.changeKeyword(newKeyword)
         if error:
             abort(503)  # сервис недоступен
+        # Если пользователь не был аутентифицирован - теперь да (он ввёл правильное текущее ключевое слово)
         # Создаём пользовательскую сессию, добавляя в куки сессии флаг
-        session['sessionFlag'] = True
+        if not isAuthorized:
+            session['sessionFlag'] = True
         #session.permanent = True  # Делаем её перманентной (время действия такой сессии задаётся в конфиге)
         # Перенаправляем пользователя на страницу с записями
         return redirect(url_for('showStats'))
 
 @app.route('/logout')
 def logout():
-    # Если пользователь не аутентифицирован, то и не выйти
+    # Если пользователь не аутентифицирован, перенаправляем его на страницу входа
     if 'sessionFlag' not in session:
         return redirect(url_for('login'))
     session.pop('sessionFlag')
@@ -109,20 +109,19 @@ def getStats():
     # Если пользователь не аутентифицирован, требуем этого
     if 'sessionFlag' not in session:
         abort(401)  # требуется аутентификация
-    # Получаем все записи
+    # Получаем все записи 
     stats, error = storage.getAllStatistics()
     if error:
         abort(503)  # сервис недоступен
+    # Отдаём их в формате JSON
     return jsonify([stat.__dict__ for stat in stats])
 
 @app.route('/api/stats', methods=['POST'])
 def createStat():
-    # Если пользователь не аутентифицирован, требуем этого
-    #if 'sessionFlag' not in session:
-    #    abort(401)  # требуется аутентификация
+    # Проверяем правильность запроса - контент должен быть json
     if not request.is_json:
         abort(400)  # ошибка в запросе - нужен json
-    # Формируем объект Statistics
+    # Формируем добавляемый объект Statistics
     creatingStat = Statistics(None, request.json['student_name'], request.json['student_group'],
         request.json['problem_name'], request.json['example_name'], request.json['example_description'],
         request.json['statistics_body'], request.json['total_errors_count'], request.json['necessary_errors_count'], 
@@ -130,6 +129,7 @@ def createStat():
     stat, error = storage.addStatistics(creatingStat)
     if error:
         abort(503)  # сервис недоступен
+    # Отдаём результат - добавленную запись - в формате JSON
     return jsonify(stat.__dict__)
 
 @app.route('/api/stats', methods=['DELETE'])
@@ -137,6 +137,7 @@ def deleteAllStats():
     # Если пользователь не аутентифицирован, требуем этого
     if 'sessionFlag' not in session:
         abort(401)  # требуется аутентификация
+    # Удаляем все записи
     error = storage.deleteAllStatistics()
     if error:
         abort(503)  # сервис недоступен
@@ -153,6 +154,7 @@ def getStat(recordId):
         abort(503)  # сервис недоступен
     if not stat:
         abort(404)  # такой записи нет
+    # Отдаём её в формате JSON
     return jsonify(stat.__dict__)
 
 

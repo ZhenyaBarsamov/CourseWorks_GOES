@@ -158,7 +158,7 @@ def deleteStatistics(recordId):
 
 def changeKeyword(keyword):
     '''
-    Изменить ключевое слово для входа на заданное.
+    Изменить ключевое слово для входа на новое.
     Возврат: errorText.
     errorText означивается в случае ошибки.
     '''

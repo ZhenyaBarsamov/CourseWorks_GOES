@@ -1,10 +1,11 @@
-// Сохраняем в переменные форму добавления записи, а также список записей, блок-загрузочный экран и блок, содержащий контент списка записей
+// Сохраняем в переменные список записей, блок-загрузочный экран и блок, содержащий контент списка записей, поля ввода фильтров
 const statsList = document.querySelector('#stats-list');
 const loadingDiv = document.querySelector('#loading');
 const statsListWrapper = document.querySelector('#stats-list-wrapper');
 const studentNameInput = document.querySelector('#studentname-filter-input');
 const studentGroupInput = document.querySelector('#studentgroup-filter-input');
 const deleteAllButton = document.querySelector('#delete-all-button');
+const clearAllFiltersButton = document.querySelector('#clear-all-filters-button')
 
 
 // Функция включения/отключения загрузочного экрана
@@ -16,7 +17,7 @@ function setLoading(isLoading) {
 
 // -----------------------AJAX--------------------------
 
-// Функция удаления записи
+// Удалить запись с заданным идентификатором
 async function deleteStat(recordId) {
     // Выставляем загрузку
     //setLoading(true);
@@ -46,7 +47,11 @@ async function deleteStat(recordId) {
     //setLoading(false);
 }
 
+// Удалить все записи
 async function deleteAllStats() {
+    // Выставляем загрузку
+    //setLoading(true);
+    // Удаляем
     try {
         const response = await fetch(`/api/stats`, {
             method: 'DELETE',
@@ -68,8 +73,11 @@ async function deleteAllStats() {
     } catch (e) {
         alert(e.message);
     }
+    // Убираем загрузку
+    //setLoading(false);
 }
 
+// Обработчик на событие нажатия кнопки удаления всех записей
 deleteAllButton.addEventListener('click', (event) => {
     deleteAllStats();
 });
@@ -77,32 +85,46 @@ deleteAllButton.addEventListener('click', (event) => {
 
 // -----------------ФИЛЬТРАЦИЯ-----------------------
 
+// Отфильтровать отображаемый список записей на основании введённых в studentNameInput и studentGroupInput
+// имени и группы, без учёта регистра.
 function filterRecords() {
+    // Получаем введённое имя, удаляем лишние пробелы, формируем шаблон для регулярного выражения для проверки имени (без учёта регистра)
+    // Если имя пустое - допустимо любое имя
     let studentName = studentNameInput.value.trim();
     let nameTemplate = studentName != '' ? `Имя: .*${studentName}.*` : 'Имя: .*';
     let regexName = new RegExp(nameTemplate, "i");
+    // Получаем введённую группу, удаляем лишние пробелы, формируем шаблон для регулярного выражения для проверки группы (без учёта регистра)
+    // Если группа пустая - допустима любая группа
     let studentGroup = studentGroupInput.value.trim();
     let groupTemplate = studentGroup != '' ? `Группа \\(класс\\): .*${studentGroup}.*` : 'Группа \\(класс\\): .*';
     let regexGroup = new RegExp(groupTemplate, "i");
+    // Скрываем в списке все записи, имя и группа в которых не удовлетворяют соответствующим регулярным выражениям
     for (var i = 0; i < statsList.children.length; i++) {
+        // Получаем идентификатор записи
         let recordId = statsList.children[i].getAttribute('data-stat-id');
+        // Получаем текст из параграфов с именем и группой и сравниваем с нужными шаблонами. И скрываем/показываем нужные элементы
         let curStudentName = document.querySelector(`#studentname-${recordId}`).innerHTML.trim();
         let curStudentGroup = document.querySelector(`#studentgroup-${recordId}`).innerHTML.trim();
-        if (regexName.test(curStudentName) && regexGroup.test(curStudentGroup)) {            
+        if (regexName.test(curStudentName) && regexGroup.test(curStudentGroup))     
             statsList.children[i].style.display = '';
-        }
-        else {
+        else
             statsList.children[i].style.display = 'none';
-        }
     }
 }
 
-// Обработчик события на ввод конкретного имени
+// Обработчик события изменения имени в фильтре
 studentNameInput.addEventListener('input', (event) => {
         filterRecords();
 });
 
-// Обработчик события на ввод конкретной группы
+// Обработчик события изменения группы в фильтре
 studentGroupInput.addEventListener('input', (event) => {
+    filterRecords();
+});
+
+// Обработчик на событие нажатия кнопки сброса фильтров
+clearAllFiltersButton.addEventListener('click', (event) => {
+    studentNameInput.value = '';
+    studentGroupInput.value = '';
     filterRecords();
 });

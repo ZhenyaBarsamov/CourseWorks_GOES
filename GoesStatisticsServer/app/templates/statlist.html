@@ -28,11 +28,14 @@
               aria-describedby="studentgroup-filter-label"
               id="studentgroup-filter-input"/>
         </div>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary btn-block" type="button" id="clear-all-filters-button">Убрать все фильтры</button>
+        </div>
         <hr/>
         <h2>Управление списком</h2>
         <div class="d-grid gap-2">
             <button class="btn btn-secondary btn-block" type="button" id="delete-all-button">Удалить все записи</button>
-          </div>
+        </div>
     </div>
     <hr/>
     <h2>Все записи:</h2>
@@ -50,7 +53,9 @@
             </div>
             <div class="card-body">
                 <p>
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse-statbody-{{ stat.record_id }}" aria-expanded="false" aria-controls="collapse-statbody-{{ stat.record_id }}">
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" 
+                            data-target="#collapse-statbody-{{ stat.record_id }}" aria-expanded="false" 
+                            aria-controls="collapse-statbody-{{ stat.record_id }}">
                         Подробнее
                     </button>
                     <button class="btn btn-danger" onclick="deleteStat('{{ stat.record_id }}')">Удалить запись</button>

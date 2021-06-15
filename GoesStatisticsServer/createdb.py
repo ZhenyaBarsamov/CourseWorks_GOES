@@ -1,4 +1,4 @@
-# Скрипт для создания sqlite базы данных для приложения
+# Скрипт для создания SQLite базы данных для приложения
 
 import sqlite3
 from pathlib import Path

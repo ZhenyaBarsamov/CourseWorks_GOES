@@ -1,3 +1,5 @@
+--SQL-скрипт создания БД для хранения записей статистики
+
 CREATE TABLE "statistics"
 (
 	record_id INTEGER PRIMARY KEY,

@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormProblemSelector));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonSolution = new System.Windows.Forms.Button();
             this.buttonDemonstration = new System.Windows.Forms.Button();
@@ -221,6 +222,7 @@
             this.ClientSize = new System.Drawing.Size(1039, 520);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormProblemSelector";
             this.Text = "Выбор задачи";
             this.tableLayoutPanel1.ResumeLayout(false);

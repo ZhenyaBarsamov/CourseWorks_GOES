@@ -23,11 +23,12 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormProblemStatistics));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.textLabelStatistics = new GOES.Controls.TextLabel();
             this.buttonAccept = new System.Windows.Forms.Button();
             this.buttonSend = new System.Windows.Forms.Button();
             this.buttonRestart = new System.Windows.Forms.Button();
-            this.textLabelStatistics = new GOES.Controls.TextLabel();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,6 +50,17 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(917, 525);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // textLabelStatistics
+            // 
+            this.textLabelStatistics.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textLabelStatistics.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textLabelStatistics.Location = new System.Drawing.Point(3, 3);
+            this.textLabelStatistics.Multiline = true;
+            this.textLabelStatistics.Name = "textLabelStatistics";
+            this.textLabelStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textLabelStatistics.Size = new System.Drawing.Size(911, 361);
+            this.textLabelStatistics.TabIndex = 0;
             // 
             // buttonAccept
             // 
@@ -86,23 +98,13 @@
             this.buttonRestart.UseVisualStyleBackColor = true;
             this.buttonRestart.Click += new System.EventHandler(this.buttonRestart_Click);
             // 
-            // textLabelStatistics
-            // 
-            this.textLabelStatistics.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textLabelStatistics.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textLabelStatistics.Location = new System.Drawing.Point(3, 3);
-            this.textLabelStatistics.Multiline = true;
-            this.textLabelStatistics.Name = "textLabelStatistics";
-            this.textLabelStatistics.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textLabelStatistics.Size = new System.Drawing.Size(911, 361);
-            this.textLabelStatistics.TabIndex = 0;
-            // 
             // FormProblemStatistics
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(917, 525);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormProblemStatistics";
             this.Text = "Статистика решения задачи";
             this.tableLayoutPanel1.ResumeLayout(false);

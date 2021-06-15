@@ -71,6 +71,8 @@ namespace GOES.Forms {
             // Если всё прошло хорошо - говорим об этом
             MessageBox.Show($"Результаты успешно отправлены",
                     "Отправка результатов", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Запрещаем повторную отправку результата
+            buttonSend.Enabled = false;
         }
     }
 }

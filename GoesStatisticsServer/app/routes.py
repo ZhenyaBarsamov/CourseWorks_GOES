@@ -14,7 +14,6 @@ def showStats():
         return redirect(url_for('login'))
     # Получаем все записи
     stats, error = storage.getAllStatistics()
-    print(error)
     if error:
         abort(503)  # сервис недоступен
     return render_template('statlist.html', title='Все записи', stats=stats, authorized=True)
@@ -61,8 +60,8 @@ def login():
 @app.route('/keywordupdate', methods=['GET', 'POST'])
 def keywordUpdate():
     # Если пользователь не аутентифицирован, менять ключевое слово нельзя
-    if 'sessionFlag' not in session:
-        return redirect(url_for('login'))
+    #if 'sessionFlag' not in session:
+    #    return redirect(url_for('login'))
     # Запрос на отображение формы
     if request.method == 'GET':
         return render_template('keywordupdate.html', title='Изменить ключевое слово', authorized=True)
@@ -70,7 +69,7 @@ def keywordUpdate():
     elif request.method == 'POST':
         # Проверяем правильность введённых данных
         oldKeyword = request.form['oldkeyword']
-        newKeyword = request.form['keyword']
+        newKeyword = request.form['newkeyword']
         repeatedNewKeyword = request.form['repeatednewkeyword']
         errors = checkKeyword(newKeyword)
         if newKeyword != repeatedNewKeyword:
@@ -132,6 +131,16 @@ def createStat():
     if error:
         abort(503)  # сервис недоступен
     return jsonify(stat.__dict__)
+
+@app.route('/api/stats', methods=['DELETE'])
+def deleteAllStats():
+    # Если пользователь не аутентифицирован, требуем этого
+    if 'sessionFlag' not in session:
+        abort(401)  # требуется аутентификация
+    error = storage.deleteAllStatistics()
+    if error:
+        abort(503)  # сервис недоступен
+    return Response(status=200)
 
 @app.route('/api/stats/<int:recordId>/', methods=['GET'])
 def getStat(recordId):

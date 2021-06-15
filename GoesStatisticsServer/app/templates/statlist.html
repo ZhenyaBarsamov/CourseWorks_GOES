@@ -4,39 +4,69 @@
 <div id="stats-list-wrapper">
     <div>
         <h2>Фильтрация</h2>
-        <p>
-            <label for="studentname">Имя студента: </label>
-            <input type="text" id="studentname"/>
-        </p>
-        <p>
-            <label for="studentgroup">Группа (класс) студента: </label>
-            <input type="text" id="studentgroup"/>
-        </p>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="studentname-filter-label">Имя студента</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Имя студента"
+              aria-label="Имя студента"
+              aria-describedby="studentname-filter-label"
+              id="studentname-filter-input"/>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="studentgroup-filter-label">Группа (класс) студента</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Группа (класс) студента"
+              aria-label="Группа (класс) студента"
+              aria-describedby="studentgroup-filter-label"
+              id="studentgroup-filter-input"/>
+        </div>
+        <hr/>
+        <h2>Управление списком</h2>
+        <div class="d-grid gap-2">
+            <button class="btn btn-secondary btn-block" type="button" id="delete-all-button">Удалить все записи</button>
+          </div>
     </div>
     <hr/>
     <h2>Все записи:</h2>
     <ul id="stats-list" class="list-group">
+        {% if not stats %} Нет записей
+        {% else %}
         {% for stat in stats %}
-        <li class="card bg-light mb-3" data-todo-id="{{ stat.record_id }}">
+        <li class="card bg-light mb-3" data-stat-id="{{ stat.record_id }}">
             <div class="card-header">
-                <p>Студент: {{ stat.student_name }}</p>
-                <p>Группа (класс): {{ stat.student_group }}</p>
+                <p id="studentname-{{ stat.record_id }}">Имя: {{ stat.student_name }}</p>
+                <p id="studentgroup-{{ stat.record_id }}">Группа (класс): {{ stat.student_group }}</p>
                 <p>Задание: {{ stat.problem_name }}</p>
                 <p>Пример: {{ stat.example_name }}</p>
+                <p>Описание примера: {{ stat.example_description }}</p>
             </div>
             <div class="card-body">
-                <p class="card-text">Описание примера:<br/>{{ stat.example_description }}</p>
-                <hr/>
-                <p class="card-text" style="white-space: pre-line">Статистика:<br/>{{ stat.statistics_body }}</p>
-                <button class="btn btn-danger" onclick="deleteTodo('{{ stat.record_id }}')">Удалить</button>
+                <p>
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse-statbody-{{ stat.record_id }}" aria-expanded="false" aria-controls="collapse-statbody-{{ stat.record_id }}">
+                        Подробнее
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteStat('{{ stat.record_id }}')">Удалить запись</button>
+                </p>
+                <div class="collapse" id="collapse-statbody-{{ stat.record_id }}">
+                    <div class="card card-body">
+                        <p class="card-text" style="white-space: pre-line">{{ stat.statistics_body }}</p>
+                    </div>
+                </div>
             </div>
-            <div class="card-footer">{{ stat.record_time }}</div>
+            <div class="card-footer">{{ stat.record_time.strftime('%d.%m.%Y, %H:%M:%S') }}</div>
         </li>
         {% endfor %}
+        {% endif %}
     </ul>
-    <!-- СКРИПТ ДЛЯ РЕДАКТИРОВАНИЯ ЗАПИСЕЙ ПО AJAX -->
+    <!-- СКРИПТ ДЛЯ AJAX -->
     <script src="{{ url_for('static', filename='js/ajax.js') }}"></script>
-    <!-- СКРИПТ ФИЛЬРОВ -->
-    <!--<script src="{{ url_for('static', filename='js/filtering.js') }}"></script>-->
     {% endblock %}
 </div>

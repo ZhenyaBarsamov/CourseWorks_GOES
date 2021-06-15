@@ -57,7 +57,7 @@ def __createUpdateDeleteQuery(sql, params=None):
 
 def getAllStatistics():
     '''
-    Получить все записи из БД.
+    Получить все записи из БД, отсортированные по времени в порядке от новых к старым.
     Возврат: список statistics, errorText.
     errorText означивается в случае ошибки.
     '''
@@ -69,7 +69,8 @@ def getAllStatistics():
             problem_name, example_name, example_description,\
             statistics_body, total_errors_count, necessary_errors_count,\
             mark, record_time\
-        FROM "statistics"'
+        FROM "statistics"\
+        ORDER BY record_time DESC'
     queryRes, error = __selectQuery(sql, tuple())
     # Если есть хотя бы что-то, даже пустой список = is not None
     # А если просто проверять if queryRes, то пустой список даст False
@@ -131,6 +132,17 @@ def addStatistics(statistics):
         statistics.record_id = record_id
         statisticsRes = statistics
     return statisticsRes, error
+
+def deleteAllStatistics():
+    '''
+    Удалить все статистики из БД.
+    Возврат: errorText.
+    errorText означивается в случае ошибки.
+    '''
+    error = None
+    sql = 'DELETE FROM "statistics"'
+    _, error = __createUpdateDeleteQuery(sql, tuple())
+    return error
 
 def deleteStatistics(recordId):
     '''
